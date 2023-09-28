@@ -1,4 +1,5 @@
 import React from "react";
+import theme from "theme";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,7 +13,10 @@ const Nav = (): JSX.Element => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={{ headerShown: false }}
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.bgColor },
+        }}
         initialRouteName={Routes.NOTES}
       >
         <Stack.Screen name={Routes.SIGN_IN} component={NotesScreen} />

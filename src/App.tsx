@@ -2,8 +2,11 @@ import { loadAsync } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
 
 import Nav from "./modules/navigation/components/Nav";
@@ -53,21 +56,24 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container onLayout={onLayoutRootView}>
-        <StatusBar
-          translucent
-          barStyle="dark-content"
-          backgroundColor="transparent"
-        />
-        <Nav />
-      </Container>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <StatusBar
+            translucent
+            barStyle="light-content"
+            backgroundColor="transparent"
+          />
+          <Container onLayout={onLayoutRootView}>
+            <Nav />
+          </Container>
+        </SafeAreaProvider>
+      </Provider>
     </ThemeProvider>
   );
 }
 
 const Container = styled.View`
   flex: 1;
-  background-color: ${theme.colors.white};
   align-content: center;
   justify-content: center;
 `;
