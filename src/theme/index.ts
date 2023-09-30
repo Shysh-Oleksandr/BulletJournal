@@ -11,6 +11,7 @@ const theme: DefaultTheme = {
     darkBlueText: "#267491",
     blackText: "#00092e",
     gray: "#c9c1c1",
+    whitish: "#bdffff",
   },
   fontSizes: {
     xxl: 22,

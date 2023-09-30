@@ -7,7 +7,7 @@ import styled from "styled-components/native";
 
 import Typography, { TypographyProps } from "./Typography";
 
-interface ButtonProps {
+type Props = {
   label?: string;
   onPress?: () => void;
   disabled?: boolean;
@@ -25,9 +25,9 @@ interface ButtonProps {
   width?: string;
   labelProps?: TypographyProps;
   Icon?: FC<SvgProps>;
-}
+};
 
-const Button: React.FC<ButtonProps> = ({
+const Button = ({
   label,
   onPress,
   disabled,
@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
   loadingIndicatorColor = theme.colors.white,
   width,
   Icon,
-}) => {
+}: Props): JSX.Element => {
   return (
     <ButtonWrapper
       onPress={() => {

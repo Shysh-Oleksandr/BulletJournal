@@ -12,6 +12,7 @@ declare module "styled-components/native" {
       darkBlueText: string;
       blackText: string;
       gray: string;
+      whitish: string;
     };
     fontSizes: {
       xxl: number;
