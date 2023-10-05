@@ -38,10 +38,10 @@ const NotesScreen: FC = () => {
 
   return (
     <>
-      <HeaderBar withLogo />
+      <HeaderBar withLogo withLogoutBtn />
       {isLoading ? (
         <LoaderContainer>
-          <ActivityIndicator />
+          <ActivityIndicator size="large" />
         </LoaderContainer>
       ) : (
         <FlashList

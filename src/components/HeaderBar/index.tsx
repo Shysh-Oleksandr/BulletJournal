@@ -1,15 +1,15 @@
 import React from "react";
-import DropShadow from "react-native-drop-shadow";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Shadow } from "react-native-shadow-2";
 import theme from "theme";
 
+import { AntDesign } from "@expo/vector-icons";
 import Button from "components/Button";
 import Typography from "components/Typography";
 import { IS_ANDROID } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import styled from "styled-components/native";
 
-import LeftArrowIcon from "./assets/LeftArrowIcon.svg";
 import LogoIcon from "./assets/Logo.svg";
 
 export const BUTTON_HIT_SLOP = { top: 15, bottom: 15, left: 20, right: 20 };
@@ -25,6 +25,7 @@ type Props = {
   paddingVertical?: number;
   bgColor?: string;
   withLogo?: boolean;
+  withLogoutBtn?: boolean;
   onBackArrowPress?: () => void;
 };
 
@@ -36,6 +37,7 @@ const HeaderBar = ({
   paddingVertical = 8,
   bgColor = theme.colors.cyan700,
   withLogo,
+  withLogoutBtn,
   onBackArrowPress,
 }: Props): JSX.Element => {
   const insets = useSafeAreaInsets();
@@ -47,7 +49,7 @@ const HeaderBar = ({
     : insets.top;
 
   return (
-    <StyledDropShadow>
+    <StyledDropShadow distance={20} offset={[0, 5]} startColor="#00000015">
       <CoverView bgColor={bgColor} height={distanceFromTheTop} />
       <HeaderWrapper
         marginBottom={marginBottom}
@@ -61,7 +63,7 @@ const HeaderBar = ({
             hitSlop={BUTTON_HIT_SLOP}
             paddingHorizontal={5}
           >
-            <LeftArrowIcon />
+            <AntDesign name="arrowleft" size={24} color={theme.colors.white} />
           </IconWrapper>
         )}
         {withLogo && (
@@ -73,12 +75,14 @@ const HeaderBar = ({
           align="center"
           color={theme.colors.white}
           fontSize="lg"
-          uppercase
           fontWeight="bold"
+          paddingRight={24}
         >
           {title}
         </Title>
-        <Button label="Logout" bgColor={theme.colors.cyan600} />
+        {withLogoutBtn && (
+          <Button label="Logout" bgColor={theme.colors.cyan600} />
+        )}
       </HeaderWrapper>
     </StyledDropShadow>
   );
@@ -90,11 +94,8 @@ const CoverView = styled.View<{ bgColor: string; height: number }>`
   width: 100%;
 `;
 
-const StyledDropShadow = styled(DropShadow)`
-  shadow-color: ${theme.colors.black};
-  shadow-offset: 0 5px;
-  shadow-opacity: 0.2;
-  shadow-radius: 10px;
+const StyledDropShadow = styled(Shadow)`
+  width: 100%;
 `;
 
 const HeaderWrapper = styled.View<{

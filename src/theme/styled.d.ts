@@ -9,10 +9,14 @@ declare module "styled-components/native" {
       cyan700: string;
       cyan600: string;
       cyan500: string;
+      cyan400: string;
+      cyan300: string;
+      cyan200: string;
       darkBlueText: string;
       blackText: string;
       gray: string;
       whitish: string;
+      red600: string;
     };
     fontSizes: {
       xxl: number;

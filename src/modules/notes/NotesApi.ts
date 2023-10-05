@@ -1,5 +1,5 @@
 import { emptyAxiosApi } from "store/api/emptyAxiosApi";
-import { Method } from "store/models";
+import { Method, TAG } from "store/models";
 
 import { FetchNotesResponse } from "./types";
 
@@ -13,6 +13,25 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
             method: Method.GET,
           };
         },
+        providesTags: [TAG.NOTES],
+      }),
+      updateNote: build.mutation<void, string>({
+        query(noteId) {
+          return {
+            url: `/notes/update/${noteId}`,
+            method: Method.PATCH,
+          };
+        },
+        invalidatesTags: [TAG.NOTES],
+      }),
+      createNote: build.mutation<void, void>({
+        query() {
+          return {
+            url: `/notes/create`,
+            method: Method.POST,
+          };
+        },
+        invalidatesTags: [TAG.NOTES],
       }),
     };
   },

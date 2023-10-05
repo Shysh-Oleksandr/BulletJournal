@@ -3,6 +3,8 @@ import theme from "theme";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { IS_ANDROID } from "modules/app/constants";
+import EditNoteScreen from "modules/notes/screens/EditNoteScreen";
 
 import NotesScreen from "../../notes/screens/NotesScreen";
 import { RootStackParamList, Routes } from "../types";
@@ -16,12 +18,15 @@ const Nav = (): JSX.Element => {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.bgColor },
+          presentation: IS_ANDROID ? "modal" : "card",
+          animationTypeForReplace: "push",
+          animation: "slide_from_right",
         }}
         initialRouteName={Routes.NOTES}
       >
         <Stack.Screen name={Routes.SIGN_IN} component={NotesScreen} />
         <Stack.Screen name={Routes.NOTES} component={NotesScreen} />
-        <Stack.Screen name={Routes.EDIT_NOTE} component={NotesScreen} />
+        <Stack.Screen name={Routes.EDIT_NOTE} component={EditNoteScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
