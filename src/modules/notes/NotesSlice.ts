@@ -22,14 +22,16 @@ export const notesSlice = createSlice({
   initialState: initialState,
   reducers: {
     setNotes: (state, payload: PayloadAction<Note[]>) => {
-      state.notes = payload.payload;
+      state.notes = payload.payload.sort((a, b) => b.startDate - a.startDate);
     },
   },
   extraReducers: (build) => {
     build.addMatcher(
       notesApi.endpoints.fetchNotes.matchFulfilled,
       (state, action) => {
-        state.notes = action.payload.notes;
+        state.notes = action.payload.notes.sort(
+          (a, b) => b.startDate - a.startDate,
+        );
       },
     );
   },

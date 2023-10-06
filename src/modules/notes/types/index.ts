@@ -9,6 +9,7 @@ export type Note = {
   rating: number;
   isLocked: boolean;
   isStarred: boolean;
+  image: string;
   type: Category | null;
   category: Category[];
 };
@@ -25,3 +26,7 @@ export type FetchNotesResponse = {
   count: number;
   notes: Note[];
 };
+
+export type UpdateNoteRequest = Note;
+
+export type CreateNoteRequest = Omit<Note, "_id">;

@@ -9,7 +9,7 @@ const getFont = (fontWeight?: keyof typeof theme.fonts): string => {
     return theme.fonts[fontWeight];
   }
 
-  return theme.fonts.regular;
+  return theme.fonts.medium;
 };
 
 const getColor = (color?: string): string =>

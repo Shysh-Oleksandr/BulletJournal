@@ -32,10 +32,3 @@ export function dateDiffInDays(a: Date, b: Date) {
 
   return Math.abs(Math.floor((utc2 - utc1) / _MS_PER_DAY));
 }
-
-export const getContentWords = (content: string) => {
-  return content
-    .trim()
-    .split(/\s+/)
-    .filter((row) => row.trim() !== "<p></p>").length;
-};

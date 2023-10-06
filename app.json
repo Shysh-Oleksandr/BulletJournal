@@ -9,10 +9,15 @@
     "icon": "./assets/images/icon.png",
     "scheme": "com.frankmelward.bulletjournal",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "backgroundColor": "#0789af",
+      "barStyle": "light-content",
+      "translucent": true
+    },
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -23,7 +28,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.frankmelward.bulletjournal"

@@ -1,6 +1,5 @@
-import React, { FC } from "react";
-import { ActivityIndicator, TouchableOpacity } from "react-native";
-import { SvgProps } from "react-native-svg";
+import React from "react";
+import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
 import styled from "styled-components/native";
@@ -24,7 +23,7 @@ type Props = {
   bgColor?: string;
   width?: string;
   labelProps?: TypographyProps;
-  Icon?: FC<SvgProps>;
+  Icon?: JSX.Element;
 };
 
 const Button = ({
@@ -50,10 +49,10 @@ const Button = ({
     <ButtonWrapper
       onPress={() => {
         if (isLoading || disabled) return;
-        onPress && onPress();
+        onPress?.();
       }}
       activeOpacity={isLoading ? 1 : activeOpacity}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       marginTop={marginTop}
       marginBottom={marginBottom}
       isTransparent={isTransparent}
@@ -62,7 +61,7 @@ const Button = ({
       bgColor={bgColor}
       width={width}
     >
-      {Icon && <Icon height={24} width={24} />}
+      {Icon && <IconContainer>{Icon}</IconContainer>}
       {showLoadingIndicator && isLoading && (
         <LoaderWrapper>
           <ActivityIndicator size={24} color={loadingIndicatorColor} />
@@ -85,7 +84,7 @@ const Button = ({
   );
 };
 
-const ButtonWrapper = styled(TouchableOpacity)<{
+const ButtonWrapper = styled.TouchableOpacity<{
   marginTop: number | string;
   marginBottom: number | string;
   wide?: boolean;
@@ -121,5 +120,7 @@ const LabelContainer = styled.View<{
 const LoaderWrapper = styled.View`
   position: absolute;
 `;
+
+const IconContainer = styled.View``;
 
 export default Button;
