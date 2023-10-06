@@ -77,7 +77,7 @@ const NoteBody = ({
           <NoteLabel label={`${rating}/10`} color={color} />
           {relevantCategories?.map((category, index, array) => (
             <NoteLabel
-              key={category._id}
+              key={category.labelName + category._id}
               label={category.labelName}
               color={color}
               isLast={index === array.length - 1}

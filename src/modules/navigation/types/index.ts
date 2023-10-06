@@ -11,5 +11,6 @@ export type RootStackParamList = {
   [Routes.NOTES]: undefined;
   [Routes.EDIT_NOTE]: {
     item: Note;
+    isNewNote?: boolean;
   };
 };

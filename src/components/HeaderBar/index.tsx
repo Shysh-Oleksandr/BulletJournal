@@ -10,12 +10,13 @@ import { IS_ANDROID } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import styled from "styled-components/native";
 
-import LogoIcon from "./assets/Logo.svg";
+import LogoIcon from "./assets/Logo.png";
 
 export const BUTTON_HIT_SLOP = { top: 15, bottom: 15, left: 20, right: 20 };
 
 const DISTANCE_FROM_THE_STATUS_BAR_ANDROID = 15;
 const HEADER_MIN_HEIGHT = 50;
+const LOGO_SIZE = 40;
 
 type Props = {
   title?: string;
@@ -67,9 +68,12 @@ const HeaderBar = ({
           </IconWrapper>
         )}
         {withLogo && (
-          <IconWrapper disabled hitSlop={BUTTON_HIT_SLOP} paddingHorizontal={5}>
-            <LogoIcon width={32} height={32} fill={theme.colors.white} />
-          </IconWrapper>
+          <Logo
+            source={LogoIcon}
+            width={LOGO_SIZE}
+            height={LOGO_SIZE}
+            resizeMode="contain"
+          />
         )}
         <Title
           align="center"
@@ -116,11 +120,19 @@ const HeaderWrapper = styled.View<{
 
 const IconWrapper = styled.TouchableOpacity<{ paddingHorizontal?: number }>`
   padding-horizontal: ${(props) => props.paddingHorizontal ?? 10}px;
+  max-width: 32px;
+  max-height: 32px;
   z-index: 2;
 `;
 
 const Title = styled(Typography)`
   flex: 1;
+`;
+
+const Logo = styled.Image`
+  margin-left: 5px;
+  width: ${LOGO_SIZE}px;
+  height: ${LOGO_SIZE}px;
 `;
 
 export default HeaderBar;

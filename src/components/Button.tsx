@@ -52,7 +52,7 @@ const Button = ({
         onPress?.();
       }}
       activeOpacity={isLoading ? 1 : activeOpacity}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       marginTop={marginTop}
       marginBottom={marginBottom}
       isTransparent={isTransparent}

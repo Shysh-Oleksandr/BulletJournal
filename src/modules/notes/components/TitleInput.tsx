@@ -20,7 +20,7 @@ const TitleInput = ({ currentTitle, setCurrentTitle }: Props): JSX.Element => {
         paddingHorizontal={0}
         placeholder="Title"
         isCentered
-        multiline
+        multiline={currentTitle.length > 30}
         numberOfLines={currentTitle.length > 30 ? 3 : 1}
         maxLength={200}
         bgColor="transparent"

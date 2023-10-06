@@ -1,5 +1,5 @@
-import React, { FC, useMemo, useRef, useState } from "react";
-import { GestureResponderEvent } from "react-native";
+import React, { FC, useCallback, useMemo, useRef, useState } from "react";
+import { Alert, GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import { Shadow } from "react-native-shadow-2";
 import theme from "theme";
@@ -7,9 +7,11 @@ import theme from "theme";
 import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
+import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 import { getContentWords } from "utils/getContentWords";
+import { getPluralLabel } from "utils/getPluralLabel";
 
 import ColorPicker from "../components/ColorPicker";
 import DatePicker from "../components/DatePicker";
@@ -19,13 +21,22 @@ import NoteBody from "../components/NoteBody";
 import TextEditor from "../components/TextEditor";
 import TitleInput from "../components/TitleInput";
 import TypeSelector from "../components/TypeSelector";
-import { Category } from "../types";
+import { notesApi } from "../NotesApi";
+import { Category, Note } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
-  const { title, content, color, type, rating, startDate } = route.params.item;
+  const [updateNote] = notesApi.useUpdateNoteMutation();
+  const [createNote] = notesApi.useCreateNoteMutation();
+  const [deleteNote] = notesApi.useDeleteNoteMutation();
+
+  const navigation = useAppNavigation();
+
+  const { item: initialNote, isNewNote } = route.params;
+
+  const { _id, title, content, color, type, rating, startDate } = initialNote;
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
@@ -39,9 +50,77 @@ const EditNoteScreen: FC<{
 
   const [isTypeSelectorExpanded, setIsTypeSelectorExpanded] = useState(false);
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const richTextRef = useRef<RichEditor | null>(null);
 
   const wordsCount = useMemo(() => getContentWords(contentHTML), [contentHTML]);
+
+  const saveNoteHandler = useCallback(async () => {
+    if (currentTitle.trim() === "") {
+      Alert.alert("Error", "Please fill out all the required fields");
+
+      return;
+    }
+
+    setIsSaving(true);
+
+    // TODO: get real user id on creating
+    const note: Note = {
+      ...initialNote,
+      title: currentTitle,
+      content: contentHTML,
+      color: currentColor,
+      startDate: currentStartDate,
+      rating: currentImportance,
+      category: [],
+    };
+
+    try {
+      if (isNewNote) {
+        await createNote(note);
+
+        navigation.replace(Routes.EDIT_NOTE, { item: note });
+      } else {
+        await updateNote(note);
+      }
+      Alert.alert(
+        "Success",
+        `The note is ${isNewNote ? "created" : "updated"}`,
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [
+    contentHTML,
+    currentColor,
+    currentImportance,
+    currentStartDate,
+    currentTitle,
+    initialNote,
+    isNewNote,
+    navigation,
+    createNote,
+    updateNote,
+  ]);
+
+  const deleteNoteHandler = useCallback(async () => {
+    if (!_id) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteNote(_id);
+      Alert.alert("Success", "The note is deleted");
+      navigation.navigate(Routes.NOTES);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [_id, deleteNote, navigation]);
 
   return (
     <Wrapper
@@ -88,7 +167,7 @@ const EditNoteScreen: FC<{
                   fontSize="lg"
                   color={theme.colors.darkBlueText}
                 >
-                  {wordsCount} words
+                  {getPluralLabel(wordsCount, "word")}
                 </Typography>
               </WordsContainer>
               <InputGroup>
@@ -120,7 +199,13 @@ const EditNoteScreen: FC<{
               }}
               setContentHTML={setContentHTML}
             />
-            <NoteActionButtons />
+            <NoteActionButtons
+              isSaving={isSaving}
+              isDeleting={isDeleting}
+              isNewNote={!!isNewNote}
+              saveNote={saveNoteHandler}
+              deleteNote={deleteNoteHandler}
+            />
           </Container>
         </StyledDropShadow>
         <Typography

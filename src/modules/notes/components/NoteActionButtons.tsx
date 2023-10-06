@@ -9,12 +9,29 @@ const DeleteIcon = (
   <MaterialIcons name="delete" size={20} color={theme.colors.white} />
 );
 
-const NoteActionButtons = (): JSX.Element => (
+type Props = {
+  isSaving: boolean;
+  isDeleting: boolean;
+  isNewNote: boolean;
+  saveNote: () => Promise<void>;
+  deleteNote: () => Promise<void>;
+};
+
+const NoteActionButtons = ({
+  isSaving,
+  isDeleting,
+  isNewNote,
+  saveNote,
+  deleteNote,
+}: Props): JSX.Element => (
   <>
     <Button
-      label="Update"
+      label={isNewNote ? "Create" : "Update"}
+      onPress={saveNote}
       bgColor={theme.colors.cyan600}
       marginTop={20}
+      disabled={isSaving || isDeleting}
+      isLoading={isSaving}
       labelProps={{
         fontWeight: "bold",
         fontSize: "xl",
@@ -22,17 +39,22 @@ const NoteActionButtons = (): JSX.Element => (
       }}
       Icon={SaveIcon}
     />
-    <Button
-      label="Delete"
-      bgColor={theme.colors.red600}
-      marginTop={8}
-      labelProps={{
-        fontWeight: "bold",
-        fontSize: "xl",
-        paddingHorizontal: 8,
-      }}
-      Icon={DeleteIcon}
-    />
+    {!isNewNote && (
+      <Button
+        label="Delete"
+        onPress={deleteNote}
+        bgColor={theme.colors.red600}
+        marginTop={8}
+        disabled={isSaving || isDeleting}
+        isLoading={isDeleting}
+        labelProps={{
+          fontWeight: "bold",
+          fontSize: "xl",
+          paddingHorizontal: 8,
+        }}
+        Icon={DeleteIcon}
+      />
+    )}
   </>
 );
 

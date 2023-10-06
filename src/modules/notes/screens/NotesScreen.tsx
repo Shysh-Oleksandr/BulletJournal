@@ -1,5 +1,4 @@
-import { isEmpty } from "ramda";
-import React, { FC, useCallback, useEffect } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
@@ -7,6 +6,7 @@ import HeaderBar from "components/HeaderBar";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import AddButton from "../components/AddButton";
 import NotePreview from "../components/NotePreview";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
@@ -21,7 +21,11 @@ const contentContainerStyle = {
 const NotesScreen: FC = () => {
   const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
 
-  const notes = useAppSelector(getNotes).slice(0, 10);
+  const allNotes = useAppSelector(getNotes);
+
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const notes = useMemo(() => [...allNotes].slice(0, 10), [allNotes]);
 
   const renderItem: ListRenderItem<Note> = useCallback(
     ({ item, index }) => (
@@ -31,14 +35,16 @@ const NotesScreen: FC = () => {
   );
 
   useEffect(() => {
-    if (isEmpty(notes)) {
-      fetchNotes("62b82f38a02731ee158d8ceb");
+    if (!isLoaded) {
+      setIsLoaded(true);
+      fetchNotes("62b82f38a02731ee158d8ceb", false);
     }
-  }, [notes, fetchNotes]);
+  }, [notes, isLoaded, fetchNotes]);
 
   return (
     <>
       <HeaderBar withLogo withLogoutBtn />
+      <AddButton />
       {isLoading ? (
         <LoaderContainer>
           <ActivityIndicator size="large" />
