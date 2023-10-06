@@ -29,8 +29,6 @@ export const notesSlice = createSlice({
     build.addMatcher(
       notesApi.endpoints.fetchNotes.matchFulfilled,
       (state, action) => {
-        console.log("new notes:");
-
         state.notes = action.payload.notes.sort(
           (a, b) => b.startDate - a.startDate,
         );
