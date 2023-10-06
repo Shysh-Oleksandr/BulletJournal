@@ -9,6 +9,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "com.frankmelward.bulletjournal",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "backgroundColor": "#0789af",
+      "barStyle": "light-content",
+      "translucent": true
+    },
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
