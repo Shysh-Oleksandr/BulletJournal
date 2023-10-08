@@ -32,6 +32,7 @@ const DatePicker = ({
   };
 
   const handleConfirm = (newDate: Date) => {
+    newDate.setHours(0, 0, 0, 0);
     setDate(getFormattedDate(newDate));
     setCurrentStartDate(newDate.getTime());
     hideDatePicker();

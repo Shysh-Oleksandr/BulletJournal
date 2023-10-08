@@ -3,6 +3,7 @@ import { ActivityIndicator } from "react-native";
 
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import HeaderBar from "components/HeaderBar";
+import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
@@ -14,15 +15,18 @@ import { Note } from "../types";
 
 const contentContainerStyle = {
   paddingTop: 30,
-  paddingBottom: 60,
+  paddingBottom: 80,
   paddingHorizontal: 20,
 };
 
 const ITEMS_PER_PAGE = 10;
 
+const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
+
 const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
 
+  const userId = useAppSelector(getUserId);
   const allNotes = useAppSelector(getNotes);
 
   const [page, setPage] = useState(1);
@@ -59,11 +63,17 @@ const NotesScreen = (): JSX.Element => {
       setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
     }
 
-    if (!isLoaded) {
+    if (!isLoaded && userId) {
       setIsLoaded(true);
-      fetchNotes("62b82f38a02731ee158d8ceb", false);
+      fetchNotes(userId, false);
     }
-  }, [allNotes, notes.length, isLoaded, fetchNotes]);
+  }, [allNotes, notes.length, userId, isLoaded, fetchNotes]);
+
+  // When notes are updated we reset the state
+  useEffect(() => {
+    setPage(1);
+    setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
+  }, [allNotes]);
 
   return (
     <>
@@ -78,9 +88,9 @@ const NotesScreen = (): JSX.Element => {
           data={notes}
           renderItem={renderItem}
           onEndReached={loadMoreData}
+          keyExtractor={keyExtractor}
           onEndReachedThreshold={0.1}
           estimatedItemSize={200}
-          keyExtractor={(item) => item._id}
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"

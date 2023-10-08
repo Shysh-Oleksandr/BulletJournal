@@ -1,4 +1,6 @@
+import "react-native-devsettings/withAsyncStorage"; // Allows to use React Native Debugger with hermes enabled
 import { loadAsync } from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "react-native";
@@ -14,6 +16,9 @@ import theme from "./theme";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+NavigationBar.setPositionAsync("absolute");
+NavigationBar.setBackgroundColorAsync("#ffffff01");
+NavigationBar.setButtonStyleAsync("dark");
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -47,6 +52,7 @@ export default function App() {
       // we hide the splash screen once we know the root view has already
       // performed layout.
       await SplashScreen.hideAsync();
+      NavigationBar.setBackgroundColorAsync(theme.colors.bgColor);
     }
   }, [appIsReady]);
 

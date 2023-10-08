@@ -7,10 +7,12 @@ import { AntDesign } from "@expo/vector-icons";
 import Button from "components/Button";
 import Typography from "components/Typography";
 import { IS_ANDROID } from "modules/app/constants";
+import { logout } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
+import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import LogoIcon from "./assets/Logo.png";
+import LogoIcon from "../../../assets/images/icon.png";
 
 export const BUTTON_HIT_SLOP = { top: 15, bottom: 15, left: 20, right: 20 };
 
@@ -44,6 +46,7 @@ const HeaderBar = ({
   const insets = useSafeAreaInsets();
 
   const navigation = useAppNavigation();
+  const dispatch = useAppDispatch();
 
   const distanceFromTheTop = IS_ANDROID
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
@@ -85,7 +88,11 @@ const HeaderBar = ({
           {title}
         </Title>
         {withLogoutBtn && (
-          <Button label="Logout" bgColor={theme.colors.cyan600} />
+          <Button
+            label="Logout"
+            bgColor={theme.colors.cyan600}
+            onPress={() => dispatch(logout())}
+          />
         )}
       </HeaderWrapper>
     </StyledDropShadow>
