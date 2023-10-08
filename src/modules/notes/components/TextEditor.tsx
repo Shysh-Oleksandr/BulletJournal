@@ -33,7 +33,7 @@ const TextEditor = ({
   );
 
   const richTextHandleDebouncer = useMemo(
-    () => debounce(richTextHandle, 300),
+    () => debounce(richTextHandle, 500),
     [richTextHandle],
   );
 

@@ -1,6 +1,7 @@
 import createCachedSelector from "re-reselect";
 
 import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import { logout } from "modules/auth/AuthSlice";
 
 import { RootState } from "../../store/store";
 
@@ -26,6 +27,9 @@ export const notesSlice = createSlice({
     },
   },
   extraReducers: (build) => {
+    build.addMatcher(logout.match, () => ({
+      ...initialState,
+    }));
     build.addMatcher(
       notesApi.endpoints.fetchNotes.matchFulfilled,
       (state, action) => {

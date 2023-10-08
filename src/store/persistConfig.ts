@@ -3,9 +3,9 @@ import { PersistConfig } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
-  NotesState,
-  STATE_KEY as NOTES_STATE_KEY,
-} from "../modules/notes/NotesSlice";
+  AuthState,
+  STATE_KEY as AUTH_STATE_KEY,
+} from "../modules/auth/AuthSlice";
 
 type CustomPersistConfig<S = Record<string, any>> = Omit<
   PersistConfig<S>,
@@ -15,8 +15,8 @@ type CustomPersistConfig<S = Record<string, any>> = Omit<
   blacklist?: Array<keyof S>;
 };
 
-export const notesPersistConfig: CustomPersistConfig<NotesState> = {
-  key: NOTES_STATE_KEY,
+export const authPersistConfig: CustomPersistConfig<AuthState> = {
+  key: AUTH_STATE_KEY,
   storage: AsyncStorage,
-  // whitelist: ["notes"],
+  whitelist: ["user"],
 };

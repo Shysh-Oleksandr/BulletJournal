@@ -4,7 +4,7 @@ import { Note } from "../types";
 
 export const EMPTY_NOTE: Note = {
   _id: "",
-  author: "62b82f38a02731ee158d8ceb",
+  author: "",
   title: "",
   content: "",
   color: theme.colors.cyan600,

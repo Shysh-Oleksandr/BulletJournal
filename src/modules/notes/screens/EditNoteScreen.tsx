@@ -7,8 +7,11 @@ import theme from "theme";
 import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
+import logging from "config/logging";
+import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getContentWords } from "utils/getContentWords";
 import { getPluralLabel } from "utils/getPluralLabel";
@@ -20,10 +23,15 @@ import NoteActionButtons from "../components/NoteActionButtons";
 import NoteBody from "../components/NoteBody";
 import TextEditor from "../components/TextEditor";
 import TitleInput from "../components/TitleInput";
-import TypeSelector from "../components/TypeSelector";
 import { notesApi } from "../NotesApi";
-import { Category, Note } from "../types";
+import { Note } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
+import removeMarkdown from "../util/removeMarkdown";
+
+const contentContainerStyle = {
+  paddingHorizontal: 20,
+  paddingBottom: 70,
+};
 
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
@@ -34,30 +42,41 @@ const EditNoteScreen: FC<{
 
   const navigation = useAppNavigation();
 
+  const userId = useAppSelector(getUserId);
+
   const { item: initialNote, isNewNote } = route.params;
 
-  const { _id, title, content, color, type, rating, startDate } = initialNote;
+  const { _id, title, content, color, rating, startDate } = initialNote;
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
-  const [currentType, setCurrentType] = useState(type?.labelName ?? "Note");
+  // const [currentType, setCurrentType] = useState(type?.labelName ?? "Note");
   const [contentHTML, setContentHTML] = useState(content);
 
   const [childrenIds, setChildrenIds] = useState<number[]>([]);
   const [isChildrenIdsSet, setIsChildrenIdsSet] = useState(false);
 
-  const [isTypeSelectorExpanded, setIsTypeSelectorExpanded] = useState(false);
+  // const [isTypeSelectorExpanded, setIsTypeSelectorExpanded] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const richTextRef = useRef<RichEditor | null>(null);
 
-  const wordsCount = useMemo(() => getContentWords(contentHTML), [contentHTML]);
+  const wordsCount = useMemo(
+    () => getContentWords(removeMarkdown(contentHTML)),
+    [contentHTML],
+  );
 
   const saveNoteHandler = useCallback(async () => {
+    if (!userId) {
+      logging.error("The user doesn't have an id");
+
+      return;
+    }
+
     if (currentTitle.trim() === "") {
       Alert.alert("Error", "Please fill out all the required fields");
 
@@ -66,11 +85,11 @@ const EditNoteScreen: FC<{
 
     setIsSaving(true);
 
-    // TODO: get real user id on creating
     const note: Note = {
       ...initialNote,
-      title: currentTitle,
-      content: contentHTML,
+      author: userId,
+      title: currentTitle.trim(),
+      content: contentHTML.trim(),
       color: currentColor,
       startDate: currentStartDate,
       rating: currentImportance,
@@ -90,20 +109,21 @@ const EditNoteScreen: FC<{
         `The note is ${isNewNote ? "created" : "updated"}`,
       );
     } catch (error) {
-      console.error(error);
+      logging.error(error);
     } finally {
       setIsSaving(false);
     }
   }, [
+    userId,
+    currentTitle,
+    currentStartDate,
+    initialNote,
     contentHTML,
     currentColor,
     currentImportance,
-    currentStartDate,
-    currentTitle,
-    initialNote,
     isNewNote,
-    navigation,
     createNote,
+    navigation,
     updateNote,
   ]);
 
@@ -145,10 +165,7 @@ const EditNoteScreen: FC<{
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingBottom: 50,
-        }}
+        contentContainerStyle={contentContainerStyle}
       >
         <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000010">
           <Container>
@@ -181,16 +198,16 @@ const EditNoteScreen: FC<{
                 />
               </InputGroup>
             </Section>
-            <TypeSelector
+            {/* <TypeSelector
               currentType={currentType}
               isExpanded={isTypeSelectorExpanded}
               setIsExpanded={setIsTypeSelectorExpanded}
               setCurrentType={setCurrentType}
-            />
+            /> */}
             <TextEditor
               initialContentHtml={content}
               richTextRef={richTextRef}
-              isPressable={!isTypeSelectorExpanded}
+              isPressable // ={!isTypeSelectorExpanded}
               containerRef={(component) => {
                 if (component && !isChildrenIdsSet) {
                   setChildrenIds(getAllChildrenIds(component));
@@ -221,7 +238,7 @@ const EditNoteScreen: FC<{
           title={currentTitle}
           rating={currentImportance}
           color={currentColor}
-          type={{ ...type, labelName: currentType } as Category}
+          // type={{ ...type, labelName: currentType } as Category}
           content={contentHTML}
         />
       </SScrollView>
