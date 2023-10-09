@@ -45,11 +45,14 @@ const NoteBody = ({
     [category, type],
   );
 
-  const source = {
-    html:
-      content.slice(0, MAX_CONTENT_SYMBOLS) +
-      (content.length > MAX_CONTENT_SYMBOLS ? "..." : ""),
-  };
+  const source = useMemo(
+    () => ({
+      html:
+        content.slice(0, MAX_CONTENT_SYMBOLS) +
+        (content.length > MAX_CONTENT_SYMBOLS ? "..." : ""),
+    }),
+    [content],
+  );
 
   return (
     <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000015">

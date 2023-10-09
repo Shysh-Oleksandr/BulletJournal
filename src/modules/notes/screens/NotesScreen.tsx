@@ -1,14 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
+import theme from "theme";
 
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
+import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
+import { useAppNavigation } from "modules/navigation/NavigationService";
+import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/NotePreview";
+import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
 import { Note } from "../types";
@@ -26,6 +32,8 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
 
+  const navigation = useAppNavigation();
+
   const userId = useAppSelector(getUserId);
   const allNotes = useAppSelector(getNotes);
 
@@ -40,6 +48,34 @@ const NotesScreen = (): JSX.Element => {
       <NotePreview item={item} isLast={index === notes.length - 1} />
     ),
     [notes],
+  );
+
+  const ListEmptyComponent = useMemo(
+    () => (
+      <>
+        <Typography
+          fontWeight="semibold"
+          fontSize="xl"
+          align="center"
+          color={theme.colors.darkBlueText}
+        >
+          You don't have any notes yet
+        </Typography>
+        <Button
+          label="Add a note"
+          marginTop={20}
+          labelProps={{ fontSize: "xl", fontWeight: "bold" }}
+          onPress={() =>
+            navigation.navigate(Routes.EDIT_NOTE, {
+              item: EMPTY_NOTE,
+              isNewNote: true,
+            })
+          }
+          bgColor={theme.colors.cyan600}
+        />
+      </>
+    ),
+    [navigation],
   );
 
   const loadMoreData = useCallback(() => {
@@ -81,7 +117,7 @@ const NotesScreen = (): JSX.Element => {
       <AddButton />
       {isLoading ? (
         <LoaderContainer>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={theme.colors.cyan600} />
         </LoaderContainer>
       ) : (
         <FlashList
@@ -89,6 +125,7 @@ const NotesScreen = (): JSX.Element => {
           renderItem={renderItem}
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
+          ListEmptyComponent={ListEmptyComponent}
           onEndReachedThreshold={0.1}
           estimatedItemSize={200}
           contentContainerStyle={contentContainerStyle}
