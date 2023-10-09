@@ -18,7 +18,7 @@ const theme: DefaultTheme = {
     red600: "#c31515",
   },
   fontSizes: {
-    xxl: 22,
+    xxl: 24,
     xl: 20,
     lg: 18,
     md: 16,

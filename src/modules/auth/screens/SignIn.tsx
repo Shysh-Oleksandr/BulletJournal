@@ -99,7 +99,7 @@ const SignIn = (): JSX.Element => {
         <Typography
           fontWeight="bold"
           fontSize="xxl"
-          paddingTop={10}
+          paddingTop={16}
           color={theme.colors.darkBlueText}
         >
           Bullet Journal
@@ -109,8 +109,8 @@ const SignIn = (): JSX.Element => {
           Icon={GOOGLE_ICON}
           wide
           bgColor={theme.colors.cyan600}
-          marginTop={70}
-          marginBottom={50}
+          marginTop={50}
+          marginBottom={70}
           disabled={isLoading}
           isLoading={isLoading}
           onPress={() => {

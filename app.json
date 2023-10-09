@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "BulletJournal",
+    "name": "Bullet Journal",
     "slug": "bulletjournal",
     "owner": "oleksandrshysh",
     "originalFullName": "@frankmelward/bulletjournal",
@@ -10,7 +10,7 @@
     "scheme": "com.frankmelward.bulletjournal",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
-      "backgroundColor": "#0789af",
+      "backgroundColor": "#ffffff01",
       "barStyle": "light-content",
       "translucent": true
     },

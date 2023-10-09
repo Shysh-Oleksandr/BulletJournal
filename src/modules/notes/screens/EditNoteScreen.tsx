@@ -159,7 +159,10 @@ const EditNoteScreen: FC<{
         return false;
       }}
     >
-      <HeaderBar withBackArrow title="Edit note" />
+      <HeaderBar
+        withBackArrow
+        title={`${isNewNote ? "Create" : "Edit"} note`}
+      />
       <SScrollView
         bounces={false}
         overScrollMode="never"
