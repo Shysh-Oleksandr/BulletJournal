@@ -1,7 +1,5 @@
-import { API_URL, FIREBASE_API_KEY, ANDROID_CLIENT_ID } from "@env";
-
 const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: "bulletjournalproject.firebaseapp.com",
   projectId: "bulletjournalproject",
   storageBucket: "bulletjournalproject.appspot.com",
@@ -11,7 +9,7 @@ const firebaseConfig = {
 };
 
 export default {
-  apiUrl: API_URL,
-  androidClientId: ANDROID_CLIENT_ID,
+  apiUrl: process.env.EXPO_PUBLIC_API_URL,
+  androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
   firebaseConfig,
 } as const;
