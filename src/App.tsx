@@ -8,6 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import logging from "config/logging";
 import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
 
@@ -35,7 +36,7 @@ export default function App() {
           ...FontAwesome.font,
         });
       } catch (e) {
-        console.warn(e);
+        logging.warn(e);
       } finally {
         setAppIsReady(true);
       }

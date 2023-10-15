@@ -10,14 +10,14 @@
     "scheme": "com.frankmelward.bulletjournal",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
-      "backgroundColor": "#ffffff01",
+      "backgroundColor": "#0891b2",
       "barStyle": "light-content",
       "translucent": true
     },
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#0789af"
+      "backgroundColor": "#0891b2"
     },
     "assetBundlePatterns": [
       "**/*"

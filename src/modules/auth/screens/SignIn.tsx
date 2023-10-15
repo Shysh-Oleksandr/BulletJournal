@@ -84,9 +84,8 @@ const SignIn = (): JSX.Element => {
   return (
     <>
       <StatusBar
-        translucent
         barStyle="dark-content"
-        backgroundColor="transparent"
+        backgroundColor={theme.colors.bgColor}
       />
 
       <Container>
