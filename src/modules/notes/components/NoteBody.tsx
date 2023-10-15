@@ -65,11 +65,13 @@ const NoteBody = ({
         <Typography fontWeight="bold" fontSize="xl" color={textColor}>
           {title}
         </Typography>
-        <RenderHTML
-          defaultTextProps={{ style: { color: textColor } }}
-          contentWidth={width - 80}
-          source={source}
-        />
+        <ContentContainer>
+          <RenderHTML
+            defaultTextProps={{ style: { color: textColor } }}
+            contentWidth={width - 80}
+            source={source}
+          />
+        </ContentContainer>
         <LabelsContainer>
           {isStarred && (
             <NoteLabel
@@ -103,6 +105,11 @@ const LabelsContainer = styled.View`
   width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
+`;
+
+const ContentContainer = styled.View`
+  width: 100%;
+  margin-left: 3px;
 `;
 
 const StyledDropShadow = styled(Shadow)`

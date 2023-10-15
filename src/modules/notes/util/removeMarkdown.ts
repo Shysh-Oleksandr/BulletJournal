@@ -1,4 +1,7 @@
 /* eslint-disable no-useless-escape */
+
+import logging from "config/logging";
+
 /* eslint-disable no-prototype-builtins */
 type Options = {
   stripListLeaders?: boolean;
@@ -95,7 +98,7 @@ const removeMarkdown = (
       // Replace two or more newlines with exactly two? Not entirely sure this belongs here...
       .replace(/\n{2,}/g, "\n\n");
   } catch (e) {
-    console.error(e);
+    logging.error(e);
 
     return markdown;
   }

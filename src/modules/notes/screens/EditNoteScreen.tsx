@@ -136,7 +136,7 @@ const EditNoteScreen: FC<{
       Alert.alert("Success", "The note is deleted");
       navigation.navigate(Routes.NOTES);
     } catch (error) {
-      console.error(error);
+      logging.error(error);
     } finally {
       setIsDeleting(false);
     }

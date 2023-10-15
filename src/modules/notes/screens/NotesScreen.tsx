@@ -37,7 +37,7 @@ const NotesScreen = (): JSX.Element => {
   const userId = useAppSelector(getUserId);
   const allNotes = useAppSelector(getNotes);
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   const [notes, setNotes] = useState(allNotes.slice(0, ITEMS_PER_PAGE));
 
@@ -107,7 +107,7 @@ const NotesScreen = (): JSX.Element => {
 
   // When notes are updated we reset the state
   useEffect(() => {
-    setPage(1);
+    setPage(0);
     setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
   }, [allNotes]);
 

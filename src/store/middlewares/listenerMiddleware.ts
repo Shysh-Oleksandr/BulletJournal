@@ -3,11 +3,12 @@ import {
   TypedStartListening,
   TypedStopListening,
 } from "@reduxjs/toolkit";
+import logging from "config/logging";
 import { RootState, AppDispatch } from "store/store";
 
 const appListenerMiddleware = createListenerMiddleware({
   onError: (error, errorInfo) => {
-    console.error(`raised by: ${errorInfo.raisedBy}`, error);
+    logging.error(`raised by: ${errorInfo.raisedBy}. Error: ${error}`);
   },
 });
 
