@@ -32,7 +32,7 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 2,
+      "versionCode": 3,
       "package": "com.frankmelward.bulletjournal"
     },
     "plugins": [
