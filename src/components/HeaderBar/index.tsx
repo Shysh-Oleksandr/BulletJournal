@@ -30,6 +30,7 @@ type Props = {
   withLogo?: boolean;
   withLogoutBtn?: boolean;
   onBackArrowPress?: () => void;
+  onLogoPress?: () => void;
 };
 
 const HeaderBar = ({
@@ -42,6 +43,7 @@ const HeaderBar = ({
   withLogo,
   withLogoutBtn,
   onBackArrowPress,
+  onLogoPress,
 }: Props): JSX.Element => {
   const insets = useSafeAreaInsets();
 
@@ -71,12 +73,14 @@ const HeaderBar = ({
           </IconWrapper>
         )}
         {withLogo && (
-          <Logo
-            source={LogoIcon}
-            width={LOGO_SIZE}
-            height={LOGO_SIZE}
-            resizeMode="contain"
-          />
+          <LogoContainer hitSlop={BUTTON_HIT_SLOP} onPress={onLogoPress}>
+            <Logo
+              source={LogoIcon}
+              width={LOGO_SIZE}
+              height={LOGO_SIZE}
+              resizeMode="contain"
+            />
+          </LogoContainer>
         )}
         <Title
           align="center"
@@ -136,8 +140,11 @@ const Title = styled(Typography)`
   flex: 1;
 `;
 
-const Logo = styled.Image`
+const LogoContainer = styled.TouchableOpacity`
   margin-left: 5px;
+`;
+
+const Logo = styled.Image`
   width: ${LOGO_SIZE}px;
   height: ${LOGO_SIZE}px;
 `;

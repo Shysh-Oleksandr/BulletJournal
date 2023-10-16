@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
@@ -41,6 +47,8 @@ const NotesScreen = (): JSX.Element => {
 
   const userId = useAppSelector(getUserId);
   const allNotes = useAppSelector(getNotes);
+
+  const flashListRef = useRef<FlashList<Note>>(null);
 
   const [page, setPage] = useState(0);
 
@@ -88,6 +96,10 @@ const NotesScreen = (): JSX.Element => {
     [notes],
   );
 
+  const scrollToTop = useCallback(() => {
+    flashListRef?.current?.scrollToOffset({ offset: 0, animated: true });
+  }, [flashListRef]);
+
   const loadMoreData = useCallback(() => {
     const nextPage = page + 1;
     const startIndex = nextPage * ITEMS_PER_PAGE;
@@ -127,7 +139,7 @@ const NotesScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withLogo withLogoutBtn />
+      <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
       {isLoading || !isLoaded ? (
         <LoaderContainer>
@@ -147,6 +159,7 @@ const NotesScreen = (): JSX.Element => {
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
+          ref={flashListRef}
           bounces={false}
         />
       )}
