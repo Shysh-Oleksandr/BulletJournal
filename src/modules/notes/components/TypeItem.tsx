@@ -1,69 +1,42 @@
 import React from "react";
 import theme from "theme";
 
-import Divider from "components/Divider";
 import Typography from "components/Typography";
 import styled from "styled-components/native";
 
 type Props = {
   type: string;
-  isLast: boolean;
   isActive: boolean;
   Icon?: JSX.Element;
   onChoose: (type: string) => void;
 };
 
-const TypeItem = ({
-  type,
-  isActive,
-  isLast,
-  Icon,
-  onChoose,
-}: Props): JSX.Element => (
-  <>
-    <BgContainer style={{ backgroundColor: theme.colors.cyan200 }}>
-      <TypeItemContainer
-        isLast={isLast}
-        isActive={isActive}
-        activeOpacity={0.8}
-        onPress={() => onChoose(type)}
+const TypeItem = ({ type, isActive, Icon, onChoose }: Props): JSX.Element => (
+  <TypeItemContainer
+    isActive={isActive}
+    onPress={() => onChoose(type)}
+    activeOpacity={isActive ? 0.5 : 0.2}
+  >
+    {Icon ?? (
+      <Typography
+        fontWeight="medium"
+        fontSize="md"
+        align="center"
+        color={isActive ? theme.colors.white : theme.colors.darkBlueText}
       >
-        {Icon ?? (
-          <Typography
-            fontWeight="medium"
-            fontSize="md"
-            align="center"
-            color={theme.colors.white}
-          >
-            {type}
-          </Typography>
-        )}
-      </TypeItemContainer>
-    </BgContainer>
-    {!isLast && <Divider />}
-  </>
+        {type}
+      </Typography>
+    )}
+  </TypeItemContainer>
 );
 
-const BgContainer = styled.View`
-  background-color: ${theme.colors.cyan200};
-`;
-
 const TypeItemContainer = styled.TouchableOpacity<{
-  isLast: boolean;
   isActive: boolean;
 }>`
   width: 100%;
-  background-color: ${({ isActive }) =>
-    isActive ? theme.colors.cyan500 : theme.colors.cyan600};
-  padding: 10px 12px;
-  height: 40px;
+  padding: 16px 12px;
 
-  ${({ isLast }) =>
-    isLast &&
-    `
-      border-bottom-right-radius: 6px;
-      border-bottom-left-radius: 6px;
-    `}
+  ${({ isActive }) => isActive && `background-color: ${theme.colors.cyan500};`}
 `;
 
 export default React.memo(TypeItem);

@@ -84,10 +84,9 @@ const Input = ({
       bgColor={bgColor}
       maxWidth={maxWidth}
       minHeight={minHeight}
-      paddingHorizontal={paddingHorizontal}
     >
       {!!placeholder && !value.length && (
-        <PlaceholderContainer>
+        <PlaceholderContainer pointerEvents="none">
           <Typography color={theme.colors.cyan700}>{placeholder}</Typography>
         </PlaceholderContainer>
       )}
@@ -99,6 +98,8 @@ const Input = ({
         ref={inputRef}
         fontWeight={fontWeight}
         fontSize={fontSize}
+        paddingHorizontal={paddingHorizontal}
+        maxWidth={maxWidth}
         keyboardType={keyboardType}
         maxLength={maxLength}
         selectTextOnFocus={selectTextOnFocus}
@@ -127,14 +128,11 @@ const InputWrapper = styled.KeyboardAvoidingView<{
   bgColor: string;
   maxWidth?: number;
   minHeight: number;
-  paddingHorizontal: number;
 }>`
   justify-content: center;
   align-items: center;
   width: 100%;
   min-height: ${({ minHeight }) => minHeight}px;
-  padding-horizontal: ${({ maxWidth, paddingHorizontal }) =>
-    maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
   background-color: ${({ bgColor }) => bgColor};
   border-bottom-width: ${({ isFocused }) => (isFocused ? 3 : 2)}px;
   border-color: ${({ isFocused }) =>
@@ -147,6 +145,8 @@ const CustomInput = styled.TextInput<{
   isCentered: boolean;
   fontWeight?: keyof typeof theme.fonts;
   fontSize?: keyof typeof theme.fontSizes;
+  paddingHorizontal: number;
+  maxWidth?: number;
 }>`
   width: 100%;
   color: ${theme.colors.darkBlueText};
@@ -154,6 +154,8 @@ const CustomInput = styled.TextInput<{
   font-family: ${({ fontWeight }) => getFont(fontWeight)};
   text-align: ${({ isCentered }) => (isCentered ? "center" : "left")};
   padding-vertical: 8px;
+  padding-horizontal: ${({ maxWidth, paddingHorizontal }) =>
+    maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
 `;
 
 const IconContainer = styled.TouchableOpacity`

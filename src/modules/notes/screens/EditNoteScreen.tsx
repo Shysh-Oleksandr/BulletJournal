@@ -23,8 +23,9 @@ import NoteActionButtons from "../components/NoteActionButtons";
 import NoteBody from "../components/NoteBody";
 import TextEditor from "../components/TextEditor";
 import TitleInput from "../components/TitleInput";
+import TypeSelector from "../components/TypeSelector";
 import { notesApi } from "../NotesApi";
-import { Note } from "../types";
+import { Category, Note } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 import removeMarkdown from "../util/removeMarkdown";
 
@@ -46,19 +47,17 @@ const EditNoteScreen: FC<{
 
   const { item: initialNote, isNewNote } = route.params;
 
-  const { _id, title, content, color, rating, startDate } = initialNote;
+  const { _id, title, content, color, type, rating, startDate } = initialNote;
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
-  // const [currentType, setCurrentType] = useState(type?.labelName ?? "Note");
+  const [currentType, setCurrentType] = useState(type?.labelName ?? "Note");
   const [contentHTML, setContentHTML] = useState(content);
 
   const [childrenIds, setChildrenIds] = useState<number[]>([]);
   const [isChildrenIdsSet, setIsChildrenIdsSet] = useState(false);
-
-  // const [isTypeSelectorExpanded, setIsTypeSelectorExpanded] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -201,16 +200,13 @@ const EditNoteScreen: FC<{
                 />
               </InputGroup>
             </Section>
-            {/* <TypeSelector
+            <TypeSelector
               currentType={currentType}
-              isExpanded={isTypeSelectorExpanded}
-              setIsExpanded={setIsTypeSelectorExpanded}
               setCurrentType={setCurrentType}
-            /> */}
+            />
             <TextEditor
               initialContentHtml={content}
               richTextRef={richTextRef}
-              isPressable // ={!isTypeSelectorExpanded}
               containerRef={(component) => {
                 if (component && !isChildrenIdsSet) {
                   setChildrenIds(getAllChildrenIds(component));
@@ -241,7 +237,7 @@ const EditNoteScreen: FC<{
           title={currentTitle}
           rating={currentImportance}
           color={currentColor}
-          // type={{ ...type, labelName: currentType } as Category}
+          type={{ ...type, labelName: currentType } as Category}
           content={contentHTML}
         />
       </SScrollView>

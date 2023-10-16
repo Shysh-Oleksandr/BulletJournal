@@ -1,9 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Animated, TextInput } from "react-native";
+import { FlatList, ListRenderItem, TextInput } from "react-native";
 import theme from "theme";
 
-import { Entypo } from "@expo/vector-icons";
+import BottomModal from "components/BottomModal";
+import Divider from "components/Divider";
 import Input from "components/Input";
+import Typography from "components/Typography";
 import styled from "styled-components/native";
 
 import FormLabel from "./FormLabel";
@@ -13,65 +15,34 @@ const initialTypes = ["Note", "Event", "Programming", "Work", "Random"];
 
 const PLUS_TYPE = "+";
 
+const keyExtractor = (item: string, i: number) => `${i}-${item}`;
+
 type Props = {
   currentType: string;
-  isExpanded: boolean;
-  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentType: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TypeSelector = ({
-  currentType,
-  isExpanded,
-  setIsExpanded,
-  setCurrentType,
-}: Props): JSX.Element => {
-  const [inputValue, setInputValue] = useState(currentType);
-  const [isAdding, setIsAdding] = useState(false);
+const TypeSelector = ({ currentType, setCurrentType }: Props): JSX.Element => {
+  const [inputValue, setInputValue] = useState("");
   const [types, setTypes] = useState(initialTypes);
+  const [closeTriggered, setCloseTriggered] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   const inputRef = useRef<TextInput | null>(null);
+  const flatListRef = useRef<FlatList<string>>(null);
 
-  const animatedHeight = useRef(new Animated.Value(0)).current;
-  const animatedOpacity = useRef(new Animated.Value(0)).current;
-
-  const toggleSelector = useCallback(() => {
-    const toValue = isExpanded ? 0 : 1;
-
-    Animated.parallel([
-      Animated.timing(animatedHeight, {
-        toValue: toValue,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(animatedOpacity, {
-        toValue: toValue,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
-
-    setTimeout(() => {
-      setIsExpanded((prev) => !prev);
-    }, 100);
-  }, [animatedHeight, animatedOpacity, isExpanded, setIsExpanded]);
+  const openModal = useCallback(() => {
+    setIsVisible(true);
+  }, []);
 
   const onChange = (text: string) => {
     setInputValue(text);
   };
 
-  const onBlur = () => {
-    toggleSelector();
-    setIsAdding(false);
-    setInputValue(currentType);
-  };
-
   const onChoose = useCallback(
     (type: string) => {
       if (type === PLUS_TYPE) {
-        setInputValue("");
-        setIsAdding(true);
-        toggleSelector();
+        setCloseTriggered(true);
 
         setTimeout(() => {
           inputRef.current?.focus();
@@ -80,68 +51,79 @@ const TypeSelector = ({
         return;
       }
       setCurrentType(type);
-      setInputValue(type);
-      toggleSelector();
+      setCloseTriggered(true);
     },
-    [setCurrentType, toggleSelector],
+    [setCurrentType, setCloseTriggered],
   );
-  const onSubmitEditing = () => {
+
+  const onSubmitEditing = useCallback(() => {
     if (inputValue.trim() === "") {
       return;
     }
 
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 200);
+
+    setInputValue("");
     setCurrentType(inputValue);
     setTypes((prev) => [...prev, inputValue]);
-  };
+  }, [inputValue, setCurrentType]);
+
+  const renderItem: ListRenderItem<string> = useCallback(
+    ({ item, index }) => (
+      <TypeItem
+        key={index}
+        type={item}
+        isActive={item === currentType}
+        onChoose={onChoose}
+      />
+    ),
+    [currentType, onChoose],
+  );
 
   return (
     <Section>
-      <InputContainer disabled={isAdding} onPress={toggleSelector}>
+      <SelectedTypeContainer onPress={openModal}>
+        <Typography
+          fontWeight="medium"
+          fontSize="md"
+          align="center"
+          color={theme.colors.darkBlueText}
+        >
+          {currentType}
+        </Typography>
+      </SelectedTypeContainer>
+      <BottomModal
+        title="Choose a type"
+        maxHeight="80%"
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+        onClose={() => setIsVisible(false)}
+        closeTriggered={closeTriggered}
+        setCloseTriggered={setCloseTriggered}
+        withCloseButtonDivider={false}
+      >
         <Input
           value={inputValue}
           placeholder="Enter a new type"
           isCentered
-          editable={isAdding}
           inputRef={inputRef}
-          onBlur={onBlur}
           onChange={onChange}
           onSubmitEditing={onSubmitEditing}
         />
-      </InputContainer>
-      <TypesContainer
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        style={{
-          height: animatedHeight.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 400],
-          }),
-          opacity: animatedOpacity,
-        }}
-      >
-        <TypeItem
-          type={PLUS_TYPE}
-          Icon={AddIcon}
-          isActive={false}
-          isLast={false}
-          onChoose={onChoose}
+        <FlatList
+          data={types}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ListEmptyComponent={undefined}
+          ItemSeparatorComponent={Divider}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+          ref={flatListRef}
+          bounces={false}
         />
-        {types.map((type, index, array) => {
-          const isLast = index === array.length - 1;
-          const isActive = currentType === type;
-
-          return (
-            <TypeItem
-              key={index}
-              type={type}
-              isActive={isActive}
-              isLast={isLast}
-              onChoose={onChoose}
-            />
-          );
-        })}
-      </TypesContainer>
+      </BottomModal>
       <FormLabel label="Type" bottomOffset={-13} />
     </Section>
   );
@@ -156,29 +138,15 @@ const Section = styled.View`
   z-index: 100000;
 `;
 
-const InputContainer = styled.TouchableOpacity`
-  width: 100%;
-`;
-
-const AddIconContainer = styled.View`
-  flex-direction: row;
-  align-center: center;
+const SelectedTypeContainer = styled.TouchableOpacity`
   justify-content: center;
-`;
-
-const TypesContainer = styled(Animated.ScrollView)`
-  z-index: 1000000;
-  position: absolute;
-  top: 46px;
+  align-items: center;
   width: 100%;
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
+  min-height: 40px;
+  padding-horizontal: 20px;
+  background-color: ${theme.colors.cyan300};
+  border-bottom-width: 2px;
+  border-color: ${theme.colors.cyan200};
 `;
-
-const AddIcon = (
-  <AddIconContainer>
-    <Entypo name="circle-with-plus" size={20} color={theme.colors.white} />
-  </AddIconContainer>
-);
 
 export default TypeSelector;

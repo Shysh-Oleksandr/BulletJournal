@@ -3,7 +3,6 @@ import { View, ViewStyle } from "react-native";
 import theme from "theme";
 
 import styled from "styled-components/native";
-import { functionThatReturnsTrue } from "utils/utilityFunctions";
 
 import SvgDashedLine from "./components/SvgDashedLine";
 
@@ -52,4 +51,4 @@ const Line = styled.View<{
   opacity: ${({ opacity }) => opacity};
 `;
 
-export default memo(Divider, functionThatReturnsTrue);
+export default memo(Divider);
