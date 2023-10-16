@@ -11,8 +11,7 @@
     "userInterfaceStyle": "light",
     "androidStatusBar": {
       "backgroundColor": "#0891b2",
-      "barStyle": "light-content",
-      "translucent": true
+      "barStyle": "light-content"
     },
     "splash": {
       "image": "./assets/images/splash.png",
@@ -32,7 +31,7 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 3,
+      "versionCode": 4,
       "package": "com.frankmelward.bulletjournal"
     },
     "plugins": [

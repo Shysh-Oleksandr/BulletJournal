@@ -14,6 +14,7 @@ import styled from "styled-components/native";
 
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/NotePreview";
+import NoteSeparator from "../components/NoteSeparator";
 import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
@@ -29,6 +30,10 @@ const ITEMS_PER_PAGE = 10;
 
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 
+const renderItem: ListRenderItem<Note> = ({ item }) => (
+  <NotePreview item={item} />
+);
+
 const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
 
@@ -42,13 +47,6 @@ const NotesScreen = (): JSX.Element => {
   const [notes, setNotes] = useState(allNotes.slice(0, ITEMS_PER_PAGE));
 
   const [isLoaded, setIsLoaded] = useState(false);
-
-  const renderItem: ListRenderItem<Note> = useCallback(
-    ({ item, index }) => (
-      <NotePreview item={item} isLast={index === notes.length - 1} />
-    ),
-    [notes],
-  );
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -78,6 +76,18 @@ const NotesScreen = (): JSX.Element => {
     [navigation],
   );
 
+  const ListHeaderComponent = useMemo(
+    () =>
+      notes.length > 0 ? (
+        <NoteSeparator
+          leadingItem={notes[0]}
+          trailingItem={notes[0]}
+          isFirstItem
+        />
+      ) : undefined,
+    [notes],
+  );
+
   const loadMoreData = useCallback(() => {
     const nextPage = page + 1;
     const startIndex = nextPage * ITEMS_PER_PAGE;
@@ -94,16 +104,20 @@ const NotesScreen = (): JSX.Element => {
     setPage(nextPage);
   }, [allNotes, page]);
 
+  const fetchInitialData = useCallback(async () => {
+    if (!isLoaded && userId) {
+      await fetchNotes(userId, false);
+      setIsLoaded(true);
+    }
+  }, [fetchNotes, isLoaded, userId]);
+
   useEffect(() => {
     if (notes.length === 0 && allNotes.length > 0) {
       setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
     }
 
-    if (!isLoaded && userId) {
-      setIsLoaded(true);
-      fetchNotes(userId, false);
-    }
-  }, [allNotes, notes.length, userId, isLoaded, fetchNotes]);
+    fetchInitialData();
+  }, [allNotes, notes.length, fetchInitialData]);
 
   // When notes are updated we reset the state
   useEffect(() => {
@@ -115,7 +129,7 @@ const NotesScreen = (): JSX.Element => {
     <>
       <HeaderBar withLogo withLogoutBtn />
       <AddButton />
-      {isLoading ? (
+      {isLoading || !isLoaded ? (
         <LoaderContainer>
           <ActivityIndicator size="large" color={theme.colors.cyan600} />
         </LoaderContainer>
@@ -126,6 +140,8 @@ const NotesScreen = (): JSX.Element => {
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}
+          ListHeaderComponent={ListHeaderComponent}
+          ItemSeparatorComponent={NoteSeparator}
           onEndReachedThreshold={0.1}
           estimatedItemSize={200}
           contentContainerStyle={contentContainerStyle}

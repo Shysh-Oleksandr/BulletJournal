@@ -65,11 +65,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <Provider store={store}>
         <SafeAreaProvider>
-          <StatusBar
-            translucent
-            barStyle="light-content"
-            backgroundColor="transparent"
-          />
+          <StatusBar barStyle="light-content" backgroundColor="transparent" />
           <Container onLayout={onLayoutRootView}>
             <Nav />
           </Container>
