@@ -1,9 +1,15 @@
+import "react-native-devsettings/withAsyncStorage"; // Allows to use React Native Debugger with hermes enabled
 import { loadAsync } from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import logging from "config/logging";
+import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
 
 import Nav from "./modules/navigation/components/Nav";
@@ -11,6 +17,9 @@ import theme from "./theme";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+NavigationBar.setPositionAsync("absolute");
+NavigationBar.setBackgroundColorAsync("#ffffff01");
+NavigationBar.setButtonStyleAsync("dark");
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -27,7 +36,7 @@ export default function App() {
           ...FontAwesome.font,
         });
       } catch (e) {
-        console.warn(e);
+        logging.warn(e);
       } finally {
         setAppIsReady(true);
       }
@@ -44,6 +53,7 @@ export default function App() {
       // we hide the splash screen once we know the root view has already
       // performed layout.
       await SplashScreen.hideAsync();
+      NavigationBar.setBackgroundColorAsync(theme.colors.bgColor);
     }
   }, [appIsReady]);
 
@@ -53,21 +63,24 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container onLayout={onLayoutRootView}>
-        <StatusBar
-          translucent
-          barStyle="dark-content"
-          backgroundColor="transparent"
-        />
-        <Nav />
-      </Container>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <StatusBar
+            translucent
+            barStyle="light-content"
+            backgroundColor="transparent"
+          />
+          <Container onLayout={onLayoutRootView}>
+            <Nav />
+          </Container>
+        </SafeAreaProvider>
+      </Provider>
     </ThemeProvider>
   );
 }
 
 const Container = styled.View`
   flex: 1;
-  background-color: ${theme.colors.white};
   align-content: center;
   justify-content: center;
 `;

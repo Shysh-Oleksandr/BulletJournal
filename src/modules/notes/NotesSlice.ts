@@ -1,9 +1,11 @@
 import createCachedSelector from "re-reselect";
 
 import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import { logout } from "modules/auth/AuthSlice";
 
 import { RootState } from "../../store/store";
 
+import { notesApi } from "./NotesApi";
 import { Note } from "./types";
 
 export const STATE_KEY = "notes";
@@ -21,18 +23,22 @@ export const notesSlice = createSlice({
   initialState: initialState,
   reducers: {
     setNotes: (state, payload: PayloadAction<Note[]>) => {
-      state.notes = payload.payload;
+      state.notes = payload.payload.sort((a, b) => b.startDate - a.startDate);
     },
   },
-  // extraReducers: (build) => {
-  //   build
-  //     .addMatcher(
-  //       notesApi.endpoints.fetchNotes.matchFulfilled,
-  //       (state, action) => {
-  //         state.notes = action.payload.notes;
-  //       },
-  //     )
-  // },
+  extraReducers: (build) => {
+    build.addMatcher(logout.match, () => ({
+      ...initialState,
+    }));
+    build.addMatcher(
+      notesApi.endpoints.fetchNotes.matchFulfilled,
+      (state, action) => {
+        state.notes = action.payload.notes.sort(
+          (a, b) => b.startDate - a.startDate,
+        );
+      },
+    );
+  },
 });
 
 const NotesReducer = notesSlice.reducer;
@@ -49,5 +55,5 @@ export const getNotesLength = createSelector(getNotes, (notes) => notes.length);
 export const getNoteById = createCachedSelector(
   getNotes,
   (_: RootState, noteId: string) => noteId,
-  (notes, noteId) => notes.find((note) => note.id === noteId) as Note,
+  (notes, noteId) => notes.find((note) => note._id === noteId) as Note,
 )((_: RootState, noteId: string) => noteId);

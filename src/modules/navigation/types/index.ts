@@ -1,3 +1,5 @@
+import { Note } from "modules/notes/types";
+
 export enum Routes {
   SIGN_IN = "sign_in",
   NOTES = "notes",
@@ -7,5 +9,8 @@ export enum Routes {
 export type RootStackParamList = {
   [Routes.SIGN_IN]: undefined;
   [Routes.NOTES]: undefined;
-  [Routes.EDIT_NOTE]: undefined;
+  [Routes.EDIT_NOTE]: {
+    item: Note;
+    isNewNote?: boolean;
+  };
 };

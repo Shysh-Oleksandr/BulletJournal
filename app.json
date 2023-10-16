@@ -1,18 +1,23 @@
 {
   "expo": {
-    "name": "BulletJournal",
-    "slug": "BulletJournal",
-    "owner": "frankmelward",
+    "name": "Bullet Journal",
+    "slug": "bulletjournal",
+    "owner": "oleksandrshysh",
     "originalFullName": "@frankmelward/bulletjournal",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/mainIcon.png",
     "scheme": "com.frankmelward.bulletjournal",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "backgroundColor": "#0891b2",
+      "barStyle": "light-content",
+      "translucent": true
+    },
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#0891b2"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -24,20 +29,25 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundImage": "./assets/images/iconBg.png",
+        "backgroundColor": "#354352"
       },
+      "versionCode": 3,
       "package": "com.frankmelward.bulletjournal"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6359b66b-9eb1-4131-88a0-e25cc5f603f9"
+      }
     }
   }
 }

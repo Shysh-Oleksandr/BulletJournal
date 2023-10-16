@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "version": ">= 3.16.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://bullet-journal-3q4s.onrender.com",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyCN0HVzj1sjMzfFMG1DyYobvv5yjz7XsyM",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "1000487121408-02g289hkmvf089bs0gfeel9nvluaovmr.apps.googleusercontent.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
