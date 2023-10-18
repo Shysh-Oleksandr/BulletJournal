@@ -1,85 +1,110 @@
-import React, { useCallback, useRef, useState } from "react";
-import { FlatList, ListRenderItem, TextInput } from "react-native";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { FlatList, ListRenderItem } from "react-native";
 import theme from "theme";
 
 import BottomModal from "components/BottomModal";
 import Divider from "components/Divider";
-import Input from "components/Input";
 import Typography from "components/Typography";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { getCustomTypes } from "../NotesSlice";
+import { CustomLabel } from "../types";
+
+import AddLabelInput from "./AddLabelInput";
 import FormLabel from "./FormLabel";
 import TypeItem from "./TypeItem";
 
-const initialTypes = ["Note", "Event", "Programming", "Work", "Random"];
-
-const PLUS_TYPE = "+";
-
-const keyExtractor = (item: string, i: number) => `${i}-${item}`;
+const keyExtractor = (item: CustomLabel) => item._id;
 
 type Props = {
-  currentType: string;
-  setCurrentType: React.Dispatch<React.SetStateAction<string>>;
+  currentTypeId: string | null;
+  currentColor: string;
+  setCurrentTypeId: React.Dispatch<React.SetStateAction<string | null>>;
+  setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TypeSelector = ({ currentType, setCurrentType }: Props): JSX.Element => {
-  const [inputValue, setInputValue] = useState("");
+const TypeSelector = ({
+  currentTypeId,
+  currentColor,
+  setCurrentTypeId,
+  setCurrentColor,
+}: Props): JSX.Element => {
+  const initialTypes = useAppSelector(getCustomTypes);
+
   const [types, setTypes] = useState(initialTypes);
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
-  const inputRef = useRef<TextInput | null>(null);
-  const flatListRef = useRef<FlatList<string>>(null);
+  const flatListRef = useRef<FlatList<CustomLabel>>(null);
+
+  const currentType = useMemo(
+    () => types.find((type) => type._id === currentTypeId),
+    [currentTypeId, types],
+  );
 
   const openModal = useCallback(() => {
     setIsVisible(true);
   }, []);
 
-  const onChange = (text: string) => {
-    setInputValue(text);
-  };
+  const onEditBtnPress = useCallback((typeId: string | null) => {
+    setEditingItemId(typeId);
+  }, []);
 
-  const onChoose = useCallback(
-    (type: string) => {
-      if (type === PLUS_TYPE) {
-        setCloseTriggered(true);
+  const onCreate = useCallback(
+    (newLabel: CustomLabel) => {
+      setCurrentTypeId(newLabel._id);
+      setTypes((prev) => [...prev, newLabel]);
 
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
-
-        return;
-      }
-      setCurrentType(type);
-      setCloseTriggered(true);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 200);
     },
-    [setCurrentType, setCloseTriggered],
+    [setCurrentTypeId],
   );
 
-  const onSubmitEditing = useCallback(() => {
-    if (inputValue.trim() === "") {
-      return;
-    }
+  const onSelectColor = useCallback(
+    (color: string) => {
+      setCurrentColor(color);
+    },
+    [setCurrentColor],
+  );
 
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 200);
+  const onChoose = useCallback(
+    (typeId: string | null, shouldCloseModal = true) => {
+      setEditingItemId(null);
+      setCurrentTypeId(typeId);
 
-    setInputValue("");
-    setCurrentType(inputValue);
-    setTypes((prev) => [...prev, inputValue]);
-  }, [inputValue, setCurrentType]);
+      if (shouldCloseModal) {
+        setCloseTriggered(true);
+      }
+    },
+    [setCurrentTypeId, setCloseTriggered],
+  );
 
-  const renderItem: ListRenderItem<string> = useCallback(
+  const renderItem: ListRenderItem<CustomLabel> = useCallback(
     ({ item, index }) => (
       <TypeItem
         key={index}
         type={item}
-        isActive={item === currentType}
+        isActive={item._id === currentTypeId}
+        isEditing={item._id === editingItemId}
+        currentNoteColor={currentColor}
         onChoose={onChoose}
+        onEditBtnPress={onEditBtnPress}
+        setTypes={setTypes}
+        onSelectColor={onSelectColor}
       />
     ),
-    [currentType, onChoose],
+    [
+      currentTypeId,
+      editingItemId,
+      currentColor,
+      onChoose,
+      onSelectColor,
+      onEditBtnPress,
+    ],
   );
 
   return (
@@ -91,7 +116,7 @@ const TypeSelector = ({ currentType, setCurrentType }: Props): JSX.Element => {
           align="center"
           color={theme.colors.darkBlueText}
         >
-          {currentType}
+          {currentType?.labelName ?? ""}
         </Typography>
       </SelectedTypeContainer>
       <BottomModal
@@ -99,25 +124,23 @@ const TypeSelector = ({ currentType, setCurrentType }: Props): JSX.Element => {
         maxHeight="80%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        onClose={() => setIsVisible(false)}
+        onClose={() => {
+          setIsVisible(false);
+          setEditingItemId(null);
+        }}
         closeTriggered={closeTriggered}
         setCloseTriggered={setCloseTriggered}
         withCloseButtonDivider={false}
       >
-        <Input
-          value={inputValue}
-          placeholder="Enter a new type"
-          isCentered
-          inputRef={inputRef}
-          onChange={onChange}
-          onSubmitEditing={onSubmitEditing}
-        />
+        <AddLabelInput allLabels={types} onCreate={onCreate} />
         <FlatList
           data={types}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ListEmptyComponent={undefined}
-          ItemSeparatorComponent={Divider}
+          ItemSeparatorComponent={() => (
+            <Divider lineColor={theme.colors.cyan400} />
+          )}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
           ref={flatListRef}

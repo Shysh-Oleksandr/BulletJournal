@@ -25,7 +25,8 @@ import TextEditor from "../components/TextEditor";
 import TitleInput from "../components/TitleInput";
 import TypeSelector from "../components/TypeSelector";
 import { notesApi } from "../NotesApi";
-import { Category, Note } from "../types";
+import { getCustomTypes } from "../NotesSlice";
+import { Note, UpdateNoteRequest } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 import removeMarkdown from "../util/removeMarkdown";
 
@@ -44,6 +45,7 @@ const EditNoteScreen: FC<{
   const navigation = useAppNavigation();
 
   const userId = useAppSelector(getUserId);
+  const types = useAppSelector(getCustomTypes);
 
   const { item: initialNote, isNewNote } = route.params;
 
@@ -53,7 +55,9 @@ const EditNoteScreen: FC<{
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
-  const [currentType, setCurrentType] = useState(type?.labelName ?? "Note");
+  const [currentTypeId, setCurrentTypeId] = useState<string | null>(
+    type?._id ?? null,
+  );
   const [contentHTML, setContentHTML] = useState(content);
 
   const [childrenIds, setChildrenIds] = useState<number[]>([]);
@@ -67,6 +71,11 @@ const EditNoteScreen: FC<{
   const wordsCount = useMemo(
     () => getContentWords(removeMarkdown(contentHTML)),
     [contentHTML],
+  );
+
+  const currentType = useMemo(
+    () => types.find((type) => type._id === currentTypeId) ?? null,
+    [currentTypeId, types],
   );
 
   const saveNoteHandler = useCallback(async () => {
@@ -92,16 +101,23 @@ const EditNoteScreen: FC<{
       color: currentColor,
       startDate: currentStartDate,
       rating: currentImportance,
+      type: currentType,
+      category: [],
+    };
+
+    const updateNoteData: UpdateNoteRequest = {
+      ...note,
+      type: currentTypeId,
       category: [],
     };
 
     try {
       if (isNewNote) {
-        await createNote(note);
+        await createNote(updateNoteData);
 
         navigation.replace(Routes.EDIT_NOTE, { item: note });
       } else {
-        await updateNote(note);
+        await updateNote(updateNoteData);
       }
       Alert.alert(
         "Success",
@@ -115,14 +131,16 @@ const EditNoteScreen: FC<{
   }, [
     userId,
     currentTitle,
-    currentStartDate,
     initialNote,
     contentHTML,
     currentColor,
+    currentStartDate,
     currentImportance,
+    currentType,
+    currentTypeId,
     isNewNote,
-    createNote,
     navigation,
+    createNote,
     updateNote,
   ]);
 
@@ -201,8 +219,10 @@ const EditNoteScreen: FC<{
               </InputGroup>
             </Section>
             <TypeSelector
-              currentType={currentType}
-              setCurrentType={setCurrentType}
+              currentTypeId={currentTypeId}
+              currentColor={currentColor}
+              setCurrentTypeId={setCurrentTypeId}
+              setCurrentColor={setCurrentColor}
             />
             <TextEditor
               initialContentHtml={content}
@@ -237,7 +257,7 @@ const EditNoteScreen: FC<{
           title={currentTitle}
           rating={currentImportance}
           color={currentColor}
-          type={{ ...type, labelName: currentType } as Category}
+          type={currentType}
           content={contentHTML}
         />
       </SScrollView>

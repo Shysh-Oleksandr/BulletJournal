@@ -24,6 +24,8 @@ type Props = {
   keyboardType?: KeyboardType;
   selectTextOnFocus?: boolean;
   multiline?: boolean;
+  withBorder?: boolean;
+  labelColor?: string;
   fontWeight?: keyof typeof theme.fonts;
   fontSize?: keyof typeof theme.fontSizes;
   maxWidth?: number;
@@ -52,6 +54,8 @@ const Input = ({
   fontWeight,
   fontSize,
   selectTextOnFocus,
+  labelColor = theme.colors.darkBlueText,
+  withBorder = true,
   multiline,
   maxWidth,
   numberOfLines = 1,
@@ -82,6 +86,7 @@ const Input = ({
     <InputWrapper
       isFocused={isKeyboardShown}
       bgColor={bgColor}
+      withBorder={withBorder}
       maxWidth={maxWidth}
       minHeight={minHeight}
     >
@@ -105,6 +110,7 @@ const Input = ({
         selectTextOnFocus={selectTextOnFocus}
         numberOfLines={numberOfLines}
         multiline={multiline}
+        labelColor={labelColor}
         onChangeText={onChange}
         onSubmitEditing={onSubmitEditing}
         onBlur={handleInputBlur}
@@ -125,6 +131,7 @@ const Input = ({
 
 const InputWrapper = styled.KeyboardAvoidingView<{
   isFocused: boolean;
+  withBorder: boolean;
   bgColor: string;
   maxWidth?: number;
   minHeight: number;
@@ -139,6 +146,7 @@ const InputWrapper = styled.KeyboardAvoidingView<{
     isFocused ? theme.colors.cyan400 : theme.colors.cyan200};
 
   ${({ maxWidth }) => maxWidth && `max-width: ${maxWidth}px;`}
+  ${({ withBorder }) => !withBorder && `border-bottom-width: 0;`}
 `;
 
 const CustomInput = styled.TextInput<{
@@ -147,9 +155,11 @@ const CustomInput = styled.TextInput<{
   fontSize?: keyof typeof theme.fontSizes;
   paddingHorizontal: number;
   maxWidth?: number;
+  labelColor: string;
 }>`
   width: 100%;
   color: ${theme.colors.darkBlueText};
+  color: ${({ labelColor }) => labelColor};
   font-size: ${({ fontSize }) => getFontSize(fontSize)}px;
   font-family: ${({ fontWeight }) => getFont(fontWeight)};
   text-align: ${({ isCentered }) => (isCentered ? "center" : "left")};

@@ -41,7 +41,9 @@ const renderItem: ListRenderItem<Note> = ({ item }) => (
 );
 
 const NotesScreen = (): JSX.Element => {
-  const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
+  const [fetchNotes, { isLoading: isNotesLoading }] =
+    notesApi.useLazyFetchNotesQuery();
+  const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
 
   const navigation = useAppNavigation();
 
@@ -55,6 +57,8 @@ const NotesScreen = (): JSX.Element => {
   const [notes, setNotes] = useState(allNotes.slice(0, ITEMS_PER_PAGE));
 
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const isLoading = isNotesLoading || !isLoaded;
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -118,10 +122,11 @@ const NotesScreen = (): JSX.Element => {
 
   const fetchInitialData = useCallback(async () => {
     if (!isLoaded && userId) {
-      await fetchNotes(userId, false);
+      await fetchNotes(userId);
+      await fetchLabels(userId);
       setIsLoaded(true);
     }
-  }, [fetchNotes, isLoaded, userId]);
+  }, [isLoaded, userId, fetchLabels, fetchNotes]);
 
   useEffect(() => {
     if (notes.length === 0 && allNotes.length > 0) {
@@ -141,7 +146,7 @@ const NotesScreen = (): JSX.Element => {
     <>
       <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
-      {isLoading || !isLoaded ? (
+      {isLoading ? (
         <LoaderContainer>
           <ActivityIndicator size="large" color={theme.colors.cyan600} />
         </LoaderContainer>
