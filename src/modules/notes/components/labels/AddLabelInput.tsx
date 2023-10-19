@@ -16,10 +16,15 @@ import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
   allLabels: CustomLabel[];
+  isCategoryLabel?: boolean;
   onCreate: (newLabel: CustomLabel) => void;
 };
 
-const AddLabelInput = ({ allLabels, onCreate }: Props): JSX.Element => {
+const AddLabelInput = ({
+  allLabels,
+  isCategoryLabel = false,
+  onCreate,
+}: Props): JSX.Element => {
   const [createLabel] = notesApi.useCreateLabelMutation();
 
   const userId = useAppSelector(getUserId);
@@ -30,6 +35,8 @@ const AddLabelInput = ({ allLabels, onCreate }: Props): JSX.Element => {
   const inputRef = useRef<TextInput | null>(null);
 
   const isEmpty = !inputValue.length;
+
+  const relevantLabelName = isCategoryLabel ? "category" : "type";
 
   const onChange = (text: string) => {
     setInputValue(text);
@@ -45,14 +52,17 @@ const AddLabelInput = ({ allLabels, onCreate }: Props): JSX.Element => {
     }
 
     if (allLabels.some((item) => item.labelName === label)) {
-      Alert.alert("Failure", `The label ${label} already exists`);
+      Alert.alert(
+        "Failure",
+        `The ${relevantLabelName} "${label}" already exists`,
+      );
 
       return;
     }
 
     const createLabelData = {
       labelName: label,
-      isCategoryLabel: false,
+      isCategoryLabel,
       user: userId,
       color: currentColor,
     };
@@ -64,7 +74,16 @@ const AddLabelInput = ({ allLabels, onCreate }: Props): JSX.Element => {
     setInputValue("");
     setCurrentColor(generateRandomColor());
     onCreate({ ...createLabelData, _id: newLabelId });
-  }, [inputValue, userId, allLabels, currentColor, createLabel, onCreate]);
+  }, [
+    inputValue,
+    userId,
+    allLabels,
+    isCategoryLabel,
+    currentColor,
+    createLabel,
+    onCreate,
+    relevantLabelName,
+  ]);
 
   return (
     <InputContainer>
@@ -79,7 +98,7 @@ const AddLabelInput = ({ allLabels, onCreate }: Props): JSX.Element => {
       )}
       <Input
         value={inputValue}
-        placeholder="Enter a new type"
+        placeholder={`Enter a new ${relevantLabelName}`}
         isCentered
         inputRef={inputRef}
         onChange={onChange}

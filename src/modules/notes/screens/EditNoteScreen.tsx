@@ -16,6 +16,7 @@ import styled from "styled-components/native";
 import { getContentWords } from "utils/getContentWords";
 import { getPluralLabel } from "utils/getPluralLabel";
 
+import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
@@ -25,7 +26,7 @@ import TextEditor from "../components/noteForm/TextEditor";
 import TitleInput from "../components/noteForm/TitleInput";
 import NoteBody from "../components/noteItem/NoteBody";
 import { notesApi } from "../NotesApi";
-import { getCustomTypes } from "../NotesSlice";
+import { getLabels } from "../NotesSlice";
 import { Note, UpdateNoteRequest } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 import removeMarkdown from "../util/removeMarkdown";
@@ -45,11 +46,12 @@ const EditNoteScreen: FC<{
   const navigation = useAppNavigation();
 
   const userId = useAppSelector(getUserId);
-  const types = useAppSelector(getCustomTypes);
+  const allLabels = useAppSelector(getLabels);
 
   const { item: initialNote, isNewNote } = route.params;
 
-  const { _id, title, content, color, type, rating, startDate } = initialNote;
+  const { _id, title, content, color, type, category, rating, startDate } =
+    initialNote;
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
@@ -57,6 +59,9 @@ const EditNoteScreen: FC<{
   const [currentColor, setCurrentColor] = useState(color);
   const [currentTypeId, setCurrentTypeId] = useState<string | null>(
     type?._id ?? null,
+  );
+  const [currentCategoriesIds, setCurrentCategoriesIds] = useState<string[]>(
+    category.map((item) => item._id),
   );
   const [contentHTML, setContentHTML] = useState(content);
 
@@ -74,8 +79,20 @@ const EditNoteScreen: FC<{
   );
 
   const currentType = useMemo(
-    () => types.find((type) => type._id === currentTypeId) ?? null,
-    [currentTypeId, types],
+    () =>
+      allLabels.find(
+        (label) => !label.isCategoryLabel && label._id === currentTypeId,
+      ) ?? null,
+    [currentTypeId, allLabels],
+  );
+
+  const currentCategories = useMemo(
+    () =>
+      allLabels.filter(
+        (label) =>
+          label.isCategoryLabel && currentCategoriesIds.includes(label._id),
+      ),
+    [allLabels, currentCategoriesIds],
   );
 
   const saveNoteHandler = useCallback(async () => {
@@ -102,13 +119,13 @@ const EditNoteScreen: FC<{
       startDate: currentStartDate,
       rating: currentImportance,
       type: currentType,
-      category: [],
+      category: currentCategories,
     };
 
     const updateNoteData: UpdateNoteRequest = {
       ...note,
       type: currentTypeId,
-      category: [],
+      category: currentCategoriesIds,
     };
 
     try {
@@ -137,6 +154,8 @@ const EditNoteScreen: FC<{
     currentStartDate,
     currentImportance,
     currentType,
+    currentCategories,
+    currentCategoriesIds,
     currentTypeId,
     isNewNote,
     navigation,
@@ -159,23 +178,26 @@ const EditNoteScreen: FC<{
     }
   }, [_id, deleteNote, navigation]);
 
-  return (
-    <Wrapper
-      onStartShouldSetResponder={(evt: GestureResponderEvent) => {
-        evt.persist();
-        if (childrenIds?.length) {
-          if (childrenIds.includes(+evt.nativeEvent.target)) {
-            return false;
-          }
-
-          richTextRef.current?.dismissKeyboard();
-
+  const onStartShouldSetResponder = useCallback(
+    (evt: GestureResponderEvent) => {
+      evt.persist();
+      if (childrenIds?.length) {
+        if (childrenIds.includes(+evt.nativeEvent.target)) {
           return false;
         }
 
+        richTextRef.current?.dismissKeyboard();
+
         return false;
-      }}
-    >
+      }
+
+      return false;
+    },
+    [childrenIds],
+  );
+
+  return (
+    <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         withBackArrow
         title={`${isNewNote ? "Create" : "Edit"} note`}
@@ -224,6 +246,12 @@ const EditNoteScreen: FC<{
               setCurrentTypeId={setCurrentTypeId}
               setCurrentColor={setCurrentColor}
             />
+            <CategoriesSelector
+              currentCategoriesIds={currentCategoriesIds}
+              currentColor={currentColor}
+              setCurrentCategoriesIds={setCurrentCategoriesIds}
+              setCurrentColor={setCurrentColor}
+            />
             <TextEditor
               initialContentHtml={content}
               richTextRef={richTextRef}
@@ -258,6 +286,7 @@ const EditNoteScreen: FC<{
           rating={currentImportance}
           color={currentColor}
           type={currentType}
+          category={currentCategories}
           content={contentHTML}
         />
       </SScrollView>

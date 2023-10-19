@@ -40,7 +40,7 @@ const TypeItem = ({
   const [name, setName] = useState(type.labelName);
   const [currentColor, setCurrentColor] = useState(type.color);
 
-  const saveChanges = async () => {
+  const saveChanges = useCallback(async () => {
     onEditBtnPress(null);
 
     if (type.color === currentColor && type.labelName === name) return;
@@ -56,7 +56,7 @@ const TypeItem = ({
     setTypes((prev) =>
       prev.map((item) => (item._id !== type._id ? item : updatedType)),
     );
-  };
+  }, [currentColor, name, onEditBtnPress, setTypes, type, updateLabel]);
 
   const onDelete = useCallback(() => {
     if (isActive) {

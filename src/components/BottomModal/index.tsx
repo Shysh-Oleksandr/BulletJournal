@@ -189,4 +189,4 @@ const CloseButtonContainer = styled.TouchableOpacity<{
   ${({ withPadding }) => withPadding && "padding-horizontal: 20px;"}
 `;
 
-export default BottomModal;
+export default React.memo(BottomModal);

@@ -149,4 +149,4 @@ const Logo = styled.Image`
   height: ${LOGO_SIZE}px;
 `;
 
-export default HeaderBar;
+export default React.memo(HeaderBar);

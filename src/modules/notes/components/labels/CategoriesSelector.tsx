@@ -9,7 +9,7 @@ import Typography from "components/Typography";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { getCustomTypes } from "../../NotesSlice";
+import { getCustomCategories } from "../../NotesSlice";
 import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
@@ -22,50 +22,54 @@ const ItemSeparatorComponent = () => (
 );
 
 type Props = {
-  currentTypeId: string | null;
+  currentCategoriesIds: string[];
   currentColor: string;
-  setCurrentTypeId: React.Dispatch<React.SetStateAction<string | null>>;
+  setCurrentCategoriesIds: React.Dispatch<React.SetStateAction<string[]>>;
   setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TypeSelector = ({
-  currentTypeId,
+const CategoriesSelector = ({
+  currentCategoriesIds,
   currentColor,
-  setCurrentTypeId,
+  setCurrentCategoriesIds,
   setCurrentColor,
 }: Props): JSX.Element => {
-  const initialTypes = useAppSelector(getCustomTypes);
+  const initialCategories = useAppSelector(getCustomCategories);
 
-  const [types, setTypes] = useState(initialTypes);
+  const [categories, setCategories] = useState(initialCategories);
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
-  const currentType = useMemo(
-    () => types.find((type) => type._id === currentTypeId),
-    [currentTypeId, types],
+  const selectedCategoriesLabel = useMemo(
+    () =>
+      categories
+        .filter((category) => currentCategoriesIds?.includes(category._id))
+        .map((category) => category.labelName)
+        .join(", "),
+    [currentCategoriesIds, categories],
   );
 
   const openModal = useCallback(() => {
     setIsVisible(true);
   }, []);
 
-  const onEditBtnPress = useCallback((typeId: string | null) => {
-    setEditingItemId(typeId);
+  const onEditBtnPress = useCallback((categoryId: string | null) => {
+    setEditingItemId(categoryId);
   }, []);
 
   const onCreate = useCallback(
     (newLabel: CustomLabel) => {
-      setCurrentTypeId(newLabel._id);
-      setTypes((prev) => [...prev, newLabel]);
+      setCurrentCategoriesIds((prev) => [...prev, newLabel._id]);
+      setCategories((prev) => [...prev, newLabel]);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd(true);
       }, 200);
     },
-    [setCurrentTypeId],
+    [setCurrentCategoriesIds],
   );
 
   const onSelectColor = useCallback(
@@ -76,15 +80,19 @@ const TypeSelector = ({
   );
 
   const onChoose = useCallback(
-    (typeId: string | null, shouldCloseModal = true) => {
-      setEditingItemId(null);
-      setCurrentTypeId(typeId);
+    (categoryId: string | null) => {
+      if (!categoryId) return;
 
-      if (shouldCloseModal) {
-        setCloseTriggered(true);
-      }
+      setEditingItemId(null);
+      setCurrentCategoriesIds((prev) => {
+        if (prev.includes(categoryId)) {
+          return prev.filter((itemId) => itemId !== categoryId);
+        }
+
+        return [...prev, categoryId];
+      });
     },
-    [setCurrentTypeId, setCloseTriggered],
+    [setCurrentCategoriesIds],
   );
 
   const renderItem: ListRenderItem<CustomLabel> = useCallback(
@@ -92,17 +100,17 @@ const TypeSelector = ({
       <TypeItem
         key={index}
         type={item}
-        isActive={item._id === currentTypeId}
+        isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
-        setTypes={setTypes}
+        setTypes={setCategories}
         onSelectColor={onSelectColor}
       />
     ),
     [
-      currentTypeId,
+      currentCategoriesIds,
       editingItemId,
       currentColor,
       onChoose,
@@ -125,11 +133,11 @@ const TypeSelector = ({
           align="center"
           color={theme.colors.darkBlueText}
         >
-          {currentType?.labelName ?? ""}
+          {selectedCategoriesLabel}
         </Typography>
       </SelectedTypeContainer>
       <BottomModal
-        title="Choose a type"
+        title="Choose categories"
         maxHeight="80%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
@@ -138,9 +146,13 @@ const TypeSelector = ({
         setCloseTriggered={setCloseTriggered}
         withCloseButtonDivider={false}
       >
-        <AddLabelInput allLabels={types} onCreate={onCreate} />
+        <AddLabelInput
+          allLabels={categories}
+          isCategoryLabel
+          onCreate={onCreate}
+        />
         <KeyboardAwareFlatList
-          data={types}
+          data={categories}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={ItemSeparatorComponent}
@@ -153,7 +165,7 @@ const TypeSelector = ({
           extraHeight={150}
         />
       </BottomModal>
-      <FormLabel label="Type" bottomOffset={-13} />
+      <FormLabel label="Categories" bottomOffset={-13} />
     </Section>
   );
 };
@@ -178,4 +190,4 @@ const SelectedTypeContainer = styled.TouchableOpacity`
   border-color: ${theme.colors.cyan200};
 `;
 
-export default React.memo(TypeSelector);
+export default React.memo(CategoriesSelector);
