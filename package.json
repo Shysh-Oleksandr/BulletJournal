@@ -6,6 +6,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "build": "eas build --platform android",
     "prepare": "husky install",
     "lint": "yarn lint:js && yarn lint:types-cli",
     "lint:js": "eslint --ext .ts --ext .tsx .",
