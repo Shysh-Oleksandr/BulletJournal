@@ -6,7 +6,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import styled from "styled-components/native";
 
-import { getFormattedDate } from "../util/getFormattedDate";
+import { getFormattedDate } from "../../util/getFormattedDate";
 
 type Props = {
   currentStartDate: number;

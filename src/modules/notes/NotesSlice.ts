@@ -1,31 +1,29 @@
 import createCachedSelector from "re-reselect";
 
-import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { logout } from "modules/auth/AuthSlice";
 
 import { RootState } from "../../store/store";
 
 import { notesApi } from "./NotesApi";
-import { Note } from "./types";
+import { CustomLabel, Note } from "./types";
 
 export const STATE_KEY = "notes";
 
 export interface NotesState {
   notes: Note[];
+  labels: CustomLabel[];
 }
 
 const initialState: NotesState = {
   notes: [],
+  labels: [],
 };
 
 export const notesSlice = createSlice({
   name: STATE_KEY,
   initialState: initialState,
-  reducers: {
-    setNotes: (state, payload: PayloadAction<Note[]>) => {
-      state.notes = payload.payload.sort((a, b) => b.startDate - a.startDate);
-    },
-  },
+  reducers: {},
   extraReducers: (build) => {
     build.addMatcher(logout.match, () => ({
       ...initialState,
@@ -38,21 +36,35 @@ export const notesSlice = createSlice({
         );
       },
     );
+    build.addMatcher(
+      notesApi.endpoints.fetchLabels.matchFulfilled,
+      (state, action) => {
+        state.labels = action.payload.customLabels;
+      },
+    );
   },
 });
 
 const NotesReducer = notesSlice.reducer;
-
-export const { setNotes } = notesSlice.actions;
 
 export default NotesReducer;
 
 // Selectors
 export const getNotes = (state: RootState): Note[] => state[STATE_KEY].notes;
 
-export const getNotesLength = createSelector(getNotes, (notes) => notes.length);
+export const getLabels = (state: RootState): CustomLabel[] =>
+  state[STATE_KEY].labels;
+
+export const getCustomTypes = createSelector(getLabels, (labels) =>
+  labels.filter((label) => !label.isCategoryLabel),
+);
+
+export const getCustomCategories = createSelector(getLabels, (labels) =>
+  labels.filter((label) => label.isCategoryLabel),
+);
 
 export const getNoteById = createCachedSelector(
+  // Example
   getNotes,
   (_: RootState, noteId: string) => noteId,
   (notes, noteId) => notes.find((note) => note._id === noteId) as Note,

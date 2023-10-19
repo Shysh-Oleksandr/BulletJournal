@@ -2,8 +2,12 @@ import { emptyAxiosApi } from "store/api/emptyAxiosApi";
 import { Method, TAG } from "store/models";
 
 import {
+  CreateLabelRequest,
+  CreateLabelResponse,
   CreateNoteRequest,
+  FetchLabelsResponse,
   FetchNotesResponse,
+  UpdateLabelRequest,
   UpdateNoteRequest,
 } from "./types";
 
@@ -47,6 +51,44 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
           };
         },
         invalidatesTags: [TAG.NOTES],
+      }),
+      fetchLabels: build.query<FetchLabelsResponse, string>({
+        query(userId) {
+          return {
+            url: `/customlabels/${userId}`,
+            method: Method.GET,
+          };
+        },
+        providesTags: [TAG.LABEL],
+      }),
+      updateLabel: build.mutation<void, UpdateLabelRequest>({
+        query(payload) {
+          return {
+            url: `/customlabels/update/${payload._id}`,
+            method: Method.PATCH,
+            body: payload,
+          };
+        },
+        invalidatesTags: [TAG.LABEL],
+      }),
+      createLabel: build.mutation<CreateLabelResponse, CreateLabelRequest>({
+        query(payload) {
+          return {
+            url: `/customlabels/create`,
+            method: Method.POST,
+            body: payload,
+          };
+        },
+        invalidatesTags: [TAG.LABEL],
+      }),
+      deleteLabel: build.mutation<void, string>({
+        query(labelId) {
+          return {
+            url: `/customlabels/${labelId}`,
+            method: Method.DELETE,
+          };
+        },
+        invalidatesTags: [TAG.LABEL],
       }),
     };
   },

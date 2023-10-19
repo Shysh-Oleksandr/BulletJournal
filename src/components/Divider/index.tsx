@@ -1,9 +1,8 @@
 import React, { memo } from "react";
-import { View, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import theme from "theme";
 
 import styled from "styled-components/native";
-import { functionThatReturnsTrue } from "utils/utilityFunctions";
 
 import SvgDashedLine from "./components/SvgDashedLine";
 
@@ -22,7 +21,7 @@ const Divider = ({
   filledLineAndGapSize,
   lineOpacity = 1,
   width = "100%",
-  height = 1,
+  height = StyleSheet.hairlineWidth * 3,
   dashed,
   ...props
 }: Props): JSX.Element => (
@@ -52,4 +51,4 @@ const Line = styled.View<{
   opacity: ${({ opacity }) => opacity};
 `;
 
-export default memo(Divider, functionThatReturnsTrue);
+export default memo(Divider);

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
@@ -13,7 +19,8 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import AddButton from "../components/AddButton";
-import NotePreview from "../components/NotePreview";
+import NotePreview from "../components/noteItem/NotePreview";
+import NoteSeparator from "../components/noteItem/NoteSeparator";
 import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
@@ -29,13 +36,21 @@ const ITEMS_PER_PAGE = 10;
 
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 
+const renderItem: ListRenderItem<Note> = ({ item }) => (
+  <NotePreview item={item} />
+);
+
 const NotesScreen = (): JSX.Element => {
-  const [fetchNotes, { isLoading }] = notesApi.useLazyFetchNotesQuery();
+  const [fetchNotes, { isLoading: isNotesLoading }] =
+    notesApi.useLazyFetchNotesQuery();
+  const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
 
   const navigation = useAppNavigation();
 
   const userId = useAppSelector(getUserId);
   const allNotes = useAppSelector(getNotes);
+
+  const flashListRef = useRef<FlashList<Note>>(null);
 
   const [page, setPage] = useState(0);
 
@@ -43,12 +58,7 @@ const NotesScreen = (): JSX.Element => {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const renderItem: ListRenderItem<Note> = useCallback(
-    ({ item, index }) => (
-      <NotePreview item={item} isLast={index === notes.length - 1} />
-    ),
-    [notes],
-  );
+  const isLoading = isNotesLoading || !isLoaded;
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -78,6 +88,22 @@ const NotesScreen = (): JSX.Element => {
     [navigation],
   );
 
+  const ListHeaderComponent = useMemo(
+    () =>
+      notes.length > 0 ? (
+        <NoteSeparator
+          leadingItem={notes[0]}
+          trailingItem={notes[0]}
+          isFirstItem
+        />
+      ) : undefined,
+    [notes],
+  );
+
+  const scrollToTop = useCallback(() => {
+    flashListRef?.current?.scrollToOffset({ offset: 0, animated: true });
+  }, [flashListRef]);
+
   const loadMoreData = useCallback(() => {
     const nextPage = page + 1;
     const startIndex = nextPage * ITEMS_PER_PAGE;
@@ -94,16 +120,21 @@ const NotesScreen = (): JSX.Element => {
     setPage(nextPage);
   }, [allNotes, page]);
 
+  const fetchInitialData = useCallback(async () => {
+    if (!isLoaded && userId) {
+      await fetchNotes(userId);
+      await fetchLabels(userId);
+      setIsLoaded(true);
+    }
+  }, [isLoaded, userId, fetchLabels, fetchNotes]);
+
   useEffect(() => {
     if (notes.length === 0 && allNotes.length > 0) {
       setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
     }
 
-    if (!isLoaded && userId) {
-      setIsLoaded(true);
-      fetchNotes(userId, false);
-    }
-  }, [allNotes, notes.length, userId, isLoaded, fetchNotes]);
+    fetchInitialData();
+  }, [allNotes, notes.length, fetchInitialData]);
 
   // When notes are updated we reset the state
   useEffect(() => {
@@ -113,7 +144,7 @@ const NotesScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withLogo withLogoutBtn />
+      <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
       {isLoading ? (
         <LoaderContainer>
@@ -126,11 +157,14 @@ const NotesScreen = (): JSX.Element => {
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}
+          ListHeaderComponent={ListHeaderComponent}
+          ItemSeparatorComponent={NoteSeparator}
           onEndReachedThreshold={0.1}
           estimatedItemSize={200}
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
+          ref={flashListRef}
           bounces={false}
         />
       )}
