@@ -14,7 +14,6 @@ type Props = {
   initialContentHtml: string;
   richTextRef: React.MutableRefObject<RichEditor | null>;
   containerRef: React.Ref<ScrollView>;
-  isPressable: boolean;
   setContentHTML: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -22,7 +21,6 @@ const TextEditor = ({
   initialContentHtml,
   richTextRef,
   containerRef,
-  isPressable,
   setContentHTML,
 }: Props): JSX.Element => {
   const richTextHandle = useCallback(
@@ -38,7 +36,7 @@ const TextEditor = ({
   );
 
   return (
-    <Section ref={containerRef} pointerEvents={isPressable ? "auto" : "none"}>
+    <Section ref={containerRef}>
       <RichToolbar
         editor={richTextRef}
         style={{

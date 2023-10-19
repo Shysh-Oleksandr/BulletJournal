@@ -9,7 +9,7 @@ import Typography from "components/Typography";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
-import { Category } from "../types";
+import { CustomLabel } from "../../types";
 
 import NoteLabel from "./NoteLabel";
 
@@ -21,8 +21,8 @@ type Props = {
   color: string;
   rating: number;
   isStarred: boolean;
-  type: Category | null;
-  category: Category[];
+  type: CustomLabel | null;
+  category: CustomLabel[];
   onPress?: () => void;
 };
 
