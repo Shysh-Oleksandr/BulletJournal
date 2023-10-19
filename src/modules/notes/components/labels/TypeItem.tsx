@@ -8,10 +8,9 @@ import SwipeableItem from "components/SwipeableItem";
 import { BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
 
-import { notesApi } from "../NotesApi";
-import { CustomLabel } from "../types";
-
-import ColorPicker from "./ColorPicker";
+import { notesApi } from "../../NotesApi";
+import { CustomLabel } from "../../types";
+import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
   type: CustomLabel;

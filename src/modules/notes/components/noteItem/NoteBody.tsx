@@ -9,7 +9,7 @@ import Typography from "components/Typography";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
-import { CustomLabel } from "../types";
+import { CustomLabel } from "../../types";
 
 import NoteLabel from "./NoteLabel";
 

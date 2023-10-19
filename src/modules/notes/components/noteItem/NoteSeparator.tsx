@@ -4,7 +4,7 @@ import theme from "theme";
 import Typography from "components/Typography";
 import styled from "styled-components/native";
 
-import { Note } from "../types";
+import { Note } from "../../types";
 
 type Props = {
   leadingItem?: Note;

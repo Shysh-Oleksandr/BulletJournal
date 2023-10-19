@@ -9,11 +9,11 @@ import Typography from "components/Typography";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { getCustomTypes } from "../NotesSlice";
-import { CustomLabel } from "../types";
+import { getCustomTypes } from "../../NotesSlice";
+import { CustomLabel } from "../../types";
+import FormLabel from "../noteForm/FormLabel";
 
 import AddLabelInput from "./AddLabelInput";
-import FormLabel from "./FormLabel";
 import TypeItem from "./TypeItem";
 
 const keyExtractor = (item: CustomLabel) => item._id;

@@ -19,8 +19,8 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import AddButton from "../components/AddButton";
-import NotePreview from "../components/NotePreview";
-import NoteSeparator from "../components/NoteSeparator";
+import NotePreview from "../components/noteItem/NotePreview";
+import NoteSeparator from "../components/noteItem/NoteSeparator";
 import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";

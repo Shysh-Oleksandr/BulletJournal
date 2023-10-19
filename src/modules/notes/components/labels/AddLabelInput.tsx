@@ -10,10 +10,9 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { generateRandomColor } from "utils/generateRandomColor";
 
-import { notesApi } from "../NotesApi";
-import { CustomLabel } from "../types";
-
-import ColorPicker from "./ColorPicker";
+import { notesApi } from "../../NotesApi";
+import { CustomLabel } from "../../types";
+import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
   allLabels: CustomLabel[];

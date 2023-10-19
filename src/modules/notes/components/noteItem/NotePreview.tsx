@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 
-import { Note } from "../types";
+import { Note } from "../../types";
 
 import NoteBody from "./NoteBody";
 
