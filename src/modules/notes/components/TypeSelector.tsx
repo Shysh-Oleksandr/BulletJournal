@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, ListRenderItem } from "react-native";
+import { ListRenderItem } from "react-native";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
 
 import BottomModal from "components/BottomModal";
@@ -16,6 +17,9 @@ import FormLabel from "./FormLabel";
 import TypeItem from "./TypeItem";
 
 const keyExtractor = (item: CustomLabel) => item._id;
+const ItemSeparatorComponent = () => (
+  <Divider lineColor={theme.colors.cyan400} />
+);
 
 type Props = {
   currentTypeId: string | null;
@@ -37,7 +41,7 @@ const TypeSelector = ({
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
-  const flatListRef = useRef<FlatList<CustomLabel>>(null);
+  const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
   const currentType = useMemo(
     () => types.find((type) => type._id === currentTypeId),
@@ -58,7 +62,7 @@ const TypeSelector = ({
       setTypes((prev) => [...prev, newLabel]);
 
       setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
+        flatListRef.current?.scrollToEnd(true);
       }, 200);
     },
     [setCurrentTypeId],
@@ -133,18 +137,18 @@ const TypeSelector = ({
         withCloseButtonDivider={false}
       >
         <AddLabelInput allLabels={types} onCreate={onCreate} />
-        <FlatList
+        <KeyboardAwareFlatList
           data={types}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
-          ListEmptyComponent={undefined}
-          ItemSeparatorComponent={() => (
-            <Divider lineColor={theme.colors.cyan400} />
-          )}
+          ItemSeparatorComponent={ItemSeparatorComponent}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
           ref={flatListRef}
           bounces={false}
+          enableOnAndroid
+          extraScrollHeight={20}
+          extraHeight={150}
         />
       </BottomModal>
       <FormLabel label="Type" bottomOffset={-13} />
