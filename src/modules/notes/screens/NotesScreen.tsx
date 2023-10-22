@@ -8,7 +8,7 @@ import React, {
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
@@ -35,10 +35,6 @@ const contentContainerStyle = {
 const ITEMS_PER_PAGE = 10;
 
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
-
-const renderItem: ListRenderItem<Note> = ({ item }) => (
-  <NotePreview item={item} />
-);
 
 const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading: isNotesLoading }] =
@@ -153,7 +149,7 @@ const NotesScreen = (): JSX.Element => {
       ) : (
         <FlashList
           data={notes}
-          renderItem={renderItem}
+          renderItem={({ item }) => <NotePreview item={item} />} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}
