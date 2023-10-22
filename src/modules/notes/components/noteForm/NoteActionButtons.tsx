@@ -13,6 +13,8 @@ type Props = {
   isSaving: boolean;
   isDeleting: boolean;
   isNewNote: boolean;
+  hasNoChanges: boolean;
+  isLocked: boolean;
   saveNote: () => Promise<void>;
   deleteNote: () => Promise<void>;
 };
@@ -21,6 +23,8 @@ const NoteActionButtons = ({
   isSaving,
   isDeleting,
   isNewNote,
+  hasNoChanges,
+  isLocked,
   saveNote,
   deleteNote,
 }: Props): JSX.Element => (
@@ -30,7 +34,7 @@ const NoteActionButtons = ({
       onPress={saveNote}
       bgColor={theme.colors.cyan600}
       marginTop={20}
-      disabled={isSaving || isDeleting}
+      disabled={isLocked || hasNoChanges || isSaving || isDeleting}
       isLoading={isSaving}
       labelProps={{
         fontWeight: "bold",
@@ -45,7 +49,7 @@ const NoteActionButtons = ({
         onPress={deleteNote}
         bgColor={theme.colors.red600}
         marginTop={8}
-        disabled={isSaving || isDeleting}
+        disabled={isLocked || isSaving || isDeleting}
         isLoading={isDeleting}
         labelProps={{
           fontWeight: "bold",

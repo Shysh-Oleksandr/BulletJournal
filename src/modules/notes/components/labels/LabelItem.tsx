@@ -23,7 +23,7 @@ type Props = {
   onSelectColor: (color: string) => void;
 };
 
-const TypeItem = ({
+const LabelItem = ({
   type,
   isActive,
   isEditing,
@@ -156,4 +156,4 @@ const EditIconContainer = styled.TouchableOpacity`
 
 const ColorPickerContainer = styled.View``;
 
-export default React.memo(TypeItem);
+export default React.memo(LabelItem);

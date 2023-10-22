@@ -14,7 +14,7 @@ import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
 import AddLabelInput from "./AddLabelInput";
-import TypeItem from "./TypeItem";
+import LabelItem from "./LabelItem";
 
 const keyExtractor = (item: CustomLabel) => item._id;
 const ItemSeparatorComponent = () => (
@@ -97,7 +97,7 @@ const CategoriesSelector = ({
 
   const renderItem: ListRenderItem<CustomLabel> = useCallback(
     ({ item, index }) => (
-      <TypeItem
+      <LabelItem
         key={index}
         type={item}
         isActive={currentCategoriesIds?.includes(item._id)}
