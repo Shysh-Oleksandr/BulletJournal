@@ -1,4 +1,5 @@
 import isEqual from "lodash.isequal";
+import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { Alert, GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
@@ -23,6 +24,7 @@ import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
 import ImportanceInput from "../components/noteForm/ImportanceInput";
 import LockButton from "../components/noteForm/LockButton";
+import NeighboringNotesLinks from "../components/noteForm/NeighboringNotesLinks";
 import NoteActionButtons from "../components/noteForm/NoteActionButtons";
 import SavingStatusLabel from "../components/noteForm/SavingStatusLabel";
 import StarButton from "../components/noteForm/StarButton";
@@ -52,7 +54,9 @@ const EditNoteScreen: FC<{
   const userId = useAppSelector(getUserId);
   const allLabels = useAppSelector(getLabels);
 
-  const { item: initialNote, isNewNote } = route.params;
+  const { item: initialNote, index, isNewNote } = route.params;
+
+  const shouldDisplayNeighboringNotes = !isNil(index);
 
   const {
     _id,
@@ -151,11 +155,7 @@ const EditNoteScreen: FC<{
       return;
     }
 
-    if (currentTitle.trim() === "") {
-      Alert.alert("Failure", "Title cannot be empty");
-
-      return;
-    }
+    if (currentTitle.trim() === "") return;
 
     setIsSaving(true);
 
@@ -295,69 +295,74 @@ const EditNoteScreen: FC<{
         <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000010">
           <Container
             isLocked={isLocked}
-            pointerEvents={isLocked ? "none" : "auto"}
+            shouldDisplayNeighboringNotes={shouldDisplayNeighboringNotes}
           >
-            <TitleInput
-              currentTitle={currentTitle}
-              setCurrentTitle={setCurrentTitle}
-            />
-            <DatePicker
-              currentStartDate={currentStartDate}
-              setCurrentStartDate={setCurrentStartDate}
-            />
-            <Section>
-              <WordsContainer>
-                <Typography
-                  fontWeight="medium"
-                  fontSize="lg"
-                  color={theme.colors.darkBlueText}
-                >
-                  {getPluralLabel(wordsCount, "word")}
-                </Typography>
-              </WordsContainer>
-              <InputGroup>
-                <ImportanceInput
-                  currentImportance={currentImportance}
-                  setCurrentImportance={setCurrentImportance}
-                />
-                <ColorPicker
-                  currentColor={currentColor}
-                  setCurrentColor={setCurrentColor}
-                />
-              </InputGroup>
-            </Section>
-            <TypeSelector
-              currentTypeId={currentTypeId}
-              currentColor={currentColor}
-              setCurrentTypeId={setCurrentTypeId}
-              setCurrentColor={setCurrentColor}
-            />
-            <CategoriesSelector
-              currentCategoriesIds={currentCategoriesIds}
-              currentColor={currentColor}
-              setCurrentCategoriesIds={setCurrentCategoriesIds}
-              setCurrentColor={setCurrentColor}
-            />
-            <TextEditor
-              initialContentHtml={content}
-              richTextRef={richTextRef}
-              containerRef={(component) => {
-                if (component && !isChildrenIdsSet) {
-                  setChildrenIds(getAllChildrenIds(component));
-                  setIsChildrenIdsSet(true);
-                }
-              }}
-              setContentHTML={setContentHTML}
-            />
-            <NoteActionButtons
-              isSaving={isSaving}
-              hasNoChanges={!hasChanges}
-              isDeleting={isDeleting}
-              isNewNote={!!isNewNote}
-              isLocked={isLocked}
-              saveNote={saveNoteHandler}
-              deleteNote={deleteNoteHandler}
-            />
+            <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
+              <TitleInput
+                currentTitle={currentTitle}
+                setCurrentTitle={setCurrentTitle}
+              />
+              <DatePicker
+                currentStartDate={currentStartDate}
+                setCurrentStartDate={setCurrentStartDate}
+              />
+              <Section>
+                <WordsContainer>
+                  <Typography
+                    fontWeight="medium"
+                    fontSize="lg"
+                    color={theme.colors.darkBlueText}
+                  >
+                    {getPluralLabel(wordsCount, "word")}
+                  </Typography>
+                </WordsContainer>
+                <InputGroup>
+                  <ImportanceInput
+                    currentImportance={currentImportance}
+                    setCurrentImportance={setCurrentImportance}
+                  />
+                  <ColorPicker
+                    currentColor={currentColor}
+                    setCurrentColor={setCurrentColor}
+                  />
+                </InputGroup>
+              </Section>
+              <TypeSelector
+                currentTypeId={currentTypeId}
+                currentColor={currentColor}
+                setCurrentTypeId={setCurrentTypeId}
+                setCurrentColor={setCurrentColor}
+              />
+              <CategoriesSelector
+                currentCategoriesIds={currentCategoriesIds}
+                currentColor={currentColor}
+                setCurrentCategoriesIds={setCurrentCategoriesIds}
+                setCurrentColor={setCurrentColor}
+              />
+              <TextEditor
+                initialContentHtml={content}
+                richTextRef={richTextRef}
+                containerRef={(component) => {
+                  if (component && !isChildrenIdsSet) {
+                    setChildrenIds(getAllChildrenIds(component));
+                    setIsChildrenIdsSet(true);
+                  }
+                }}
+                setContentHTML={setContentHTML}
+              />
+              <NoteActionButtons
+                isSaving={isSaving}
+                hasNoChanges={!hasChanges || currentTitle.trim() === ""}
+                isDeleting={isDeleting}
+                isNewNote={!!isNewNote}
+                isLocked={isLocked}
+                saveNote={saveNoteHandler}
+                deleteNote={deleteNoteHandler}
+              />
+            </FormContentContainer>
+            {shouldDisplayNeighboringNotes && (
+              <NeighboringNotesLinks index={index} />
+            )}
           </Container>
         </StyledDropShadow>
         <Typography
@@ -389,8 +394,13 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const Container = styled.View<{ isLocked: boolean }>`
-  padding: 10px 16px 30px;
+const Container = styled.View<{
+  isLocked: boolean;
+  shouldDisplayNeighboringNotes: boolean;
+}>`
+  padding: 10px 16px
+    ${({ shouldDisplayNeighboringNotes }) =>
+      shouldDisplayNeighboringNotes ? 8 : 30}px;
   align-center: center;
   background-color: ${theme.colors.white};
   border-radius: 6px;
@@ -401,6 +411,8 @@ const Container = styled.View<{ isLocked: boolean }>`
 const StyledDropShadow = styled(Shadow)`
   width: 100%;
 `;
+
+const FormContentContainer = styled.View``;
 
 const Section = styled.View`
   flex-direction: row;
