@@ -17,9 +17,7 @@ const NoteLabel = ({ label, color, isLast }: Props): JSX.Element => {
 
   return (
     <LabelItemContainer bgColor={labelBgColor} isLast={isLast}>
-      <Typography fontWeight="medium" fontSize="md" color={textColor}>
-        {label}
-      </Typography>
+      <Typography color={textColor}>{label}</Typography>
     </LabelItemContainer>
   );
 };

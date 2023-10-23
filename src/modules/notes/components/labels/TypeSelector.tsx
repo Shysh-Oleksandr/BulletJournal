@@ -119,14 +119,7 @@ const TypeSelector = ({
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
-        <Typography
-          fontWeight="medium"
-          fontSize="md"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
-          {currentType?.labelName ?? ""}
-        </Typography>
+        <Typography align="center">{currentType?.labelName ?? ""}</Typography>
       </SelectedTypeContainer>
       <BottomModal
         title="Choose a type"

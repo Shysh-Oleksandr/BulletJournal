@@ -45,13 +45,7 @@ const DatePicker = ({
           size={20}
           color={theme.colors.darkBlueText}
         />
-        <Typography
-          fontWeight="medium"
-          fontSize="lg"
-          align="center"
-          color={theme.colors.darkBlueText}
-          paddingLeft={8}
-        >
+        <Typography fontSize="lg" align="center" paddingLeft={8}>
           {date}
         </Typography>
       </ButtonContainer>

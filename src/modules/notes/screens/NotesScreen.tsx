@@ -59,12 +59,7 @@ const NotesScreen = (): JSX.Element => {
   const ListEmptyComponent = useMemo(
     () => (
       <>
-        <Typography
-          fontWeight="semibold"
-          fontSize="xl"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
+        <Typography fontWeight="semibold" fontSize="xl" align="center">
           You don't have any notes yet
         </Typography>
         <Button

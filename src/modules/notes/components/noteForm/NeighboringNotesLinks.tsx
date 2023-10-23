@@ -61,20 +61,11 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
           <>
             <LabelContainer>
               {LEFT_ICON}
-              <Typography
-                fontWeight="semibold"
-                uppercase
-                fontSize="sm"
-                color={theme.colors.darkBlueText}
-              >
+              <Typography fontWeight="semibold" uppercase fontSize="sm">
                 Previous
               </Typography>
             </LabelContainer>
-            <Typography
-              fontSize="xs"
-              color={theme.colors.darkBlueText}
-              numberOfLines={2}
-            >
+            <Typography fontSize="xs" numberOfLines={2}>
               {prevNote.title}
             </Typography>
           </>
@@ -92,7 +83,6 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
               <Typography
                 align="right"
                 fontWeight="semibold"
-                color={theme.colors.darkBlueText}
                 uppercase
                 fontSize="sm"
               >
@@ -100,12 +90,7 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
               </Typography>
               {RIGHT_ICON}
             </LabelContainer>
-            <Typography
-              fontSize="xs"
-              align="right"
-              color={theme.colors.darkBlueText}
-              numberOfLines={2}
-            >
+            <Typography fontSize="xs" align="right" numberOfLines={2}>
               {nextNote.title}
             </Typography>
           </>

@@ -127,14 +127,7 @@ const CategoriesSelector = ({
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
-        <Typography
-          fontWeight="medium"
-          fontSize="md"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
-          {selectedCategoriesLabel}
-        </Typography>
+        <Typography align="center">{selectedCategoriesLabel}</Typography>
       </SelectedTypeContainer>
       <BottomModal
         title="Choose categories"

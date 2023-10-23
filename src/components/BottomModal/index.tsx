@@ -100,12 +100,7 @@ const BottomModal = ({
           <>
             <SModalHeader>
               {Boolean(subtitle) && (
-                <Typography
-                  fontSize="xs"
-                  color={theme.colors.darkBlueText}
-                  paddingBottom={6}
-                  uppercase
-                >
+                <Typography fontSize="xs" paddingBottom={6} uppercase>
                   {subtitle}
                 </Typography>
               )}
@@ -113,7 +108,6 @@ const BottomModal = ({
                 fontSize="xl"
                 align="center"
                 fontWeight="bold"
-                color={theme.colors.darkBlueText}
                 lineHeight={27}
               >
                 {title}
@@ -139,11 +133,7 @@ const BottomModal = ({
               withPadding={!paddingHorizontal}
               onPress={closeModal}
             >
-              <Typography
-                color={theme.colors.darkBlueText}
-                fontWeight="semibold"
-                uppercase
-              >
+              <Typography fontWeight="semibold" uppercase>
                 Close
               </Typography>
             </CloseButtonContainer>

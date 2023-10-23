@@ -1,6 +1,5 @@
 import React, { PropsWithChildren } from "react";
 import { Modal } from "react-native";
-import theme from "theme";
 
 import styled from "styled-components/native";
 
@@ -57,13 +56,7 @@ const CustomModal = ({
             <ContentContainer>{children}</ContentContainer>
             <ModalFooterContainer>
               <CloseButton onPress={dismissModal} hitSlop={BUTTON_HIT_SLOP}>
-                <Typography
-                  fontSize="md"
-                  fontWeight="bold"
-                  align="center"
-                  uppercase
-                  color={theme.colors.darkBlueText}
-                >
+                <Typography fontWeight="bold" align="center" uppercase>
                   Close
                 </Typography>
               </CloseButton>

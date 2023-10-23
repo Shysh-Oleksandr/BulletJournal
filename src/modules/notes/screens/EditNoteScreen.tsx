@@ -307,11 +307,7 @@ const EditNoteScreen: FC<{
               />
               <Section>
                 <WordsContainer>
-                  <Typography
-                    fontWeight="medium"
-                    fontSize="lg"
-                    color={theme.colors.darkBlueText}
-                  >
+                  <Typography fontSize="lg">
                     {getPluralLabel(wordsCount, "word")}
                   </Typography>
                 </WordsContainer>
@@ -364,12 +360,7 @@ const EditNoteScreen: FC<{
             )}
           </Container>
         </StyledDropShadow>
-        <Typography
-          fontWeight="medium"
-          fontSize="lg"
-          paddingBottom={8}
-          color={theme.colors.darkBlueText}
-        >
+        <Typography fontSize="lg" paddingBottom={8}>
           Preview
         </Typography>
         <NoteBody

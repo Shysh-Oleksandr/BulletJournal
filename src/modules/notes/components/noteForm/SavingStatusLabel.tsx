@@ -52,9 +52,7 @@ const SavingStatusLabel = ({
   return (
     <Section>
       {Icon}
-      <Typography color={theme.colors.darkBlueText} paddingLeft={3}>
-        {label}
-      </Typography>
+      <Typography paddingLeft={3}>{label}</Typography>
     </Section>
   );
 };
