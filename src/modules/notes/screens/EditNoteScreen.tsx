@@ -155,8 +155,6 @@ const EditNoteScreen: FC<{
       return;
     }
 
-    if (currentTitle.trim() === "") return;
-
     setIsSaving(true);
 
     setSavedNote({
@@ -166,6 +164,7 @@ const EditNoteScreen: FC<{
 
     const updateNoteData: UpdateNoteRequest = {
       ...currentNote,
+      title: currentNote.title || "Note",
       type: currentTypeId,
       category: currentCategoriesIds,
       isLocked: shouldLock ?? currentNote.isLocked,
@@ -382,6 +381,7 @@ const EditNoteScreen: FC<{
           category={currentCategories}
           content={contentHTML}
           isStarred={isStarred}
+          startDate={currentStartDate}
         />
       </SScrollView>
     </Wrapper>

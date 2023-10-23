@@ -21,10 +21,10 @@ import styled from "styled-components/native";
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/noteItem/NotePreview";
 import NoteSeparator from "../components/noteItem/NoteSeparator";
-import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
 import { Note } from "../types";
+import { getEmptyNote } from "../util/getEmptyNote";
 
 const contentContainerStyle = {
   paddingTop: 30,
@@ -73,7 +73,7 @@ const NotesScreen = (): JSX.Element => {
           labelProps={{ fontSize: "xl", fontWeight: "bold" }}
           onPress={() =>
             navigation.navigate(Routes.EDIT_NOTE, {
-              item: EMPTY_NOTE,
+              item: getEmptyNote(),
               isNewNote: true,
             })
           }

@@ -7,6 +7,7 @@ import theme from "theme";
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { getLabelsIds } from "modules/notes/NotesSlice";
+import { getTimeByDate } from "modules/notes/util/getFormattedDate";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
@@ -22,6 +23,7 @@ type Props = {
   content: string;
   color: string;
   rating: number;
+  startDate: number;
   isStarred: boolean;
   type: CustomLabel | null;
   category: CustomLabel[];
@@ -33,6 +35,7 @@ const NoteBody = ({
   content,
   type,
   category,
+  startDate,
   rating,
   color,
   isStarred,
@@ -86,6 +89,7 @@ const NoteBody = ({
               color={color}
             />
           )}
+          <NoteLabel label={getTimeByDate(startDate)} color={color} />
           <NoteLabel label={`${rating}/10`} color={color} />
           {relevantCategories?.map((category, index, array) => (
             <NoteLabel
