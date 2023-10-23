@@ -6,6 +6,8 @@ import theme from "theme";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
+import { getLabelsIds } from "modules/notes/NotesSlice";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
@@ -36,13 +38,18 @@ const NoteBody = ({
   isStarred,
   onPress,
 }: Props): JSX.Element => {
+  const allLabelsIds = useAppSelector(getLabelsIds);
+
   const { width } = useWindowDimensions();
 
-  const textColor = getDifferentColor(color, 185);
+  const textColor = useMemo(() => getDifferentColor(color, 185), [color]);
 
   const relevantCategories = useMemo(
-    () => (type && category ? [type, ...category] : category),
-    [category, type],
+    () =>
+      (type && category ? [type, ...category] : category).filter((label) =>
+        allLabelsIds.includes(label._id),
+      ),
+    [category, type, allLabelsIds],
   );
 
   const source = useMemo(
@@ -98,7 +105,7 @@ const Container = styled(TouchableOpacity)<{ bgColor?: string }>`
   width: 100%;
   background-color: ${({ bgColor }) => bgColor ?? theme.colors.cyan600};
   border-radius: 8px;
-  padding: 16px 20px 12px;
+  padding: 16px 16px 12px;
 `;
 
 const LabelsContainer = styled.View`

@@ -69,11 +69,11 @@ const EditNoteScreen: FC<{
 
   const defaultNoteType = useMemo(
     () =>
-      (isNewNote
-        ? allLabels.find(
-            (label) => !label.isCategoryLabel && label.labelName === "Note",
-          )?._id
-        : type?._id) ?? null,
+      allLabels.find(
+        (label) =>
+          !label.isCategoryLabel &&
+          (isNewNote ? label.labelName === "Note" : label._id === type?._id),
+      )?._id ?? null,
     [allLabels, isNewNote, type?._id],
   );
 
@@ -96,8 +96,6 @@ const EditNoteScreen: FC<{
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const [savedNote, setSavedNote] = useState(initialNote);
 
   const richTextRef = useRef<RichEditor | null>(null);
 
@@ -137,7 +135,10 @@ const EditNoteScreen: FC<{
     isLocked,
   };
 
+  const [savedNote, setSavedNote] = useState(currentNote);
+
   const hasChanges = !isEqual(savedNote, currentNote);
+
   const hasChangesIfIgnoreLocked = !isEqual(
     { ...savedNote, isLocked: false },
     { ...currentNote, isLocked: false },
