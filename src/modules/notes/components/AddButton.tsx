@@ -7,7 +7,7 @@ import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 
-import { EMPTY_NOTE } from "../data";
+import { getEmptyNote } from "../util/getEmptyNote";
 
 const AddButton = (): JSX.Element => {
   const navigation = useAppNavigation();
@@ -16,7 +16,7 @@ const AddButton = (): JSX.Element => {
     <Container
       onPress={() =>
         navigation.navigate(Routes.EDIT_NOTE, {
-          item: EMPTY_NOTE,
+          item: getEmptyNote(),
           isNewNote: true,
         })
       }

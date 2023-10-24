@@ -6,6 +6,9 @@ import theme from "theme";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
+import { getLabelsIds } from "modules/notes/NotesSlice";
+import { getTimeByDate } from "modules/notes/util/getFormattedDate";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
@@ -20,6 +23,7 @@ type Props = {
   content: string;
   color: string;
   rating: number;
+  startDate: number;
   isStarred: boolean;
   type: CustomLabel | null;
   category: CustomLabel[];
@@ -31,18 +35,24 @@ const NoteBody = ({
   content,
   type,
   category,
+  startDate,
   rating,
   color,
   isStarred,
   onPress,
 }: Props): JSX.Element => {
+  const allLabelsIds = useAppSelector(getLabelsIds);
+
   const { width } = useWindowDimensions();
 
-  const textColor = getDifferentColor(color, 185);
+  const textColor = useMemo(() => getDifferentColor(color, 185), [color]);
 
   const relevantCategories = useMemo(
-    () => (type && category ? [type, ...category] : category),
-    [category, type],
+    () =>
+      (type && category ? [type, ...category] : category).filter((label) =>
+        allLabelsIds.includes(label._id),
+      ),
+    [category, type, allLabelsIds],
   );
 
   const source = useMemo(
@@ -79,6 +89,7 @@ const NoteBody = ({
               color={color}
             />
           )}
+          <NoteLabel label={getTimeByDate(startDate)} color={color} />
           <NoteLabel label={`${rating}/10`} color={color} />
           {relevantCategories?.map((category, index, array) => (
             <NoteLabel
@@ -98,7 +109,7 @@ const Container = styled(TouchableOpacity)<{ bgColor?: string }>`
   width: 100%;
   background-color: ${({ bgColor }) => bgColor ?? theme.colors.cyan600};
   border-radius: 8px;
-  padding: 16px 20px 12px;
+  padding: 16px 16px 12px;
 `;
 
 const LabelsContainer = styled.View`

@@ -55,6 +55,10 @@ export const getNotes = (state: RootState): Note[] => state[STATE_KEY].notes;
 export const getLabels = (state: RootState): CustomLabel[] =>
   state[STATE_KEY].labels;
 
+export const getLabelsIds = createSelector(getLabels, (labels) =>
+  labels.map((label) => label._id),
+);
+
 export const getCustomTypes = createSelector(getLabels, (labels) =>
   labels.filter((label) => !label.isCategoryLabel),
 );

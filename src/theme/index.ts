@@ -16,6 +16,7 @@ const theme: DefaultTheme = {
     gray: "#c9c1c1",
     whitish: "#bdffff",
     red600: "#c31515",
+    green600: "#16a34a",
   },
   fontSizes: {
     xxl: 24,

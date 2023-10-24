@@ -14,7 +14,7 @@ import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
 import AddLabelInput from "./AddLabelInput";
-import TypeItem from "./TypeItem";
+import LabelItem from "./LabelItem";
 
 const keyExtractor = (item: CustomLabel) => item._id;
 const ItemSeparatorComponent = () => (
@@ -89,7 +89,7 @@ const TypeSelector = ({
 
   const renderItem: ListRenderItem<CustomLabel> = useCallback(
     ({ item, index }) => (
-      <TypeItem
+      <LabelItem
         key={index}
         type={item}
         isActive={item._id === currentTypeId}
@@ -119,14 +119,7 @@ const TypeSelector = ({
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
-        <Typography
-          fontWeight="medium"
-          fontSize="md"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
-          {currentType?.labelName ?? ""}
-        </Typography>
+        <Typography align="center">{currentType?.labelName ?? ""}</Typography>
       </SelectedTypeContainer>
       <BottomModal
         title="Choose a type"

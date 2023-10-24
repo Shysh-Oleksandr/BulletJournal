@@ -95,12 +95,7 @@ const SignIn = (): JSX.Element => {
           height={LOGO_SIZE}
           resizeMode="contain"
         />
-        <Typography
-          fontWeight="bold"
-          fontSize="xxl"
-          paddingTop={16}
-          color={theme.colors.darkBlueText}
-        >
+        <Typography fontWeight="bold" fontSize="xxl" paddingTop={16}>
           Bullet Journal
         </Typography>
         <Button

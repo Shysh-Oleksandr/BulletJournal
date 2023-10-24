@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import theme from "theme";
 
 import Input from "components/Input";
 import Typography from "components/Typography";
@@ -65,12 +64,7 @@ const ImportanceInput = ({
         onChange={onChange}
         onBlur={onBlur}
       />
-      <Typography
-        fontSize="xl"
-        paddingLeft={3}
-        paddingTop={7}
-        color={theme.colors.darkBlueText}
-      >
+      <Typography fontSize="xl" paddingLeft={3} paddingTop={7}>
         /10
       </Typography>
       <FormLabel label="Importance" />

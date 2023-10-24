@@ -1,3 +1,5 @@
+import isEqual from "lodash.isequal";
+import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { Alert, GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
@@ -21,7 +23,11 @@ import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
 import ImportanceInput from "../components/noteForm/ImportanceInput";
+import LockButton from "../components/noteForm/LockButton";
+import NeighboringNotesLinks from "../components/noteForm/NeighboringNotesLinks";
 import NoteActionButtons from "../components/noteForm/NoteActionButtons";
+import SavingStatusLabel from "../components/noteForm/SavingStatusLabel";
+import StarButton from "../components/noteForm/StarButton";
 import TextEditor from "../components/noteForm/TextEditor";
 import TitleInput from "../components/noteForm/TitleInput";
 import NoteBody from "../components/noteItem/NoteBody";
@@ -48,22 +54,46 @@ const EditNoteScreen: FC<{
   const userId = useAppSelector(getUserId);
   const allLabels = useAppSelector(getLabels);
 
-  const { item: initialNote, isNewNote } = route.params;
+  const { item: initialNote, index, isNewNote } = route.params;
 
-  const { _id, title, content, color, type, category, rating, startDate } =
-    initialNote;
+  const shouldDisplayNeighboringNotes = !isNil(index);
+
+  const {
+    _id,
+    title,
+    content,
+    color,
+    type,
+    category,
+    rating,
+    startDate,
+    isStarred: isInitiallyStarred,
+    isLocked: isInitiallyLocked,
+  } = initialNote;
+
+  const defaultNoteType = useMemo(
+    () =>
+      allLabels.find(
+        (label) =>
+          !label.isCategoryLabel &&
+          (isNewNote ? label.labelName === "Note" : label._id === type?._id),
+      )?._id ?? null,
+    [allLabels, isNewNote, type?._id],
+  );
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
   const [currentTypeId, setCurrentTypeId] = useState<string | null>(
-    type?._id ?? null,
+    defaultNoteType,
   );
   const [currentCategoriesIds, setCurrentCategoriesIds] = useState<string[]>(
     category.map((item) => item._id),
   );
   const [contentHTML, setContentHTML] = useState(content);
+  const [isStarred, setIsStarred] = useState(!!isInitiallyStarred);
+  const [isLocked, setIsLocked] = useState(!!isInitiallyLocked);
 
   const [childrenIds, setChildrenIds] = useState<number[]>([]);
   const [isChildrenIdsSet, setIsChildrenIdsSet] = useState(false);
@@ -95,87 +125,100 @@ const EditNoteScreen: FC<{
     [allLabels, currentCategoriesIds],
   );
 
-  const saveNoteHandler = useCallback(async () => {
+  const currentNote: Note = {
+    ...initialNote,
+    author: userId ?? "",
+    title: currentTitle.trim(),
+    content: contentHTML.trim(),
+    color: currentColor,
+    startDate: currentStartDate,
+    rating: currentImportance,
+    type: currentType,
+    category: currentCategories,
+    isStarred,
+    isLocked,
+  };
+
+  const [savedNote, setSavedNote] = useState(currentNote);
+
+  const hasChanges = !isEqual(savedNote, currentNote);
+
+  const hasChangesIfIgnoreLocked = !isEqual(
+    { ...savedNote, isLocked: false },
+    { ...currentNote, isLocked: false },
+  );
+
+  const saveNoteHandler = async (shouldLock?: boolean, withAlert = true) => {
     if (!userId) {
       logging.error("The user doesn't have an id");
 
       return;
     }
 
-    if (currentTitle.trim() === "") {
-      Alert.alert("Error", "Please fill out all the required fields");
-
-      return;
-    }
-
     setIsSaving(true);
 
-    const note: Note = {
-      ...initialNote,
-      author: userId,
-      title: currentTitle.trim(),
-      content: contentHTML.trim(),
-      color: currentColor,
-      startDate: currentStartDate,
-      rating: currentImportance,
-      type: currentType,
-      category: currentCategories,
-    };
+    setSavedNote({
+      ...currentNote,
+      isLocked: shouldLock ?? currentNote.isLocked,
+    });
 
     const updateNoteData: UpdateNoteRequest = {
-      ...note,
+      ...currentNote,
+      title: currentNote.title || "Note",
       type: currentTypeId,
       category: currentCategoriesIds,
+      isLocked: shouldLock ?? currentNote.isLocked,
     };
 
     try {
       if (isNewNote) {
         await createNote(updateNoteData);
 
-        navigation.replace(Routes.EDIT_NOTE, { item: note });
+        if (withAlert) {
+          navigation.replace(Routes.EDIT_NOTE, { item: currentNote });
+        }
       } else {
         await updateNote(updateNoteData);
       }
-      Alert.alert(
-        "Success",
-        `The note is ${isNewNote ? "created" : "updated"}`,
-      );
+
+      if (withAlert) {
+        Alert.alert(
+          "Success",
+          `The note is ${isNewNote ? "created" : "updated"}`,
+        );
+      }
     } catch (error) {
       logging.error(error);
     } finally {
       setIsSaving(false);
     }
-  }, [
-    userId,
-    currentTitle,
-    initialNote,
-    contentHTML,
-    currentColor,
-    currentStartDate,
-    currentImportance,
-    currentType,
-    currentCategories,
-    currentCategoriesIds,
-    currentTypeId,
-    isNewNote,
-    navigation,
-    createNote,
-    updateNote,
-  ]);
+  };
 
   const deleteNoteHandler = useCallback(async () => {
     if (!_id) return;
 
-    try {
-      setIsDeleting(true);
-      await deleteNote(_id);
-      Alert.alert("Success", "The note is deleted");
-      navigation.navigate(Routes.NOTES);
-    } catch (error) {
-      logging.error(error);
-    } finally {
-      setIsDeleting(false);
-    }
+    Alert.alert(
+      "Are you sure you want to delete this note?",
+      "It will delete the note permanently. This action cannot be undone",
+      [
+        { text: "No" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              setIsDeleting(true);
+              await deleteNote(_id);
+              Alert.alert("Success", "The note is deleted");
+              navigation.navigate(Routes.NOTES);
+            } catch (error) {
+              logging.error(error);
+            } finally {
+              setIsDeleting(false);
+            }
+          },
+        },
+      ],
+    );
   }, [_id, deleteNote, navigation]);
 
   const onStartShouldSetResponder = useCallback(
@@ -196,11 +239,28 @@ const EditNoteScreen: FC<{
     [childrenIds],
   );
 
+  const onBackPress = () => {
+    if (!hasChanges) return navigation.goBack();
+
+    Alert.alert("You have unsaved changes", "Do you want to save them?", [
+      { text: "Cancel", isPreferred: true },
+      { text: "No", onPress: navigation.goBack },
+      {
+        text: "Yes",
+        onPress: () => {
+          saveNoteHandler(undefined, false);
+          navigation.goBack();
+        },
+      },
+    ]);
+  };
+
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         withBackArrow
         title={`${isNewNote ? "Create" : "Edit"} note`}
+        onBackArrowPress={onBackPress}
       />
       <SScrollView
         bounces={false}
@@ -209,75 +269,98 @@ const EditNoteScreen: FC<{
         nestedScrollEnabled
         contentContainerStyle={contentContainerStyle}
       >
+        <HeaderSection>
+          <ButtonGroup>
+            <StarButton
+              isStarred={isStarred}
+              isDisabled={isLocked}
+              setIsStarred={setIsStarred}
+            />
+            {!isNewNote && (
+              <LockButton
+                isLocked={isLocked}
+                hasChanges={hasChangesIfIgnoreLocked}
+                setIsLocked={setIsLocked}
+                saveNoteHandler={saveNoteHandler}
+              />
+            )}
+          </ButtonGroup>
+          <SavingStatusLabel
+            isSaving={isSaving}
+            isLocked={isLocked}
+            hasChanges={hasChanges}
+          />
+        </HeaderSection>
         <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000010">
-          <Container>
-            <TitleInput
-              currentTitle={currentTitle}
-              setCurrentTitle={setCurrentTitle}
-            />
-            <DatePicker
-              currentStartDate={currentStartDate}
-              setCurrentStartDate={setCurrentStartDate}
-            />
-            <Section>
-              <WordsContainer>
-                <Typography
-                  fontWeight="medium"
-                  fontSize="lg"
-                  color={theme.colors.darkBlueText}
-                >
-                  {getPluralLabel(wordsCount, "word")}
-                </Typography>
-              </WordsContainer>
-              <InputGroup>
-                <ImportanceInput
-                  currentImportance={currentImportance}
-                  setCurrentImportance={setCurrentImportance}
-                />
-                <ColorPicker
-                  currentColor={currentColor}
-                  setCurrentColor={setCurrentColor}
-                />
-              </InputGroup>
-            </Section>
-            <TypeSelector
-              currentTypeId={currentTypeId}
-              currentColor={currentColor}
-              setCurrentTypeId={setCurrentTypeId}
-              setCurrentColor={setCurrentColor}
-            />
-            <CategoriesSelector
-              currentCategoriesIds={currentCategoriesIds}
-              currentColor={currentColor}
-              setCurrentCategoriesIds={setCurrentCategoriesIds}
-              setCurrentColor={setCurrentColor}
-            />
-            <TextEditor
-              initialContentHtml={content}
-              richTextRef={richTextRef}
-              containerRef={(component) => {
-                if (component && !isChildrenIdsSet) {
-                  setChildrenIds(getAllChildrenIds(component));
-                  setIsChildrenIdsSet(true);
-                }
-              }}
-              setContentHTML={setContentHTML}
-            />
-            <NoteActionButtons
-              isSaving={isSaving}
-              isDeleting={isDeleting}
-              isNewNote={!!isNewNote}
-              saveNote={saveNoteHandler}
-              deleteNote={deleteNoteHandler}
-            />
+          <Container
+            isLocked={isLocked}
+            shouldDisplayNeighboringNotes={shouldDisplayNeighboringNotes}
+          >
+            <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
+              <TitleInput
+                currentTitle={currentTitle}
+                setCurrentTitle={setCurrentTitle}
+              />
+              <DatePicker
+                currentStartDate={currentStartDate}
+                setCurrentStartDate={setCurrentStartDate}
+              />
+              <Section>
+                <WordsContainer>
+                  <Typography fontSize="lg">
+                    {getPluralLabel(wordsCount, "word")}
+                  </Typography>
+                </WordsContainer>
+                <InputGroup>
+                  <ImportanceInput
+                    currentImportance={currentImportance}
+                    setCurrentImportance={setCurrentImportance}
+                  />
+                  <ColorPicker
+                    currentColor={currentColor}
+                    setCurrentColor={setCurrentColor}
+                  />
+                </InputGroup>
+              </Section>
+              <TypeSelector
+                currentTypeId={currentTypeId}
+                currentColor={currentColor}
+                setCurrentTypeId={setCurrentTypeId}
+                setCurrentColor={setCurrentColor}
+              />
+              <CategoriesSelector
+                currentCategoriesIds={currentCategoriesIds}
+                currentColor={currentColor}
+                setCurrentCategoriesIds={setCurrentCategoriesIds}
+                setCurrentColor={setCurrentColor}
+              />
+              <TextEditor
+                initialContentHtml={content}
+                richTextRef={richTextRef}
+                containerRef={(component) => {
+                  if (component && !isChildrenIdsSet) {
+                    setChildrenIds(getAllChildrenIds(component));
+                    setIsChildrenIdsSet(true);
+                  }
+                }}
+                setContentHTML={setContentHTML}
+              />
+              <NoteActionButtons
+                isSaving={isSaving}
+                hasNoChanges={!hasChanges || currentTitle.trim() === ""}
+                isDeleting={isDeleting}
+                isNewNote={!!isNewNote}
+                isLocked={isLocked}
+                saveNote={saveNoteHandler}
+                deleteNote={deleteNoteHandler}
+              />
+            </FormContentContainer>
+            {shouldDisplayNeighboringNotes && (
+              <NeighboringNotesLinks index={index} />
+            )}
           </Container>
         </StyledDropShadow>
-        <Typography
-          fontWeight="medium"
-          fontSize="lg"
-          paddingBottom={8}
-          color={theme.colors.darkBlueText}
-        >
+        <Typography fontSize="lg" paddingBottom={8}>
           Preview
         </Typography>
         <NoteBody
@@ -288,6 +371,8 @@ const EditNoteScreen: FC<{
           type={currentType}
           category={currentCategories}
           content={contentHTML}
+          isStarred={isStarred}
+          startDate={currentStartDate}
         />
       </SScrollView>
     </Wrapper>
@@ -300,17 +385,25 @@ const Wrapper = styled.View`
   flex: 1;
 `;
 
-const Container = styled.View`
-  padding: 10px 20px 30px;
+const Container = styled.View<{
+  isLocked: boolean;
+  shouldDisplayNeighboringNotes: boolean;
+}>`
+  padding: 10px 16px
+    ${({ shouldDisplayNeighboringNotes }) =>
+      shouldDisplayNeighboringNotes ? 8 : 30}px;
   align-center: center;
-  margin: 25px 0 20px;
   background-color: ${theme.colors.white};
   border-radius: 6px;
+  margin-bottom: 20px;
+  ${({ isLocked }) => isLocked && `border: 1px solid ${theme.colors.cyan600};`}
 `;
 
 const StyledDropShadow = styled(Shadow)`
   width: 100%;
 `;
+
+const FormContentContainer = styled.View``;
 
 const Section = styled.View`
   flex-direction: row;
@@ -320,6 +413,20 @@ const Section = styled.View`
   padding-vertical: 4px;
   border-bottom-width: 2px;
   border-color: ${theme.colors.cyan200};
+`;
+
+const HeaderSection = styled.View`
+  margin-top: 25px;
+  flex-direction: row;
+  align-center: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 10px 4px;
+`;
+
+const ButtonGroup = styled.View`
+  flex-direction: row;
+  align-center: center;
 `;
 
 const InputGroup = styled.View`
