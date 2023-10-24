@@ -17,6 +17,7 @@ import {
   signOut,
 } from "firebase/auth";
 import styled from "styled-components/native";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
 import LogoIcon from "../../../../assets/images/icon.png";
 import { authApi } from "../AuthApi";
@@ -49,6 +50,10 @@ const SignIn = (): JSX.Element => {
 
       const credential = GoogleAuthProvider.credential(id_token);
 
+      addCrashlyticsLog(
+        "User chose a google account. Trying to sign in with credentials...",
+      );
+
       signInWithCredential(auth, credential);
 
       setIsSignedInWithCredential(true);
@@ -62,6 +67,8 @@ const SignIn = (): JSX.Element => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!isAuthenticating || !isSignedInWithCredential) return;
+
+      addCrashlyticsLog("User got a fire token. Signing in...");
 
       if (user) {
         try {
@@ -108,6 +115,7 @@ const SignIn = (): JSX.Element => {
           disabled={isLoading}
           isLoading={isLoading}
           onPress={() => {
+            addCrashlyticsLog("User pressed the google auth btn");
             setIsAuthenticating(true);
             promptAsync();
           }}

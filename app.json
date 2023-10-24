@@ -27,11 +27,14 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 4,
+      "versionCode": 5,
+      "googleServicesFile": "./google-services.json",
       "package": "com.frankmelward.bulletjournal"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics"
     ],
     "experiments": {
       "typedRoutes": true

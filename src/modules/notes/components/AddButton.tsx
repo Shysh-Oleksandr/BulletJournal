@@ -3,9 +3,11 @@ import { Shadow } from "react-native-shadow-2";
 import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
+import { CustomUserEvents } from "modules/app/types";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
+import { logUserEvent } from "utils/logUserEvent";
 
 import { getEmptyNote } from "../util/getEmptyNote";
 
@@ -14,12 +16,14 @@ const AddButton = (): JSX.Element => {
 
   return (
     <Container
-      onPress={() =>
+      onPress={() => {
+        logUserEvent(CustomUserEvents.ADD_ICON_PRESS);
+
         navigation.navigate(Routes.EDIT_NOTE, {
           item: getEmptyNote(),
           isNewNote: true,
-        })
-      }
+        });
+      }}
     >
       <StyledDropShadow distance={10} offset={[0, 3]} startColor="#00000015">
         <Entypo name="edit" size={34} color={theme.colors.white} />

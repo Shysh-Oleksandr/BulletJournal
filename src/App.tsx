@@ -11,6 +11,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import logging from "config/logging";
 import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
 import Nav from "./modules/navigation/components/Nav";
 import theme from "./theme";
@@ -36,6 +37,7 @@ export default function App() {
           ...FontAwesome.font,
         });
       } catch (e) {
+        addCrashlyticsLog("Failed to load fonts");
         logging.warn(e);
       } finally {
         setAppIsReady(true);

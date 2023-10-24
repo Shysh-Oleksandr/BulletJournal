@@ -10,13 +10,16 @@ import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import logging from "config/logging";
+import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { getContentWords } from "utils/getContentWords";
 import { getPluralLabel } from "utils/getPluralLabel";
+import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
@@ -155,6 +158,14 @@ const EditNoteScreen: FC<{
       return;
     }
 
+    logUserEvent(
+      isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
+      currentNote._id ? { noteId: currentNote._id } : undefined,
+    );
+    addCrashlyticsLog(
+      `User tries to ${isNewNote ? "create" : "update"} a note`,
+    );
+
     setIsSaving(true);
 
     setSavedNote({
@@ -189,6 +200,7 @@ const EditNoteScreen: FC<{
       }
     } catch (error) {
       logging.error(error);
+      addCrashlyticsLog(error as string);
     } finally {
       setIsSaving(false);
     }
@@ -206,6 +218,8 @@ const EditNoteScreen: FC<{
           text: "Yes",
           onPress: async () => {
             try {
+              logUserEvent(CustomUserEvents.DELETE_NOTE, { noteId: _id });
+              addCrashlyticsLog(`User tries to delete the note ${_id}`);
               setIsDeleting(true);
               await deleteNote(_id);
               Alert.alert("Success", "The note is deleted");
@@ -279,7 +293,9 @@ const EditNoteScreen: FC<{
             {!isNewNote && (
               <LockButton
                 isLocked={isLocked}
-                hasChanges={hasChangesIfIgnoreLocked}
+                hasChanges={
+                  hasChangesIfIgnoreLocked || (!isLocked && !savedNote.isLocked)
+                }
                 setIsLocked={setIsLocked}
                 saveNoteHandler={saveNoteHandler}
               />

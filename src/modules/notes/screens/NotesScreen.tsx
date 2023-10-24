@@ -12,11 +12,13 @@ import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
+import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { logUserEvent } from "utils/logUserEvent";
 
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/noteItem/NotePreview";
@@ -92,6 +94,7 @@ const NotesScreen = (): JSX.Element => {
   );
 
   const scrollToTop = useCallback(() => {
+    logUserEvent(CustomUserEvents.SCROLL_TO_TOP);
     flashListRef?.current?.scrollToOffset({ offset: 0, animated: true });
   }, [flashListRef]);
 
