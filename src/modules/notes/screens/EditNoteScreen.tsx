@@ -293,7 +293,9 @@ const EditNoteScreen: FC<{
             {!isNewNote && (
               <LockButton
                 isLocked={isLocked}
-                hasChanges={hasChangesIfIgnoreLocked}
+                hasChanges={
+                  hasChangesIfIgnoreLocked || (!isLocked && !savedNote.isLocked)
+                }
                 setIsLocked={setIsLocked}
                 saveNoteHandler={saveNoteHandler}
               />
