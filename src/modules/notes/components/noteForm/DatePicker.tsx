@@ -32,7 +32,6 @@ const DatePicker = ({
   };
 
   const handleConfirm = (newDate: Date) => {
-    newDate.setHours(0, 0, 0, 0);
     setDate(getFormattedDate(newDate));
     setCurrentStartDate(newDate.getTime());
     hideDatePicker();
@@ -46,22 +45,18 @@ const DatePicker = ({
           size={20}
           color={theme.colors.darkBlueText}
         />
-        <Typography
-          fontWeight="medium"
-          fontSize="lg"
-          align="center"
-          color={theme.colors.darkBlueText}
-          paddingLeft={8}
-        >
+        <Typography fontSize="lg" align="center" paddingLeft={8}>
           {date}
         </Typography>
       </ButtonContainer>
       <DateTimePickerModal
         isVisible={isPickerVisible}
         date={new Date(date)}
-        mode="date"
+        accentColor={theme.colors.cyan600}
+        mode="datetime"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
+        is24Hour
       />
     </Section>
   );

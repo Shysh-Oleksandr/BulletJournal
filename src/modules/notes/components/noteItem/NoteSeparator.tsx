@@ -28,12 +28,7 @@ const NoteSeparator = ({
   return (
     <DateContainer>
       {!isFirstItem && <VerticalLine />}
-      <Typography
-        fontWeight="medium"
-        fontSize="lg"
-        paddingBottom={2}
-        color={theme.colors.darkBlueText}
-      >
+      <Typography fontSize="lg" paddingBottom={2}>
         {date}
       </Typography>
       <VerticalLine />

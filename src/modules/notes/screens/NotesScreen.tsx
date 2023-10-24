@@ -8,23 +8,25 @@ import React, {
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
+import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { logUserEvent } from "utils/logUserEvent";
 
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/noteItem/NotePreview";
 import NoteSeparator from "../components/noteItem/NoteSeparator";
-import { EMPTY_NOTE } from "../data";
 import { notesApi } from "../NotesApi";
 import { getNotes } from "../NotesSlice";
 import { Note } from "../types";
+import { getEmptyNote } from "../util/getEmptyNote";
 
 const contentContainerStyle = {
   paddingTop: 30,
@@ -35,10 +37,6 @@ const contentContainerStyle = {
 const ITEMS_PER_PAGE = 10;
 
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
-
-const renderItem: ListRenderItem<Note> = ({ item }) => (
-  <NotePreview item={item} />
-);
 
 const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading: isNotesLoading }] =
@@ -63,12 +61,7 @@ const NotesScreen = (): JSX.Element => {
   const ListEmptyComponent = useMemo(
     () => (
       <>
-        <Typography
-          fontWeight="semibold"
-          fontSize="xl"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
+        <Typography fontWeight="semibold" fontSize="xl" align="center">
           You don't have any notes yet
         </Typography>
         <Button
@@ -77,7 +70,7 @@ const NotesScreen = (): JSX.Element => {
           labelProps={{ fontSize: "xl", fontWeight: "bold" }}
           onPress={() =>
             navigation.navigate(Routes.EDIT_NOTE, {
-              item: EMPTY_NOTE,
+              item: getEmptyNote(),
               isNewNote: true,
             })
           }
@@ -101,6 +94,7 @@ const NotesScreen = (): JSX.Element => {
   );
 
   const scrollToTop = useCallback(() => {
+    logUserEvent(CustomUserEvents.SCROLL_TO_TOP);
     flashListRef?.current?.scrollToOffset({ offset: 0, animated: true });
   }, [flashListRef]);
 
@@ -153,7 +147,9 @@ const NotesScreen = (): JSX.Element => {
       ) : (
         <FlashList
           data={notes}
-          renderItem={renderItem}
+          renderItem={({ item, index }) => (
+            <NotePreview item={item} index={index} />
+          )} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}

@@ -14,7 +14,7 @@ import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
 import AddLabelInput from "./AddLabelInput";
-import TypeItem from "./TypeItem";
+import LabelItem from "./LabelItem";
 
 const keyExtractor = (item: CustomLabel) => item._id;
 const ItemSeparatorComponent = () => (
@@ -97,9 +97,9 @@ const CategoriesSelector = ({
 
   const renderItem: ListRenderItem<CustomLabel> = useCallback(
     ({ item, index }) => (
-      <TypeItem
+      <LabelItem
         key={index}
-        type={item}
+        label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
@@ -127,14 +127,7 @@ const CategoriesSelector = ({
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
-        <Typography
-          fontWeight="medium"
-          fontSize="md"
-          align="center"
-          color={theme.colors.darkBlueText}
-        >
-          {selectedCategoriesLabel}
-        </Typography>
+        <Typography align="center">{selectedCategoriesLabel}</Typography>
       </SelectedTypeContainer>
       <BottomModal
         title="Choose categories"

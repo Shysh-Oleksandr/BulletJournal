@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1000487121408",
+    "project_id": "bulletjournalproject",
+    "storage_bucket": "bulletjournalproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000487121408:android:147380b223372e4259dee5",
+        "android_client_info": {
+          "package_name": "com.frankmelward.bulletjournal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000487121408-c5k050b44i1rp99u4rts1f0b4h31lmbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.frankmelward.bulletjournal",
+            "certificate_hash": "12fb692a169fe4888a231660b32f7a8862bfbb70"
+          }
+        },
+        {
+          "client_id": "1000487121408-2ampns7468anll17btjo074fdp9nn8he.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZTl72PmUD4htYD925G4GCldsIjJhk6AY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000487121408-2ampns7468anll17btjo074fdp9nn8he.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

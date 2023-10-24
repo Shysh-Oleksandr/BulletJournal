@@ -1,5 +1,4 @@
 import React from "react";
-import theme from "theme";
 
 import Typography from "components/Typography";
 import styled from "styled-components/native";
@@ -11,9 +10,7 @@ type Props = {
 
 const FormLabel = ({ label, bottomOffset = -18 }: Props): JSX.Element => (
   <FormLabelContainer bottomOffset={bottomOffset}>
-    <Typography fontSize="xxs" color={theme.colors.darkBlueText}>
-      {label}
-    </Typography>
+    <Typography fontSize="xxs">{label}</Typography>
   </FormLabelContainer>
 );
 

@@ -6,14 +6,17 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Input from "components/Input";
 import SwipeableItem from "components/SwipeableItem";
 import { BUTTON_HIT_SLOP } from "modules/app/constants";
+import { CustomUserEvents } from "modules/app/types";
 import styled from "styled-components/native";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { logUserEvent } from "utils/logUserEvent";
 
 import { notesApi } from "../../NotesApi";
 import { CustomLabel } from "../../types";
 import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
-  type: CustomLabel;
+  label: CustomLabel;
   isActive: boolean;
   isEditing: boolean;
   currentNoteColor: string;
@@ -23,8 +26,8 @@ type Props = {
   onSelectColor: (color: string) => void;
 };
 
-const TypeItem = ({
-  type,
+const LabelItem = ({
+  label,
   isActive,
   isEditing,
   currentNoteColor,
@@ -37,26 +40,29 @@ const TypeItem = ({
   const [deleteLabel] = notesApi.useDeleteLabelMutation();
 
   const { width: screenWidth } = useWindowDimensions();
-  const [name, setName] = useState(type.labelName);
-  const [currentColor, setCurrentColor] = useState(type.color);
+  const [name, setName] = useState(label.labelName);
+  const [currentColor, setCurrentColor] = useState(label.color);
 
   const saveChanges = useCallback(async () => {
     onEditBtnPress(null);
 
-    if (type.color === currentColor && type.labelName === name) return;
+    if (label.color === currentColor && label.labelName === name) return;
 
     const updatedType: CustomLabel = {
-      ...type,
+      ...label,
       labelName: name,
       color: currentColor,
     };
 
+    logUserEvent(CustomUserEvents.UPDATE_LABEL, { labelId: label._id });
+    addCrashlyticsLog(`User tries to update the label ${label._id}`);
+
     updateLabel(updatedType);
 
     setTypes((prev) =>
-      prev.map((item) => (item._id !== type._id ? item : updatedType)),
+      prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
-  }, [currentColor, name, onEditBtnPress, setTypes, type, updateLabel]);
+  }, [currentColor, name, onEditBtnPress, setTypes, label, updateLabel]);
 
   const onDelete = useCallback(() => {
     if (isActive) {
@@ -64,13 +70,17 @@ const TypeItem = ({
     } else {
       onEditBtnPress(null);
     }
-    setTypes((prev) => prev.filter((item) => item._id !== type._id));
-    deleteLabel(type._id);
-  }, [type._id, isActive, onChoose, setTypes, onEditBtnPress, deleteLabel]);
+
+    logUserEvent(CustomUserEvents.DELETE_LABEL, { labelId: label._id });
+    addCrashlyticsLog(`User tries to delete the label ${label._id}`);
+
+    setTypes((prev) => prev.filter((item) => item._id !== label._id));
+    deleteLabel(label._id);
+  }, [label._id, isActive, onChoose, setTypes, onEditBtnPress, deleteLabel]);
 
   const onPress = useCallback(() => {
-    onChoose(type._id);
-  }, [onChoose, type._id]);
+    onChoose(label._id);
+  }, [onChoose, label._id]);
 
   return (
     <SwipeableItem
@@ -93,7 +103,9 @@ const TypeItem = ({
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder="Enter a type name"
+          placeholder={`Enter a ${
+            label.isCategoryLabel ? "category" : "type"
+          } name`}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}
@@ -111,7 +123,7 @@ const TypeItem = ({
         />
         <EditIconContainer
           hitSlop={BUTTON_HIT_SLOP}
-          onPress={isEditing ? saveChanges : () => onEditBtnPress(type._id)}
+          onPress={isEditing ? saveChanges : () => onEditBtnPress(label._id)}
         >
           <MaterialIcons
             name={isEditing ? "check" : "edit"}
@@ -156,4 +168,4 @@ const EditIconContainer = styled.TouchableOpacity`
 
 const ColorPickerContainer = styled.View``;
 
-export default React.memo(TypeItem);
+export default React.memo(LabelItem);

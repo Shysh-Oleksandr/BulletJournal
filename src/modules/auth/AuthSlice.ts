@@ -4,6 +4,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
 import { auth } from "config/firebase";
 import { signOut } from "firebase/auth";
+import { CustomUserEvents } from "modules/app/types";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { logUserEvent } from "utils/logUserEvent";
 
 import { RootState } from "../../store/store";
 
@@ -25,6 +28,8 @@ export const authSlice = createSlice({
   initialState: initialState,
   reducers: {
     logout: () => {
+      logUserEvent(CustomUserEvents.SIGN_OUT);
+      addCrashlyticsLog("User signed out");
       signOut(auth);
       AsyncStorage.clear();
 
@@ -37,7 +42,12 @@ export const authSlice = createSlice({
     build.addMatcher(
       authApi.endpoints.login.matchFulfilled,
       (state, action) => {
-        state.user = action.payload.user;
+        const { user } = action.payload;
+
+        logUserEvent(CustomUserEvents.SIGN_IN, { uid: user.uid });
+        addCrashlyticsLog("User signed in successfully!");
+
+        state.user = user;
       },
     );
   },

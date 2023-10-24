@@ -13,7 +13,7 @@ const getFont = (fontWeight?: keyof typeof theme.fonts): string => {
 };
 
 const getColor = (color?: string): string =>
-  !isNil(color) ? color : theme.colors.black;
+  !isNil(color) ? color : theme.colors.darkBlueText;
 
 const truncate = (width: string): string =>
   `
