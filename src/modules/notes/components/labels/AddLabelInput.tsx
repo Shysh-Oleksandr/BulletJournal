@@ -5,10 +5,13 @@ import theme from "theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
+import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { generateRandomColor } from "utils/generateRandomColor";
+import { logUserEvent } from "utils/logUserEvent";
 
 import { notesApi } from "../../NotesApi";
 import { CustomLabel } from "../../types";
@@ -66,6 +69,9 @@ const AddLabelInput = ({
       user: userId,
       color: currentColor,
     };
+
+    logUserEvent(CustomUserEvents.CREATE_LABEL);
+    addCrashlyticsLog(`User tries to create a label`);
 
     const response = await createLabel(createLabelData).unwrap();
 

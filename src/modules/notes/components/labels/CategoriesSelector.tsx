@@ -99,7 +99,7 @@ const CategoriesSelector = ({
     ({ item, index }) => (
       <LabelItem
         key={index}
-        type={item}
+        label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}

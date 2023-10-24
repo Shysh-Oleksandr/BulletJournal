@@ -4,8 +4,6 @@ export default interface User {
   name: string;
   createdAt: string;
   updatedAt: string;
-  customNoteTypes?: string;
-  customNoteCategories?: string;
 }
 
 export const DEFAULT_USER: User = {

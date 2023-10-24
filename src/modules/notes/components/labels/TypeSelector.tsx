@@ -91,7 +91,7 @@ const TypeSelector = ({
     ({ item, index }) => (
       <LabelItem
         key={index}
-        type={item}
+        label={item}
         isActive={item._id === currentTypeId}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
