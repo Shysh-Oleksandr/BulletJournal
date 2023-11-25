@@ -98,7 +98,8 @@ const Section = styled.View<{ isFormItem: boolean }>`
     isFormItem &&
     `
       padding-top: 8px;
-      width: 40px;
+      min-width: 40px;
+      flex: 0.15;
       align-items: center;
     `}
 `;

@@ -57,6 +57,7 @@ const ImportanceInput = ({
         isCentered
         maxWidth={40}
         paddingHorizontal={1}
+        paddingVertical={4}
         keyboardType="number-pad"
         selectTextOnFocus
         fontSize="lg"
@@ -73,10 +74,10 @@ const ImportanceInput = ({
 };
 
 const Section = styled.View`
+  flex: 1;
   flex-direction: row;
   align-center: center;
   justify-content: center;
-  width: 100%;
 `;
 
 export default ImportanceInput;

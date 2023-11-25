@@ -16,7 +16,7 @@ export const EMPTY_NOTE: Note = {
   rating: 1,
   isLocked: false,
   isStarred: false,
-  image: "",
+  images: [],
   type: null,
   category: [],
 };
