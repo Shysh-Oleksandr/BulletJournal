@@ -4,7 +4,7 @@
     "slug": "bulletjournal",
     "owner": "oleksandrshysh",
     "originalFullName": "@frankmelward/bulletjournal",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/mainIcon.png",
     "scheme": "com.frankmelward.bulletjournal",
@@ -25,7 +25,7 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 6,
+      "versionCode": 7,
       "googleServicesFile": "./google-services.json",
       "package": "com.frankmelward.bulletjournal"
     },
