@@ -2,9 +2,13 @@ import { emptyAxiosApi } from "store/api/emptyAxiosApi";
 import { Method, TAG } from "store/models";
 
 import {
+  CreateImagesRequest,
+  CreateImagesResponse,
   CreateLabelRequest,
   CreateLabelResponse,
   CreateNoteRequest,
+  CreateNoteResponse,
+  DeleteImagesRequest,
   FetchLabelsResponse,
   FetchNotesResponse,
   UpdateLabelRequest,
@@ -33,7 +37,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
         },
         invalidatesTags: [TAG.NOTES],
       }),
-      createNote: build.mutation<void, CreateNoteRequest>({
+      createNote: build.mutation<CreateNoteResponse, CreateNoteRequest>({
         query(payload) {
           return {
             url: `/notes/create`,
@@ -52,6 +56,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
         },
         invalidatesTags: [TAG.NOTES],
       }),
+
       fetchLabels: build.query<FetchLabelsResponse, string>({
         query(userId) {
           return {
@@ -89,6 +94,25 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
           };
         },
         invalidatesTags: [TAG.LABEL],
+      }),
+
+      createImages: build.mutation<CreateImagesResponse, CreateImagesRequest>({
+        query(payload) {
+          return {
+            url: `/images/create`,
+            method: Method.POST,
+            body: payload,
+          };
+        },
+      }),
+      deleteImages: build.mutation<void, DeleteImagesRequest>({
+        query(payload) {
+          return {
+            url: `/images`,
+            method: Method.DELETE,
+            body: payload,
+          };
+        },
       }),
     };
   },

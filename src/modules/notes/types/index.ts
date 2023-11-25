@@ -9,7 +9,7 @@ export type Note = {
   rating: number;
   isLocked: boolean;
   isStarred: boolean;
-  image: string;
+  images: Image[];
   type: CustomLabel | null;
   category: CustomLabel[];
 };
@@ -22,6 +22,13 @@ export interface CustomLabel {
   _id: string;
 }
 
+export interface Image {
+  url: string;
+  author: string; // userId
+  noteId?: string; // expected that `noteId` is always presented despite being optional
+  _id: string;
+}
+
 export type FetchNotesResponse = {
   count: number;
   notes: Note[];
@@ -31,18 +38,39 @@ export type FetchLabelsResponse = {
   customLabels: CustomLabel[];
 };
 
-export type UpdateNoteRequest = Omit<Note, "type" | "category"> & {
+export type UpdateNoteRequest = Omit<Note, "type" | "category" | "images"> & {
   type: string | null;
   category: string[];
+  images: string[];
 };
 export type UpdateLabelRequest = CustomLabel;
+
+export type CreateNoteResponse = {
+  note: Note;
+};
 
 export type CreateLabelResponse = {
   customLabel: CustomLabel;
 };
 
-export type CreateNoteRequest = Omit<Note, "_id" | "type" | "category"> & {
+export type CreateImagesResponse = {
+  createdImages: Image[];
+};
+
+export type CreateNoteRequest = Omit<
+  Note,
+  "_id" | "type" | "category" | "images"
+> & {
   type: string | null;
   category: string[];
+  images: string[];
 };
 export type CreateLabelRequest = Omit<CustomLabel, "_id">;
+
+export type CreateImagesRequest = Pick<Image, "author" | "noteId"> & {
+  urls: string[];
+};
+
+export type DeleteImagesRequest = {
+  imageIdsToDelete: string[];
+};

@@ -9,6 +9,8 @@ export enum CustomUserEvents {
   CREATE_LABEL = "create_label",
   UPDATE_LABEL = "update_label",
   DELETE_LABEL = "delete_label",
+  PICK_IMAGE_FROM_GALLERY = "pick_image_from_gallery",
+  MAKE_A_PHOTO = "make_a_photo",
 }
 
 export type UserEventsStackParamList = {
@@ -22,4 +24,6 @@ export type UserEventsStackParamList = {
   [CustomUserEvents.CREATE_LABEL]: undefined;
   [CustomUserEvents.UPDATE_LABEL]: { labelId: string };
   [CustomUserEvents.DELETE_LABEL]: { labelId: string };
+  [CustomUserEvents.PICK_IMAGE_FROM_GALLERY]: undefined;
+  [CustomUserEvents.MAKE_A_PHOTO]: undefined;
 };

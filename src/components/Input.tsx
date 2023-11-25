@@ -33,6 +33,7 @@ type Props = {
   minHeight?: number;
   numberOfLines?: number;
   paddingHorizontal?: number;
+  paddingVertical?: number;
   onIconPress?: () => void;
   onChange: (text: string) => void;
   onSubmitEditing?: (
@@ -62,6 +63,7 @@ const Input = ({
   maxLength = 50,
   minHeight = 40,
   paddingHorizontal = 20,
+  paddingVertical = 8,
   onIconPress,
   onChange,
   onSubmitEditing,
@@ -104,6 +106,7 @@ const Input = ({
         fontWeight={fontWeight}
         fontSize={fontSize}
         paddingHorizontal={paddingHorizontal}
+        paddingVertical={paddingVertical}
         maxWidth={maxWidth}
         keyboardType={keyboardType}
         maxLength={maxLength}
@@ -154,16 +157,16 @@ const CustomInput = styled.TextInput<{
   fontWeight?: keyof typeof theme.fonts;
   fontSize?: keyof typeof theme.fontSizes;
   paddingHorizontal: number;
+  paddingVertical: number;
   maxWidth?: number;
   labelColor: string;
 }>`
   width: 100%;
-  color: ${theme.colors.darkBlueText};
   color: ${({ labelColor }) => labelColor};
   font-size: ${({ fontSize }) => getFontSize(fontSize)}px;
   font-family: ${({ fontWeight }) => getFont(fontWeight)};
   text-align: ${({ isCentered }) => (isCentered ? "center" : "left")};
-  padding-vertical: 8px;
+  padding-vertical: ${({ paddingVertical }) => paddingVertical}px;
   padding-horizontal: ${({ maxWidth, paddingHorizontal }) =>
     maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
 `;

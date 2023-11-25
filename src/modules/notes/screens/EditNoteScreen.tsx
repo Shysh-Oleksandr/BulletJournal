@@ -17,14 +17,14 @@ import { RootStackParamList, Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
-import { getContentWords } from "utils/getContentWords";
-import { getPluralLabel } from "utils/getPluralLabel";
 import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
+import ImagePicker from "../components/noteForm/ImagePicker";
+import ImagesSection from "../components/noteForm/ImagesSection";
 import ImportanceInput from "../components/noteForm/ImportanceInput";
 import LockButton from "../components/noteForm/LockButton";
 import NeighboringNotesLinks from "../components/noteForm/NeighboringNotesLinks";
@@ -33,12 +33,14 @@ import SavingStatusLabel from "../components/noteForm/SavingStatusLabel";
 import StarButton from "../components/noteForm/StarButton";
 import TextEditor from "../components/noteForm/TextEditor";
 import TitleInput from "../components/noteForm/TitleInput";
+import WordsCountLabel from "../components/noteForm/WordsCountLabel";
 import NoteBody from "../components/noteItem/NoteBody";
+import { useHandleImagesOnSave } from "../hooks/useHandleImagesOnSave";
+import { deleteImagesFromS3 } from "../modules/s3";
 import { notesApi } from "../NotesApi";
 import { getLabels } from "../NotesSlice";
 import { Note, UpdateNoteRequest } from "../types";
 import getAllChildrenIds from "../util/getAllChildrenIds";
-import removeMarkdown from "../util/removeMarkdown";
 
 const contentContainerStyle = {
   paddingHorizontal: 20,
@@ -54,7 +56,7 @@ const EditNoteScreen: FC<{
 
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAppSelector(getUserId) ?? "";
   const allLabels = useAppSelector(getLabels);
 
   const { item: initialNote, index, isNewNote } = route.params;
@@ -88,12 +90,11 @@ const EditNoteScreen: FC<{
   const [currentStartDate, setCurrentStartDate] = useState(startDate);
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
-  const [currentTypeId, setCurrentTypeId] = useState<string | null>(
-    defaultNoteType,
-  );
-  const [currentCategoriesIds, setCurrentCategoriesIds] = useState<string[]>(
+  const [currentTypeId, setCurrentTypeId] = useState(defaultNoteType);
+  const [currentCategoriesIds, setCurrentCategoriesIds] = useState(
     category.map((item) => item._id),
   );
+  const [currentImages, setCurrentImages] = useState(initialNote.images);
   const [contentHTML, setContentHTML] = useState(content);
   const [isStarred, setIsStarred] = useState(!!isInitiallyStarred);
   const [isLocked, setIsLocked] = useState(!!isInitiallyLocked);
@@ -105,11 +106,6 @@ const EditNoteScreen: FC<{
   const [isDeleting, setIsDeleting] = useState(false);
 
   const richTextRef = useRef<RichEditor | null>(null);
-
-  const wordsCount = useMemo(
-    () => getContentWords(removeMarkdown(contentHTML)),
-    [contentHTML],
-  );
 
   const currentType = useMemo(
     () =>
@@ -130,7 +126,7 @@ const EditNoteScreen: FC<{
 
   const currentNote: Note = {
     ...initialNote,
-    author: userId ?? "",
+    author: userId,
     title: currentTitle.trim(),
     content: contentHTML.trim(),
     color: currentColor,
@@ -138,6 +134,7 @@ const EditNoteScreen: FC<{
     rating: currentImportance,
     type: currentType,
     category: currentCategories,
+    images: currentImages,
     isStarred,
     isLocked,
   };
@@ -151,12 +148,16 @@ const EditNoteScreen: FC<{
     { ...currentNote, isLocked: false },
   );
 
+  const handleImages = useHandleImagesOnSave(currentImages, savedNote);
+
   const saveNoteHandler = async (shouldLock?: boolean, withAlert = true) => {
     if (!userId) {
       logging.error("The user doesn't have an id");
 
       return;
     }
+
+    setIsSaving(true);
 
     logUserEvent(
       isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
@@ -166,12 +167,17 @@ const EditNoteScreen: FC<{
       `User tries to ${isNewNote ? "create" : "update"} a note`,
     );
 
-    setIsSaving(true);
+    const newImages = await handleImages();
 
-    setSavedNote({
+    setCurrentImages(newImages);
+
+    const newNote = {
       ...currentNote,
       isLocked: shouldLock ?? currentNote.isLocked,
-    });
+      images: newImages,
+    };
+
+    setSavedNote(newNote);
 
     const updateNoteData: UpdateNoteRequest = {
       ...currentNote,
@@ -179,14 +185,17 @@ const EditNoteScreen: FC<{
       type: currentTypeId,
       category: currentCategoriesIds,
       isLocked: shouldLock ?? currentNote.isLocked,
+      images: newImages.map((image) => image._id),
     };
 
     try {
       if (isNewNote) {
-        await createNote(updateNoteData);
+        const response = await createNote(updateNoteData).unwrap();
 
-        if (withAlert) {
-          navigation.replace(Routes.EDIT_NOTE, { item: currentNote });
+        if (withAlert && response.note) {
+          navigation.replace(Routes.EDIT_NOTE, {
+            item: { ...newNote, _id: response.note._id },
+          });
         }
       } else {
         await updateNote(updateNoteData);
@@ -202,7 +211,10 @@ const EditNoteScreen: FC<{
       logging.error(error);
       addCrashlyticsLog(error as string);
     } finally {
-      setIsSaving(false);
+      // The save btn doesn't change its state without using timeout(for some reason)
+      setTimeout(() => {
+        setIsSaving(false);
+      }, 100);
     }
   };
 
@@ -222,6 +234,12 @@ const EditNoteScreen: FC<{
               addCrashlyticsLog(`User tries to delete the note ${_id}`);
               setIsDeleting(true);
               await deleteNote(_id);
+
+              const imagesUrlsToDelete = currentImages
+                .map((image) => image.url)
+                .filter((image) => !image.startsWith("file"));
+
+              await deleteImagesFromS3(imagesUrlsToDelete);
               Alert.alert("Success", "The note is deleted");
               navigation.navigate(Routes.NOTES);
             } catch (error) {
@@ -233,7 +251,7 @@ const EditNoteScreen: FC<{
         },
       ],
     );
-  }, [_id, deleteNote, navigation]);
+  }, [_id, currentImages, deleteNote, navigation]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
@@ -322,21 +340,19 @@ const EditNoteScreen: FC<{
                 setCurrentStartDate={setCurrentStartDate}
               />
               <Section>
-                <WordsContainer>
-                  <Typography fontSize="lg">
-                    {getPluralLabel(wordsCount, "word")}
-                  </Typography>
-                </WordsContainer>
-                <InputGroup>
-                  <ImportanceInput
-                    currentImportance={currentImportance}
-                    setCurrentImportance={setCurrentImportance}
-                  />
-                  <ColorPicker
-                    currentColor={currentColor}
-                    setCurrentColor={setCurrentColor}
-                  />
-                </InputGroup>
+                <WordsCountLabel contentHTML={contentHTML} />
+                <ImagePicker
+                  noteId={currentNote._id}
+                  setCurrentImages={setCurrentImages}
+                />
+                <ImportanceInput
+                  currentImportance={currentImportance}
+                  setCurrentImportance={setCurrentImportance}
+                />
+                <ColorPicker
+                  currentColor={currentColor}
+                  setCurrentColor={setCurrentColor}
+                />
               </Section>
               <TypeSelector
                 currentTypeId={currentTypeId}
@@ -371,6 +387,11 @@ const EditNoteScreen: FC<{
                 deleteNote={deleteNoteHandler}
               />
             </FormContentContainer>
+            <ImagesSection
+              currentImages={currentImages}
+              isLocked={isLocked}
+              setCurrentImages={setCurrentImages}
+            />
             {shouldDisplayNeighboringNotes && (
               <NeighboringNotesLinks index={index} />
             )}
@@ -380,7 +401,6 @@ const EditNoteScreen: FC<{
           Preview
         </Typography>
         <NoteBody
-          {...route.params.item}
           title={currentTitle}
           rating={currentImportance}
           color={currentColor}
@@ -389,6 +409,7 @@ const EditNoteScreen: FC<{
           content={contentHTML}
           isStarred={isStarred}
           startDate={currentStartDate}
+          images={currentImages}
         />
       </SScrollView>
     </Wrapper>
@@ -426,7 +447,7 @@ const Section = styled.View`
   align-center: center;
   justify-content: space-between;
   width: 100%;
-  padding-vertical: 4px;
+  padding-vertical: 1px;
   border-bottom-width: 2px;
   border-color: ${theme.colors.cyan200};
 `;
@@ -443,18 +464,6 @@ const HeaderSection = styled.View`
 const ButtonGroup = styled.View`
   flex-direction: row;
   align-center: center;
-`;
-
-const InputGroup = styled.View`
-  flex-direction: row;
-  align-center: center;
-  justify-content: space-between;
-  width: 50%;
-  margin-right: 40px;
-`;
-
-const WordsContainer = styled.View`
-  padding-top: 8px;
 `;
 
 export default EditNoteScreen;
