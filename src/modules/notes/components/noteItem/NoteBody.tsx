@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
-import { Shadow } from "react-native-shadow-2";
 import theme from "theme";
 
 import { FontAwesome } from "@expo/vector-icons";
@@ -50,7 +49,10 @@ const NoteBody = ({
 
   const isImageSliderScrollable = images && images?.length > 2;
 
-  const textColor = useMemo(() => getDifferentColor(color, 185), [color]);
+  const [textColor, imageBgColor] = useMemo(
+    () => [getDifferentColor(color, 185), getDifferentColor(color, 20)],
+    [color],
+  );
 
   const relevantCategories = useMemo(
     () =>
@@ -70,50 +72,48 @@ const NoteBody = ({
   );
 
   return (
-    <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000015">
-      <Container
+    <Container
+      onPress={onPress}
+      disabled={!onPress || isImageSliderScrollable}
+      activeOpacity={0.3}
+    >
+      <ImageSlider bgColor={imageBgColor} images={images} />
+      <InnerContainer
         onPress={onPress}
-        disabled={!onPress || isImageSliderScrollable}
+        disabled={!onPress || !isImageSliderScrollable}
         activeOpacity={0.3}
+        bgColor={color}
       >
-        <ImageSlider images={images} />
-        <InnerContainer
-          onPress={onPress}
-          disabled={!onPress || !isImageSliderScrollable}
-          activeOpacity={0.3}
-          bgColor={color}
-        >
-          <Typography fontWeight="bold" fontSize="xl" color={textColor}>
-            {title}
-          </Typography>
-          <ContentContainer>
-            <RenderHTML
-              defaultTextProps={{ style: { color: textColor } }}
-              contentWidth={width - 80}
-              source={source}
+        <Typography fontWeight="bold" fontSize="xl" color={textColor}>
+          {title}
+        </Typography>
+        <ContentContainer>
+          <RenderHTML
+            defaultTextProps={{ style: { color: textColor } }}
+            contentWidth={width - 80}
+            source={source}
+          />
+        </ContentContainer>
+        <LabelsContainer>
+          {isStarred && (
+            <NoteLabel
+              label={<FontAwesome name="star" size={20} color={textColor} />}
+              color={color}
             />
-          </ContentContainer>
-          <LabelsContainer>
-            {isStarred && (
-              <NoteLabel
-                label={<FontAwesome name="star" size={20} color={textColor} />}
-                color={color}
-              />
-            )}
-            <NoteLabel label={getTimeByDate(startDate)} color={color} />
-            <NoteLabel label={`${rating}/10`} color={color} />
-            {relevantCategories?.map((category, index, array) => (
-              <NoteLabel
-                key={category.labelName + category._id}
-                label={category.labelName}
-                color={color}
-                isLast={index === array.length - 1}
-              />
-            ))}
-          </LabelsContainer>
-        </InnerContainer>
-      </Container>
-    </StyledDropShadow>
+          )}
+          <NoteLabel label={getTimeByDate(startDate)} color={color} />
+          <NoteLabel label={`${rating}/10`} color={color} />
+          {relevantCategories?.map((category, index, array) => (
+            <NoteLabel
+              key={category.labelName + category._id}
+              label={category.labelName}
+              color={color}
+              isLast={index === array.length - 1}
+            />
+          ))}
+        </LabelsContainer>
+      </InnerContainer>
+    </Container>
   );
 };
 
@@ -126,7 +126,12 @@ const InnerContainer = styled.TouchableOpacity<{
   padding: 16px 16px 12px;
 `;
 
-const Container = styled.TouchableOpacity``;
+const Container = styled.TouchableOpacity`
+  elevation: 12;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+`;
 
 const LabelsContainer = styled.View`
   width: 100%;
@@ -137,12 +142,6 @@ const LabelsContainer = styled.View`
 const ContentContainer = styled.View`
   width: 100%;
   margin-left: 3px;
-`;
-
-const StyledDropShadow = styled(Shadow)`
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
 `;
 
 export default React.memo(NoteBody);

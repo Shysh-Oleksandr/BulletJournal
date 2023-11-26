@@ -73,6 +73,7 @@ const DeleteIconContainer = styled.TouchableOpacity`
   right: 4px;
   top: 4px;
   padding: 2px;
+  elevation: 10;
 `;
 
 const ImagesContainer = styled.ScrollView`

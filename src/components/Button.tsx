@@ -97,6 +97,7 @@ const ButtonWrapper = styled.TouchableOpacity<{
   align-items: center;
   flex-direction: row;
   justify-content: center;
+  elevation: 10;
   border-radius: 6px;
   ${(props) => props.borderColor && `border: 1px solid ${props.borderColor}`}
   margin-top: ${({ marginTop }) =>
@@ -105,7 +106,8 @@ const ButtonWrapper = styled.TouchableOpacity<{
     typeof marginBottom === "number" ? `${marginBottom}px` : marginBottom};
   background-color: ${({ isTransparent, bgColor }) =>
     isTransparent ? "transparent" : bgColor};
-  ${(props) => props.disabled && `background-color: ${theme.colors.gray};`}
+  ${(props) =>
+    props.disabled && `background-color: ${theme.colors.gray}; elevation: 0;`}
   ${({ wide }) => wide && "width: 100%;"}
   ${({ width }) => width && `width: ${width};`}
 `;

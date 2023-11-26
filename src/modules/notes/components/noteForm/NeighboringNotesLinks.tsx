@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import theme from "theme";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { getNotes } from "modules/notes/NotesSlice";
 import { Note } from "modules/notes/types";
+import { getEmptyNote } from "modules/notes/util/getEmptyNote";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
@@ -42,34 +43,39 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
     return { prevNote, nextNote };
   }, [allNotes, index]);
 
+  const navigateToNote = useCallback(
+    (item: Note | null, index: number) => {
+      if (!item) {
+        navigation.replace(Routes.EDIT_NOTE, {
+          item: getEmptyNote(),
+          isNewNote: true,
+        });
+
+        return;
+      }
+
+      navigation.replace(Routes.EDIT_NOTE, { item, index });
+    },
+    [navigation],
+  );
+
   if (!prevNote && !nextNote) return null;
-
-  const navigateToNote = (item: Note | null, index: number) => {
-    if (!item) return;
-
-    navigation.replace(Routes.EDIT_NOTE, { item, index });
-  };
 
   return (
     <Container>
       <PrevNoteContainer
         onPress={() => navigateToNote(prevNote, index - 1)}
-        disabled={!prevNote}
         hitSlop={BUTTON_HIT_SLOP}
       >
-        {prevNote && (
-          <>
-            <LabelContainer>
-              {LEFT_ICON}
-              <Typography fontWeight="semibold" uppercase fontSize="sm">
-                Previous
-              </Typography>
-            </LabelContainer>
-            <Typography fontSize="xs" numberOfLines={2}>
-              {prevNote.title}
-            </Typography>
-          </>
-        )}
+        <LabelContainer>
+          {LEFT_ICON}
+          <Typography fontWeight="semibold" uppercase fontSize="sm">
+            {prevNote ? "Previous" : "Create"}
+          </Typography>
+        </LabelContainer>
+        <Typography fontSize="xs" numberOfLines={2}>
+          {prevNote ? prevNote.title : "A new note"}
+        </Typography>
       </PrevNoteContainer>
       <VerticalDivider />
       <NextNoteContainer
@@ -102,7 +108,6 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
 
 const Container = styled.View`
   flex-direction: row;
-  align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-top: 12px;

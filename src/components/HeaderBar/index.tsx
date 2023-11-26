@@ -1,12 +1,11 @@
 import React from "react";
+import { Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Shadow } from "react-native-shadow-2";
 import theme from "theme";
 
-import { AntDesign } from "@expo/vector-icons";
-import Button from "components/Button";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { IS_ANDROID } from "modules/app/constants";
+import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { logout } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { useAppDispatch } from "store/helpers/storeHooks";
@@ -54,8 +53,18 @@ const HeaderBar = ({
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
     : insets.top;
 
+  const handleLogout = () => {
+    Alert.alert("Are you sure you want to logout?", undefined, [
+      { text: "No" },
+      {
+        text: "Yes",
+        onPress: () => dispatch(logout()),
+      },
+    ]);
+  };
+
   return (
-    <StyledDropShadow distance={20} offset={[0, 5]} startColor="#00000015">
+    <Container bgColor={bgColor}>
       <CoverView bgColor={bgColor} height={distanceFromTheTop} />
       <HeaderWrapper
         marginBottom={marginBottom}
@@ -92,14 +101,15 @@ const HeaderBar = ({
           {title}
         </Title>
         {withLogoutBtn && (
-          <Button
-            label="Logout"
-            bgColor={theme.colors.cyan600}
-            onPress={() => dispatch(logout())}
-          />
+          <LogoutButtonContainer
+            onPress={handleLogout}
+            hitSlop={SMALL_BUTTON_HIT_SLOP}
+          >
+            <Entypo name="log-out" size={24} color={theme.colors.white} />
+          </LogoutButtonContainer>
         )}
       </HeaderWrapper>
-    </StyledDropShadow>
+    </Container>
   );
 };
 
@@ -109,8 +119,10 @@ const CoverView = styled.View<{ bgColor: string; height: number }>`
   width: 100%;
 `;
 
-const StyledDropShadow = styled(Shadow)`
+const Container = styled.View<{ bgColor: string }>`
+  elevation: 30;
   width: 100%;
+  background-color: ${(props) => props.bgColor};
 `;
 
 const HeaderWrapper = styled.View<{
@@ -142,6 +154,14 @@ const Title = styled(Typography)`
 
 const LogoContainer = styled.TouchableOpacity`
   margin-left: 5px;
+`;
+
+const LogoutButtonContainer = styled.TouchableOpacity`
+  background-color: ${theme.colors.cyan600};
+  border-radius: 6px;
+  padding: 7px 12px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Logo = styled.Image`
