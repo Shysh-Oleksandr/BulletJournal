@@ -8,6 +8,8 @@ import Typography from "components/Typography";
 import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { logout } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
+import { Routes } from "modules/navigation/types";
+import { getEmptyNote } from "modules/notes/util/getEmptyNote";
 import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
@@ -28,6 +30,7 @@ type Props = {
   bgColor?: string;
   withLogo?: boolean;
   withLogoutBtn?: boolean;
+  withAddBtn?: boolean;
   onBackArrowPress?: () => void;
   onLogoPress?: () => void;
 };
@@ -41,6 +44,7 @@ const HeaderBar = ({
   bgColor = theme.colors.cyan700,
   withLogo,
   withLogoutBtn,
+  withAddBtn,
   onBackArrowPress,
   onLogoPress,
 }: Props): JSX.Element => {
@@ -78,7 +82,7 @@ const HeaderBar = ({
             hitSlop={BUTTON_HIT_SLOP}
             paddingHorizontal={5}
           >
-            <AntDesign name="arrowleft" size={24} color={theme.colors.white} />
+            <AntDesign name="arrowleft" size={26} color={theme.colors.white} />
           </IconWrapper>
         )}
         {withLogo && (
@@ -96,7 +100,7 @@ const HeaderBar = ({
           color={theme.colors.white}
           fontSize="lg"
           fontWeight="bold"
-          paddingRight={24}
+          paddingRight={withAddBtn ? 0 : 30}
         >
           {title}
         </Title>
@@ -107,6 +111,19 @@ const HeaderBar = ({
           >
             <Entypo name="log-out" size={24} color={theme.colors.white} />
           </LogoutButtonContainer>
+        )}
+        {withAddBtn && (
+          <AddNoteButtonContainer
+            onPress={() => {
+              navigation.replace(Routes.EDIT_NOTE, {
+                item: getEmptyNote(),
+                isNewNote: true,
+              });
+            }}
+            hitSlop={SMALL_BUTTON_HIT_SLOP}
+          >
+            <Entypo name="plus" size={30} color={theme.colors.white} />
+          </AddNoteButtonContainer>
         )}
       </HeaderWrapper>
     </Container>
@@ -134,6 +151,7 @@ const HeaderWrapper = styled.View<{
   z-index: 100;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   background-color: ${(props) => props.bgColor};
   margin-bottom: ${(props) => props.marginBottom}px;
   min-height: ${HEADER_MIN_HEIGHT}px;
@@ -159,9 +177,15 @@ const LogoContainer = styled.TouchableOpacity`
 const LogoutButtonContainer = styled.TouchableOpacity`
   background-color: ${theme.colors.cyan600};
   border-radius: 6px;
-  padding: 7px 12px;
+  padding: 7px 9px 7px 12px;
   align-items: center;
   justify-content: center;
+`;
+
+const AddNoteButtonContainer = styled.TouchableOpacity`
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
 `;
 
 const Logo = styled.Image`

@@ -289,9 +289,10 @@ const EditNoteScreen: FC<{
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
-        withBackArrow
         title={`${isNewNote ? "Create" : "Edit"} note`}
         onBackArrowPress={onBackPress}
+        withAddBtn={!isNewNote}
+        withBackArrow
       />
       <SScrollView
         bounces={false}
