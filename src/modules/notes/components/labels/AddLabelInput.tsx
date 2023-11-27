@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Alert, TextInput } from "react-native";
+import { TextInput } from "react-native";
+import Toast from "react-native-toast-message";
 import theme from "theme";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -55,10 +56,11 @@ const AddLabelInput = ({
     }
 
     if (allLabels.some((item) => item.labelName === label)) {
-      Alert.alert(
-        "Failure",
-        `The ${relevantLabelName} "${label}" already exists`,
-      );
+      Toast.show({
+        type: "error",
+        text1: "Failure",
+        text2: `The ${relevantLabelName} "${label}" already exists`,
+      });
 
       return;
     }

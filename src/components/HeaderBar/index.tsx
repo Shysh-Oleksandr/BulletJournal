@@ -1,9 +1,9 @@
-import React from "react";
-import { Alert } from "react-native";
+import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "theme";
 
 import { AntDesign, Entypo } from "@expo/vector-icons";
+import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
 import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { logout } from "modules/auth/AuthSlice";
@@ -53,19 +53,11 @@ const HeaderBar = ({
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
 
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+
   const distanceFromTheTop = IS_ANDROID
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
     : insets.top;
-
-  const handleLogout = () => {
-    Alert.alert("Are you sure you want to logout?", undefined, [
-      { text: "No" },
-      {
-        text: "Yes",
-        onPress: () => dispatch(logout()),
-      },
-    ]);
-  };
 
   return (
     <Container bgColor={bgColor}>
@@ -106,7 +98,7 @@ const HeaderBar = ({
         </Title>
         {withLogoutBtn && (
           <LogoutButtonContainer
-            onPress={handleLogout}
+            onPress={() => setIsDialogVisible(true)}
             hitSlop={SMALL_BUTTON_HIT_SLOP}
           >
             <Entypo name="log-out" size={24} color={theme.colors.white} />
@@ -126,6 +118,12 @@ const HeaderBar = ({
           </AddNoteButtonContainer>
         )}
       </HeaderWrapper>
+      <ConfirmAlert
+        message="Are you sure you want to logout?"
+        isDialogVisible={isDialogVisible}
+        setIsDialogVisible={setIsDialogVisible}
+        onConfirm={() => dispatch(logout())}
+      />
     </Container>
   );
 };

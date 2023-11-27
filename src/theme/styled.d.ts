@@ -17,6 +17,7 @@ declare module "styled-components/native" {
       gray: string;
       whitish: string;
       red600: string;
+      red500: string;
       green600: string;
     };
     fontSizes: {

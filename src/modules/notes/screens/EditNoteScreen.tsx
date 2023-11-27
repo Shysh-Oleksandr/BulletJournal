@@ -1,12 +1,13 @@
 import isEqual from "lodash.isequal";
 import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
-import { Alert, GestureResponderEvent } from "react-native";
+import { GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import Toast from "react-native-toast-message";
 import theme from "theme";
 
 import { RouteProp } from "@react-navigation/native";
+import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import logging from "config/logging";
@@ -105,6 +106,9 @@ const EditNoteScreen: FC<{
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isLeaveDialogVisible, setIsLeaveDialogVisible] = useState(false);
+  const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
 
   const richTextRef = useRef<RichEditor | null>(null);
 
@@ -224,43 +228,35 @@ const EditNoteScreen: FC<{
   const deleteNoteHandler = useCallback(async () => {
     if (!_id) return;
 
-    Alert.alert(
-      "Are you sure you want to delete this note?",
-      "It will delete the note permanently. This action cannot be undone",
-      [
-        { text: "No" },
-        {
-          text: "Yes",
-          onPress: async () => {
-            try {
-              logUserEvent(CustomUserEvents.DELETE_NOTE, { noteId: _id });
-              addCrashlyticsLog(`User tries to delete the note ${_id}`);
-              setIsDeleting(true);
-              await deleteNote(_id);
+    try {
+      logUserEvent(CustomUserEvents.DELETE_NOTE, { noteId: _id });
+      addCrashlyticsLog(`User tries to delete the note ${_id}`);
+      setIsDeleting(true);
+      await deleteNote(_id);
 
-              const imagesUrlsToDelete = currentImages
-                .map((image) => image.url)
-                .filter((image) => !image.startsWith("file"));
+      const imagesUrlsToDelete = currentImages
+        .map((image) => image.url)
+        .filter((image) => !image.startsWith("file"));
 
-              await deleteImagesFromS3(imagesUrlsToDelete);
+      await deleteImagesFromS3(imagesUrlsToDelete);
 
-              Toast.show({
-                type: "success",
-                text1: "Success",
-                text2: "The note is deleted",
-              });
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "The note is deleted",
+      });
 
-              navigation.navigate(Routes.NOTES);
-            } catch (error) {
-              logging.error(error);
-              alertError();
-            } finally {
-              setIsDeleting(false);
-            }
-          },
-        },
-      ],
-    );
+      setTimeout(() => {
+        navigation.replace(Routes.NOTES);
+      }, 1000);
+    } catch (error) {
+      logging.error(error);
+      alertError();
+    } finally {
+      setIsDeleting(false);
+    }
+
+    // "It will delete the note permanently. This action cannot be undone",
   }, [_id, currentImages, deleteNote, navigation]);
 
   const onStartShouldSetResponder = useCallback(
@@ -284,17 +280,7 @@ const EditNoteScreen: FC<{
   const onBackPress = () => {
     if (!hasChanges) return navigation.goBack();
 
-    Alert.alert("You have unsaved changes", "Do you want to save them?", [
-      { text: "Cancel", isPreferred: true },
-      { text: "No", onPress: navigation.goBack },
-      {
-        text: "Yes",
-        onPress: () => {
-          saveNoteHandler(undefined, false);
-          navigation.goBack();
-        },
-      },
-    ]);
+    setIsLeaveDialogVisible(true);
   };
 
   return (
@@ -394,7 +380,7 @@ const EditNoteScreen: FC<{
               isNewNote={!!isNewNote}
               isLocked={isLocked}
               saveNote={saveNoteHandler}
-              deleteNote={deleteNoteHandler}
+              deleteNote={() => setIsDeleteDialogVisible(true)}
             />
           </FormContentContainer>
           <ImagesSection
@@ -421,6 +407,23 @@ const EditNoteScreen: FC<{
           images={currentImages}
         />
       </SScrollView>
+      <ConfirmAlert
+        message="Are you sure you want to delete this note?"
+        isDeletion
+        isDialogVisible={isDeleteDialogVisible}
+        setIsDialogVisible={setIsDeleteDialogVisible}
+        onConfirm={deleteNoteHandler}
+      />
+      <ConfirmAlert
+        message="Do you want to save changes before leaving?"
+        isDialogVisible={isLeaveDialogVisible}
+        setIsDialogVisible={setIsLeaveDialogVisible}
+        onDeny={navigation.goBack} // TODO: handle the dialog when leaving the screen other ways
+        onConfirm={async () => {
+          await saveNoteHandler(undefined, false);
+          navigation.goBack();
+        }}
+      />
     </Wrapper>
   );
 };

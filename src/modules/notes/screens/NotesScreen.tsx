@@ -156,7 +156,7 @@ const NotesScreen = (): JSX.Element => {
           ListHeaderComponent={ListHeaderComponent}
           ItemSeparatorComponent={NoteSeparator}
           onEndReachedThreshold={0.1}
-          estimatedItemSize={200}
+          estimatedItemSize={300}
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"

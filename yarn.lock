@@ -10765,6 +10765,11 @@ react-native-screens@~3.22.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-simple-dialogs@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-simple-dialogs/-/react-native-simple-dialogs-2.0.1.tgz#9d87b1708494265c457849dd37e636216bb24eb6"
+  integrity sha512-mkeW5UbLxDvTzR2Ho4DdHqa/fHna4pQsIguOFNh+SsNDiTBf/oWVCh2Cp0Pp0EUAj+lHEH7Vorg5dsObk4Ec0Q==
+
 react-native-svg-transformer@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-svg-transformer/-/react-native-svg-transformer-1.1.0.tgz#2032bc766e20533af8aec81df49c218f08d4dbbd"
