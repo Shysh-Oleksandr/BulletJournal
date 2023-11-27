@@ -18,6 +18,7 @@ import {
 } from "firebase/auth";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { alertError } from "utils/alertMessages";
 
 import LogoIcon from "../../../../assets/images/icon.png";
 import { authApi } from "../AuthApi";
@@ -81,6 +82,7 @@ const SignIn = (): JSX.Element => {
           setIsAuthenticating(false);
         } catch (error) {
           logging.error(error, "");
+          alertError();
         }
       }
     });

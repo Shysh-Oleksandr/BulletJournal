@@ -1,6 +1,5 @@
 import * as ExpoImagePicker from "expo-image-picker";
 import React from "react";
-import { Alert } from "react-native";
 import theme from "theme";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -12,13 +11,10 @@ import { Image } from "modules/notes/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
 import FormLabel from "./FormLabel";
-
-const alertError = () => {
-  Alert.alert("Something went wrong", "Please try again");
-};
 
 type Props = {
   noteId?: string;

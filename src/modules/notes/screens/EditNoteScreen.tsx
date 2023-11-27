@@ -3,6 +3,7 @@ import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { Alert, GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
+import Toast from "react-native-toast-message";
 import theme from "theme";
 
 import { RouteProp } from "@react-navigation/native";
@@ -16,6 +17,7 @@ import { RootStackParamList, Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
@@ -201,13 +203,15 @@ const EditNoteScreen: FC<{
       }
 
       if (withAlert) {
-        Alert.alert(
-          "Success",
-          `The note is ${isNewNote ? "created" : "updated"}`,
-        );
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `The note is ${isNewNote ? "created" : "updated"}`,
+        });
       }
     } catch (error) {
       logging.error(error);
+      alertError();
       addCrashlyticsLog(error as string);
     } finally {
       // The save btn doesn't change its state without using timeout(for some reason)
@@ -239,10 +243,17 @@ const EditNoteScreen: FC<{
                 .filter((image) => !image.startsWith("file"));
 
               await deleteImagesFromS3(imagesUrlsToDelete);
-              Alert.alert("Success", "The note is deleted");
+
+              Toast.show({
+                type: "success",
+                text1: "Success",
+                text2: "The note is deleted",
+              });
+
               navigation.navigate(Routes.NOTES);
             } catch (error) {
               logging.error(error);
+              alertError();
             } finally {
               setIsDeleting(false);
             }
