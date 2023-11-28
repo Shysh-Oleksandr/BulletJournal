@@ -366,6 +366,7 @@ const EditNoteScreen: FC<{
           <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
             <TitleInput
               currentTitle={currentTitle}
+              isNewNote={!!isNewNote}
               setCurrentTitle={setCurrentTitle}
             />
             <DatePicker
