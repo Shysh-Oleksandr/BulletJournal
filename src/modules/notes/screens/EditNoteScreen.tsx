@@ -1,12 +1,19 @@
 import isEqual from "lodash.isequal";
 import { isNil } from "ramda";
-import React, { FC, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { GestureResponderEvent } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import Toast from "react-native-toast-message";
 import theme from "theme";
 
-import { RouteProp } from "@react-navigation/native";
+import { EventArg, RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
@@ -48,6 +55,21 @@ const contentContainerStyle = {
   paddingHorizontal: 20,
   paddingBottom: 70,
 };
+
+type NavigationAction = Readonly<{
+  type: string;
+  payload?: object | undefined;
+  source?: string | undefined;
+  target?: string | undefined;
+}>;
+
+type BeforeRemoveEvent = EventArg<
+  "beforeRemove",
+  true,
+  {
+    action: NavigationAction;
+  }
+>;
 
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
@@ -107,8 +129,10 @@ const EditNoteScreen: FC<{
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const [isLeaveDialogVisible, setIsLeaveDialogVisible] = useState(false);
   const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
+  const [isLeaveDialogVisible, setIsLeaveDialogVisible] = useState(false);
+  const [leaveNavigationAction, setLeaveNavigationAction] =
+    useState<NavigationAction | null>(null);
 
   const richTextRef = useRef<RichEditor | null>(null);
 
@@ -277,17 +301,30 @@ const EditNoteScreen: FC<{
     [childrenIds],
   );
 
-  const onBackPress = () => {
-    if (!hasChanges) return navigation.goBack();
+  useEffect(() => {
+    const callback = (e: BeforeRemoveEvent) => {
+      if (!hasChanges || isLeaveDialogVisible) {
+        return;
+      }
 
-    setIsLeaveDialogVisible(true);
-  };
+      e.preventDefault();
+
+      setIsLeaveDialogVisible(true);
+      setLeaveNavigationAction(e.data.action);
+    };
+
+    navigation.addListener("beforeRemove", callback);
+
+    return () => {
+      navigation.removeListener("beforeRemove", callback);
+    };
+  }, [navigation, hasChanges, isLeaveDialogVisible]);
 
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         title={`${isNewNote ? "Create" : "Edit"} note`}
-        onBackArrowPress={onBackPress}
+        onBackArrowPress={navigation.goBack}
         withAddBtn={!isNewNote}
         withBackArrow
       />
@@ -418,10 +455,13 @@ const EditNoteScreen: FC<{
         message="Do you want to save changes before leaving?"
         isDialogVisible={isLeaveDialogVisible}
         setIsDialogVisible={setIsLeaveDialogVisible}
-        onDeny={navigation.goBack} // TODO: handle the dialog when leaving the screen other ways
+        onDeny={() =>
+          leaveNavigationAction && navigation.dispatch(leaveNavigationAction)
+        }
         onConfirm={async () => {
           await saveNoteHandler(undefined, false);
-          navigation.goBack();
+
+          leaveNavigationAction && navigation.dispatch(leaveNavigationAction);
         }}
       />
     </Wrapper>
