@@ -13,6 +13,7 @@ const theme: DefaultTheme = {
     cyan200: "#cffafe",
     darkBlueText: "#267491",
     blackText: "#00092e",
+    editorText: "#184f63",
     gray: "#c9c1c1",
     whitish: "#bdffff",
     red600: "#c31515",

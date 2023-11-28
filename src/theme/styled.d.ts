@@ -14,6 +14,7 @@ declare module "styled-components/native" {
       cyan200: string;
       darkBlueText: string;
       blackText: string;
+      editorText: string;
       gray: string;
       whitish: string;
       red600: string;

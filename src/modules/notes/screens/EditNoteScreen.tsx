@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { GestureResponderEvent } from "react-native";
+import { GestureResponderEvent, ScrollView } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import Toast from "react-native-toast-message";
 import theme from "theme";
@@ -135,6 +135,7 @@ const EditNoteScreen: FC<{
     useState<NavigationAction | null>(null);
 
   const richTextRef = useRef<RichEditor | null>(null);
+  const scrollViewRef = useRef<ScrollView | null>(null);
 
   const currentType = useMemo(
     () =>
@@ -329,6 +330,7 @@ const EditNoteScreen: FC<{
         withBackArrow
       />
       <SScrollView
+        ref={scrollViewRef}
         bounces={false}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
@@ -403,6 +405,7 @@ const EditNoteScreen: FC<{
             <TextEditor
               initialContentHtml={content}
               richTextRef={richTextRef}
+              scrollViewRef={scrollViewRef}
               containerRef={(component) => {
                 if (component && !isChildrenIdsSet) {
                   setChildrenIds(getAllChildrenIds(component));

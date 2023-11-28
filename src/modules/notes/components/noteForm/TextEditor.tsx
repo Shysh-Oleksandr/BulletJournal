@@ -1,6 +1,6 @@
 import debounce from "lodash.debounce";
 import React, { useCallback, useMemo } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Dimensions } from "react-native";
 import {
   RichEditor,
   RichToolbar,
@@ -10,10 +10,25 @@ import theme from "theme";
 
 import styled from "styled-components/native";
 
+import FontFamilyStylesheet from "../../styles/stylesheet";
+
+const { height: screenHeight } = Dimensions.get("window");
+
+const scrollExtraOffsetY = Math.round(screenHeight * 0.3);
+
+const fontFamily = "Montserrat";
+const editorStyle = {
+  caretColor: theme.colors.cyan600,
+  color: theme.colors.editorText,
+  initialCSSText: `${FontFamilyStylesheet}`,
+  contentCSSText: `font-family: ${fontFamily}`,
+};
+
 type Props = {
   initialContentHtml: string;
   richTextRef: React.MutableRefObject<RichEditor | null>;
   containerRef: React.Ref<ScrollView>;
+  scrollViewRef: React.MutableRefObject<ScrollView | null>;
   setContentHTML: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -21,6 +36,7 @@ const TextEditor = ({
   initialContentHtml,
   richTextRef,
   containerRef,
+  scrollViewRef,
   setContentHTML,
 }: Props): JSX.Element => {
   const richTextHandle = useCallback(
@@ -36,7 +52,7 @@ const TextEditor = ({
   );
 
   return (
-    <Section ref={containerRef}>
+    <Section ref={containerRef} showsVerticalScrollIndicator={false}>
       <RichToolbar
         editor={richTextRef}
         style={{
@@ -51,12 +67,16 @@ const TextEditor = ({
           actions.setItalic,
           actions.setStrikethrough,
           actions.setUnderline,
-          actions.insertOrderedList,
-          // actions.insertBulletsList,
+          actions.line,
+          actions.alignLeft,
+          actions.alignCenter,
+          actions.alignRight,
+          actions.removeFormat,
           // actions.checkboxList, // is not supported yet
-          actions.insertLink,
+          // actions.insertOrderedList,
           actions.blockquote,
           actions.undo,
+          actions.redo,
         ]}
       />
       <RichEditor
@@ -65,6 +85,15 @@ const TextEditor = ({
         placeholder="Write your note here..."
         initialContentHTML={initialContentHtml}
         initialHeight={250}
+        onCursorPosition={(offsetY) => {
+          scrollViewRef.current?.scrollTo({
+            y: offsetY + scrollExtraOffsetY,
+            animated: true,
+          });
+        }}
+        autoCapitalize="sentences"
+        editorStyle={editorStyle}
+        showsVerticalScrollIndicator={false}
       />
     </Section>
   );
