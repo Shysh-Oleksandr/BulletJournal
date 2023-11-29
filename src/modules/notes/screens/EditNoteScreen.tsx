@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import isEqual from "lodash.isequal";
 import { isNil } from "ramda";
 import React, {
@@ -26,6 +27,7 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
+import { getDifferentColor } from "utils/getDifferentColor";
 import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
@@ -225,6 +227,7 @@ const EditNoteScreen: FC<{
         if (withAlert && response.note) {
           navigation.replace(Routes.EDIT_NOTE, {
             item: { ...newNote, _id: response.note._id },
+            //  TODO: Pass index and fetch notes manually
           });
         }
       } else {
@@ -329,125 +332,135 @@ const EditNoteScreen: FC<{
         withAddBtn={!isNewNote}
         withBackArrow
       />
-      <SScrollView
-        ref={scrollViewRef}
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-        contentContainerStyle={contentContainerStyle}
+      <SLinearGradient
+        locations={[0.2, 0.6, 0.8]}
+        colors={[
+          theme.colors.bgColor,
+          getDifferentColor(theme.colors.bgColor, -10),
+          theme.colors.bgColor,
+        ]}
       >
-        <HeaderSection>
-          <ButtonGroup>
-            <StarButton
-              isStarred={isStarred}
-              isDisabled={isLocked}
-              setIsStarred={setIsStarred}
-            />
-            {!isNewNote && (
-              <LockButton
-                isLocked={isLocked}
-                hasChanges={
-                  hasChangesIfIgnoreLocked || (!isLocked && !savedNote.isLocked)
-                }
-                setIsLocked={setIsLocked}
-                saveNoteHandler={saveNoteHandler}
-              />
-            )}
-          </ButtonGroup>
-          <SavingStatusLabel
-            isSaving={isSaving}
-            isLocked={isLocked}
-            hasChanges={hasChanges}
-          />
-        </HeaderSection>
-        <Container
-          isLocked={isLocked}
-          shouldDisplayNeighboringNotes={shouldDisplayNeighboringNotes}
+        <SScrollView
+          ref={scrollViewRef}
+          bounces={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+          contentContainerStyle={contentContainerStyle}
         >
-          <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
-            <TitleInput
-              currentTitle={currentTitle}
-              isNewNote={!!isNewNote}
-              setCurrentTitle={setCurrentTitle}
-            />
-            <DatePicker
-              currentStartDate={currentStartDate}
-              setCurrentStartDate={setCurrentStartDate}
-            />
-            <Section>
-              <WordsCountLabel contentHTML={contentHTML} />
-              <ImagePicker
-                noteId={currentNote._id}
-                setCurrentImages={setCurrentImages}
+          <HeaderSection>
+            <ButtonGroup>
+              <StarButton
+                isStarred={isStarred}
+                isDisabled={isLocked}
+                setIsStarred={setIsStarred}
               />
-              <ImportanceInput
-                currentImportance={currentImportance}
-                setCurrentImportance={setCurrentImportance}
+              {!isNewNote && (
+                <LockButton
+                  isLocked={isLocked}
+                  hasChanges={
+                    hasChangesIfIgnoreLocked ||
+                    (!isLocked && !savedNote.isLocked)
+                  }
+                  setIsLocked={setIsLocked}
+                  saveNoteHandler={saveNoteHandler}
+                />
+              )}
+            </ButtonGroup>
+            <SavingStatusLabel
+              isSaving={isSaving}
+              isLocked={isLocked}
+              hasChanges={hasChanges}
+            />
+          </HeaderSection>
+          <Container
+            isLocked={isLocked}
+            shouldDisplayNeighboringNotes={shouldDisplayNeighboringNotes}
+          >
+            <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
+              <TitleInput
+                currentTitle={currentTitle}
+                isNewNote={!!isNewNote}
+                setCurrentTitle={setCurrentTitle}
               />
-              <ColorPicker
+              <DatePicker
+                currentStartDate={currentStartDate}
+                setCurrentStartDate={setCurrentStartDate}
+              />
+              <Section>
+                <WordsCountLabel contentHTML={contentHTML} />
+                <ImagePicker
+                  noteId={currentNote._id}
+                  setCurrentImages={setCurrentImages}
+                />
+                <ImportanceInput
+                  currentImportance={currentImportance}
+                  setCurrentImportance={setCurrentImportance}
+                />
+                <ColorPicker
+                  currentColor={currentColor}
+                  setCurrentColor={setCurrentColor}
+                />
+              </Section>
+              <TypeSelector
+                currentTypeId={currentTypeId}
                 currentColor={currentColor}
+                setCurrentTypeId={setCurrentTypeId}
                 setCurrentColor={setCurrentColor}
               />
-            </Section>
-            <TypeSelector
-              currentTypeId={currentTypeId}
-              currentColor={currentColor}
-              setCurrentTypeId={setCurrentTypeId}
-              setCurrentColor={setCurrentColor}
-            />
-            <CategoriesSelector
-              currentCategoriesIds={currentCategoriesIds}
-              currentColor={currentColor}
-              setCurrentCategoriesIds={setCurrentCategoriesIds}
-              setCurrentColor={setCurrentColor}
-            />
-            <TextEditor
-              initialContentHtml={content}
-              richTextRef={richTextRef}
-              scrollViewRef={scrollViewRef}
-              containerRef={(component) => {
-                if (component && !isChildrenIdsSet) {
-                  setChildrenIds(getAllChildrenIds(component));
-                  setIsChildrenIdsSet(true);
-                }
-              }}
-              setContentHTML={setContentHTML}
-            />
-            <NoteActionButtons
-              isSaving={isSaving}
-              hasNoChanges={!hasChanges || currentTitle.trim() === ""}
-              isDeleting={isDeleting}
-              isNewNote={!!isNewNote}
+              <CategoriesSelector
+                currentCategoriesIds={currentCategoriesIds}
+                currentColor={currentColor}
+                setCurrentCategoriesIds={setCurrentCategoriesIds}
+                setCurrentColor={setCurrentColor}
+              />
+              <TextEditor
+                initialContentHtml={content}
+                richTextRef={richTextRef}
+                scrollViewRef={scrollViewRef}
+                containerRef={(component) => {
+                  if (component && !isChildrenIdsSet) {
+                    setChildrenIds(getAllChildrenIds(component));
+                    setIsChildrenIdsSet(true);
+                  }
+                }}
+                setContentHTML={setContentHTML}
+              />
+              <NoteActionButtons
+                isSaving={isSaving}
+                hasNoChanges={!hasChanges || currentTitle.trim() === ""}
+                isDeleting={isDeleting}
+                isNewNote={!!isNewNote}
+                isLocked={isLocked}
+                saveNote={saveNoteHandler}
+                deleteNote={() => setIsDeleteDialogVisible(true)}
+              />
+            </FormContentContainer>
+            <ImagesSection
+              currentImages={currentImages}
               isLocked={isLocked}
-              saveNote={saveNoteHandler}
-              deleteNote={() => setIsDeleteDialogVisible(true)}
+              setCurrentImages={setCurrentImages}
             />
-          </FormContentContainer>
-          <ImagesSection
-            currentImages={currentImages}
-            isLocked={isLocked}
-            setCurrentImages={setCurrentImages}
+            {shouldDisplayNeighboringNotes && (
+              <NeighboringNotesLinks index={index} />
+            )}
+          </Container>
+          <Typography fontSize="lg" paddingBottom={8}>
+            Preview
+          </Typography>
+          <NoteBody
+            title={currentTitle}
+            rating={currentImportance}
+            color={currentColor}
+            type={currentType}
+            category={currentCategories}
+            content={contentHTML}
+            isStarred={isStarred}
+            startDate={currentStartDate}
+            images={currentImages}
           />
-          {shouldDisplayNeighboringNotes && (
-            <NeighboringNotesLinks index={index} />
-          )}
-        </Container>
-        <Typography fontSize="lg" paddingBottom={8}>
-          Preview
-        </Typography>
-        <NoteBody
-          title={currentTitle}
-          rating={currentImportance}
-          color={currentColor}
-          type={currentType}
-          category={currentCategories}
-          content={contentHTML}
-          isStarred={isStarred}
-          startDate={currentStartDate}
-          images={currentImages}
-        />
-      </SScrollView>
+        </SScrollView>
+      </SLinearGradient>
       <ConfirmAlert
         message="Are you sure you want to delete this note?"
         isDeletion
@@ -473,6 +486,10 @@ const EditNoteScreen: FC<{
 };
 
 const SScrollView = styled.ScrollView``;
+
+const SLinearGradient = styled(LinearGradient)`
+  flex: 1;
+`;
 
 const Wrapper = styled.View`
   flex: 1;

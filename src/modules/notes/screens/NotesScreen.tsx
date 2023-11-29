@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, {
   useCallback,
   useEffect,
@@ -18,6 +19,7 @@ import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { getDifferentColor } from "utils/getDifferentColor";
 import { logUserEvent } from "utils/logUserEvent";
 
 import AddButton from "../components/AddButton";
@@ -140,30 +142,39 @@ const NotesScreen = (): JSX.Element => {
     <>
       <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
-      {isLoading ? (
-        <LoaderContainer>
-          <ActivityIndicator size="large" color={theme.colors.cyan600} />
-        </LoaderContainer>
-      ) : (
-        <FlashList
-          data={notes}
-          renderItem={({ item, index }) => (
-            <NotePreview item={item} index={index} />
-          )} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
-          onEndReached={loadMoreData}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={ListEmptyComponent}
-          ListHeaderComponent={ListHeaderComponent}
-          ItemSeparatorComponent={NoteSeparator}
-          onEndReachedThreshold={0.1}
-          estimatedItemSize={300}
-          contentContainerStyle={contentContainerStyle}
-          showsVerticalScrollIndicator={false}
-          overScrollMode="never"
-          ref={flashListRef}
-          bounces={false}
-        />
-      )}
+      <SLinearGradient
+        locations={[0.2, 0.6, 0.8]}
+        colors={[
+          theme.colors.bgColor,
+          getDifferentColor(theme.colors.bgColor, -10),
+          theme.colors.bgColor,
+        ]}
+      >
+        {isLoading ? (
+          <LoaderContainer>
+            <ActivityIndicator size="large" color={theme.colors.cyan600} />
+          </LoaderContainer>
+        ) : (
+          <FlashList
+            data={notes}
+            renderItem={({ item, index }) => (
+              <NotePreview item={item} index={index} />
+            )} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
+            onEndReached={loadMoreData}
+            keyExtractor={keyExtractor}
+            ListEmptyComponent={ListEmptyComponent}
+            ListHeaderComponent={ListHeaderComponent}
+            ItemSeparatorComponent={NoteSeparator}
+            onEndReachedThreshold={0.1}
+            estimatedItemSize={300}
+            contentContainerStyle={contentContainerStyle}
+            showsVerticalScrollIndicator={false}
+            overScrollMode="never"
+            ref={flashListRef}
+            bounces={false}
+          />
+        )}
+      </SLinearGradient>
     </>
   );
 };
@@ -171,6 +182,10 @@ const NotesScreen = (): JSX.Element => {
 const LoaderContainer = styled.View`
   padding-top: 40px;
   justify-content: center;
+`;
+
+const SLinearGradient = styled(LinearGradient)`
+  flex: 1;
 `;
 
 export default NotesScreen;

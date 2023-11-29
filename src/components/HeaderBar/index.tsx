@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "theme";
 
@@ -12,6 +13,7 @@ import { Routes } from "modules/navigation/types";
 import { getEmptyNote } from "modules/notes/util/getEmptyNote";
 import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
+import { getDifferentColor } from "utils/getDifferentColor";
 
 import LogoIcon from "../../../assets/images/icon.png";
 
@@ -59,65 +61,75 @@ const HeaderBar = ({
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
     : insets.top;
 
+  const [topGradientColor, bottomGradientColor] = useMemo(
+    () => [getDifferentColor(bgColor, 10), getDifferentColor(bgColor, -15)],
+    [bgColor],
+  );
+
   return (
-    <Container bgColor={bgColor}>
-      <CoverView bgColor={bgColor} height={distanceFromTheTop} />
-      <HeaderWrapper
-        marginBottom={marginBottom}
-        paddingVertical={paddingVertical}
-        paddingHorizontal={paddingHorizontal}
-        bgColor={bgColor}
-      >
-        {withBackArrow && (
-          <IconWrapper
-            onPress={onBackArrowPress ?? navigation.goBack}
-            hitSlop={BUTTON_HIT_SLOP}
-            paddingHorizontal={5}
-          >
-            <AntDesign name="arrowleft" size={26} color={theme.colors.white} />
-          </IconWrapper>
-        )}
-        {withLogo && (
-          <LogoContainer hitSlop={BUTTON_HIT_SLOP} onPress={onLogoPress}>
-            <Logo
-              source={LogoIcon}
-              width={LOGO_SIZE}
-              height={LOGO_SIZE}
-              resizeMode="contain"
-            />
-          </LogoContainer>
-        )}
-        <Title
-          align="center"
-          color={theme.colors.white}
-          fontSize="lg"
-          fontWeight="bold"
-          paddingRight={withAddBtn ? 0 : 30}
+    <Container>
+      <LinearGradient colors={[topGradientColor, bottomGradientColor]}>
+        <CoverView height={distanceFromTheTop} />
+        <HeaderWrapper
+          marginBottom={marginBottom}
+          paddingVertical={paddingVertical}
+          paddingHorizontal={paddingHorizontal}
         >
-          {title}
-        </Title>
-        {withLogoutBtn && (
-          <LogoutButtonContainer
-            onPress={() => setIsDialogVisible(true)}
-            hitSlop={SMALL_BUTTON_HIT_SLOP}
+          {withBackArrow && (
+            <IconWrapper
+              onPress={onBackArrowPress ?? navigation.goBack}
+              hitSlop={BUTTON_HIT_SLOP}
+              paddingHorizontal={5}
+            >
+              <AntDesign
+                name="arrowleft"
+                size={26}
+                color={theme.colors.white}
+              />
+            </IconWrapper>
+          )}
+          {withLogo && (
+            <LogoContainer hitSlop={BUTTON_HIT_SLOP} onPress={onLogoPress}>
+              <Logo
+                source={LogoIcon}
+                width={LOGO_SIZE}
+                height={LOGO_SIZE}
+                resizeMode="contain"
+              />
+            </LogoContainer>
+          )}
+          <Title
+            align="center"
+            color={theme.colors.white}
+            fontSize="lg"
+            fontWeight="bold"
+            paddingRight={withAddBtn ? 0 : 30}
           >
-            <Entypo name="log-out" size={24} color={theme.colors.white} />
-          </LogoutButtonContainer>
-        )}
-        {withAddBtn && (
-          <AddNoteButtonContainer
-            onPress={() => {
-              navigation.replace(Routes.EDIT_NOTE, {
-                item: getEmptyNote(),
-                isNewNote: true,
-              });
-            }}
-            hitSlop={SMALL_BUTTON_HIT_SLOP}
-          >
-            <Entypo name="plus" size={30} color={theme.colors.white} />
-          </AddNoteButtonContainer>
-        )}
-      </HeaderWrapper>
+            {title}
+          </Title>
+          {withLogoutBtn && (
+            <LogoutButtonContainer
+              onPress={() => setIsDialogVisible(true)}
+              hitSlop={SMALL_BUTTON_HIT_SLOP}
+            >
+              <Entypo name="log-out" size={24} color={theme.colors.white} />
+            </LogoutButtonContainer>
+          )}
+          {withAddBtn && (
+            <AddNoteButtonContainer
+              onPress={() => {
+                navigation.replace(Routes.EDIT_NOTE, {
+                  item: getEmptyNote(),
+                  isNewNote: true,
+                });
+              }}
+              hitSlop={SMALL_BUTTON_HIT_SLOP}
+            >
+              <Entypo name="plus" size={30} color={theme.colors.white} />
+            </AddNoteButtonContainer>
+          )}
+        </HeaderWrapper>
+      </LinearGradient>
       <ConfirmAlert
         message="Are you sure you want to logout?"
         isDialogVisible={isDialogVisible}
@@ -128,29 +140,26 @@ const HeaderBar = ({
   );
 };
 
-const CoverView = styled.View<{ bgColor: string; height: number }>`
-  background-color: ${(props) => props.bgColor};
+const CoverView = styled.View<{ height: number }>`
   height: ${(props) => props.height}px;
   width: 100%;
 `;
 
-const Container = styled.View<{ bgColor: string }>`
+const Container = styled.View`
   elevation: 30;
+  background-color: ${theme.colors.cyan600};
   width: 100%;
-  background-color: ${(props) => props.bgColor};
 `;
 
 const HeaderWrapper = styled.View<{
   marginBottom: number;
   paddingVertical?: number;
   paddingHorizontal?: number;
-  bgColor: string;
 }>`
   z-index: 100;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: ${(props) => props.bgColor};
   margin-bottom: ${(props) => props.marginBottom}px;
   min-height: ${HEADER_MIN_HEIGHT}px;
   padding-horizontal: ${(props) => props.paddingHorizontal}px;

@@ -1,8 +1,10 @@
-import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useMemo } from "react";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
 import styled from "styled-components/native";
+import { getDifferentColor } from "utils/getDifferentColor";
 
 import Typography, { TypographyProps } from "./Typography";
 
@@ -24,6 +26,7 @@ type Props = {
   width?: string;
   labelProps?: TypographyProps;
   Icon?: JSX.Element;
+  shouldReverseBgColor?: boolean;
 };
 
 const Button = ({
@@ -44,7 +47,19 @@ const Button = ({
   loadingIndicatorColor = theme.colors.white,
   width,
   Icon,
+  shouldReverseBgColor,
 }: Props): JSX.Element => {
+  const [topGradientColor, bottomGradientColor] = useMemo(() => {
+    if (disabled) {
+      return [theme.colors.gray, theme.colors.gray];
+    }
+
+    return [
+      getDifferentColor(bgColor, 10, shouldReverseBgColor),
+      getDifferentColor(bgColor, -15, shouldReverseBgColor),
+    ];
+  }, [bgColor, disabled, shouldReverseBgColor]);
+
   return (
     <ButtonWrapper
       onPress={() => {
@@ -61,25 +76,27 @@ const Button = ({
       bgColor={bgColor}
       width={width}
     >
-      {Icon && <IconContainer>{Icon}</IconContainer>}
-      {showLoadingIndicator && isLoading && (
-        <LoaderWrapper>
-          <ActivityIndicator size={24} color={loadingIndicatorColor} />
-        </LoaderWrapper>
-      )}
-      <LabelContainer isLoading={isLoading}>
-        <Typography
-          fontWeight="semibold"
-          fontSize="lg"
-          adjustsFontSizeToFit={adjustsFontSizeToFit}
-          color={theme.colors.white}
-          paddingVertical={8}
-          paddingHorizontal={16}
-          {...labelProps}
-        >
-          {label}
-        </Typography>
-      </LabelContainer>
+      <SLinearGradient colors={[topGradientColor, bottomGradientColor]}>
+        {Icon && <IconContainer>{Icon}</IconContainer>}
+        {showLoadingIndicator && isLoading && (
+          <LoaderWrapper>
+            <ActivityIndicator size={24} color={loadingIndicatorColor} />
+          </LoaderWrapper>
+        )}
+        <LabelContainer isLoading={isLoading}>
+          <Typography
+            fontWeight="semibold"
+            fontSize="lg"
+            adjustsFontSizeToFit={adjustsFontSizeToFit}
+            color={theme.colors.white}
+            paddingVertical={8}
+            paddingHorizontal={16}
+            {...labelProps}
+          >
+            {label}
+          </Typography>
+        </LabelContainer>
+      </SLinearGradient>
     </ButtonWrapper>
   );
 };
@@ -104,12 +121,22 @@ const ButtonWrapper = styled.TouchableOpacity<{
     typeof marginTop === "number" ? `${marginTop}px` : marginTop};
   margin-bottom: ${({ marginBottom }) =>
     typeof marginBottom === "number" ? `${marginBottom}px` : marginBottom};
-  background-color: ${({ isTransparent, bgColor }) =>
-    isTransparent ? "transparent" : bgColor};
+
+  ${(props) => props.borderColor && `border: 1px solid ${props.borderColor}`}
+
   ${(props) =>
     props.disabled && `background-color: ${theme.colors.gray}; elevation: 0;`}
+
   ${({ wide }) => wide && "width: 100%;"}
   ${({ width }) => width && `width: ${width};`}
+`;
+
+const SLinearGradient = styled(LinearGradient)`
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  border-radius: 6px;
 `;
 
 const LabelContainer = styled.View<{

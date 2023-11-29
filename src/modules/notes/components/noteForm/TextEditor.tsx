@@ -46,6 +46,16 @@ const TextEditor = ({
     [setContentHTML],
   );
 
+  const onCursorPosition = useCallback(
+    (offsetY: number) => {
+      scrollViewRef.current?.scrollTo({
+        y: offsetY + scrollExtraOffsetY,
+        animated: true,
+      });
+    },
+    [scrollViewRef],
+  );
+
   const richTextHandleDebouncer = useMemo(
     () => debounce(richTextHandle, 500),
     [richTextHandle],
@@ -85,12 +95,7 @@ const TextEditor = ({
         placeholder="Write your note here..."
         initialContentHTML={initialContentHtml}
         initialHeight={250}
-        onCursorPosition={(offsetY) => {
-          scrollViewRef.current?.scrollTo({
-            y: offsetY + scrollExtraOffsetY,
-            animated: true,
-          });
-        }}
+        onCursorPosition={onCursorPosition}
         autoCapitalize="sentences"
         editorStyle={editorStyle}
         showsVerticalScrollIndicator={false}

@@ -1,7 +1,7 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
-import theme from "theme";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
@@ -49,8 +49,8 @@ const NoteBody = ({
 
   const isImageSliderScrollable = images && images?.length > 2;
 
-  const [textColor, imageBgColor] = useMemo(
-    () => [getDifferentColor(color, 185), getDifferentColor(color, 20)],
+  const [textColor, gradientBg] = useMemo(
+    () => [getDifferentColor(color, 100), getDifferentColor(color, 25)],
     [color],
   );
 
@@ -77,52 +77,49 @@ const NoteBody = ({
       disabled={!onPress || isImageSliderScrollable}
       activeOpacity={0.3}
     >
-      <ImageSlider bgColor={imageBgColor} images={images} />
-      <InnerContainer
-        onPress={onPress}
-        disabled={!onPress || !isImageSliderScrollable}
-        activeOpacity={0.3}
-        bgColor={color}
-      >
-        <Typography fontWeight="bold" fontSize="xl" color={textColor}>
-          {title}
-        </Typography>
-        <ContentContainer>
-          <RenderHTML
-            defaultTextProps={{ style: { color: textColor } }}
-            contentWidth={width - 80}
-            source={source}
-          />
-        </ContentContainer>
-        <LabelsContainer>
-          {isStarred && (
-            <NoteLabel
-              label={<FontAwesome name="star" size={20} color={textColor} />}
-              color={color}
+      <ImageSlider bgColor={color} images={images} />
+      <LinearGradient colors={[color, gradientBg]}>
+        <InnerContainer
+          onPress={onPress}
+          disabled={!onPress || !isImageSliderScrollable}
+          activeOpacity={0.3}
+        >
+          <Typography fontWeight="bold" fontSize="xl" color={textColor}>
+            {title}
+          </Typography>
+          <ContentContainer>
+            <RenderHTML
+              defaultTextProps={{ style: { color: textColor } }}
+              contentWidth={width - 80}
+              source={source}
             />
-          )}
-          <NoteLabel label={getTimeByDate(startDate)} color={color} />
-          <NoteLabel label={`${rating}/10`} color={color} />
-          {relevantCategories?.map((category, index, array) => (
-            <NoteLabel
-              key={category.labelName + category._id}
-              label={category.labelName}
-              color={color}
-              isLast={index === array.length - 1}
-            />
-          ))}
-        </LabelsContainer>
-      </InnerContainer>
+          </ContentContainer>
+          <LabelsContainer>
+            {isStarred && (
+              <NoteLabel
+                label={<FontAwesome name="star" size={20} color={textColor} />}
+                color={color}
+              />
+            )}
+            <NoteLabel label={getTimeByDate(startDate)} color={color} />
+            <NoteLabel label={`${rating}/10`} color={color} />
+            {relevantCategories?.map((category, index, array) => (
+              <NoteLabel
+                key={category.labelName + category._id}
+                label={category.labelName}
+                color={color}
+                isLast={index === array.length - 1}
+              />
+            ))}
+          </LabelsContainer>
+        </InnerContainer>
+      </LinearGradient>
     </Container>
   );
 };
 
-const InnerContainer = styled.TouchableOpacity<{
-  bgColor?: string;
-}>`
+const InnerContainer = styled.TouchableOpacity`
   width: 100%;
-  background-color: ${({ bgColor }) => bgColor ?? theme.colors.cyan600};
-
   padding: 16px 16px 12px;
 `;
 

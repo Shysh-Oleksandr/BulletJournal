@@ -12,8 +12,8 @@ type Props = {
 };
 
 const NoteLabel = ({ label, color, isLast }: Props): JSX.Element => {
-  const labelBgColor = getDifferentColor(color, 20);
-  const textColor = getDifferentColor(color, 185);
+  const labelBgColor = getDifferentColor(color, 12);
+  const textColor = getDifferentColor(color, 100);
 
   return (
     <LabelItemContainer bgColor={labelBgColor} isLast={isLast}>

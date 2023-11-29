@@ -7,7 +7,7 @@ import CustomModal from "components/CustomModal";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
-import { getDifferentColor } from "utils/getDifferentColor";
+import { getShadedColor } from "utils/getDifferentColor";
 
 import FormLabel from "./FormLabel";
 
@@ -35,7 +35,7 @@ const ColorPicker = ({
   };
 
   const additionalIconColor = useMemo(
-    () => getDifferentColor(currentColor, 80),
+    () => getShadedColor(currentColor, 80),
     [currentColor],
   );
 
