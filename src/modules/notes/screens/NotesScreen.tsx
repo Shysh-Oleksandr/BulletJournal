@@ -13,13 +13,16 @@ import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
+import {
+  BG_GRADIENT_COLORS,
+  BG_GRADIENT_LOCATIONS,
+} from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
-import { getDifferentColor } from "utils/getDifferentColor";
 import { logUserEvent } from "utils/logUserEvent";
 
 import AddButton from "../components/AddButton";
@@ -143,12 +146,8 @@ const NotesScreen = (): JSX.Element => {
       <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
       <SLinearGradient
-        locations={[0.2, 0.6, 0.8]}
-        colors={[
-          theme.colors.bgColor,
-          getDifferentColor(theme.colors.bgColor, -10),
-          theme.colors.bgColor,
-        ]}
+        locations={BG_GRADIENT_LOCATIONS}
+        colors={BG_GRADIENT_COLORS}
       >
         {isLoading ? (
           <LoaderContainer>

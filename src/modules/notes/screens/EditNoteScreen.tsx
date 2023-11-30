@@ -19,6 +19,10 @@ import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import logging from "config/logging";
+import {
+  BG_GRADIENT_COLORS,
+  BG_GRADIENT_LOCATIONS,
+} from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
@@ -27,7 +31,6 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
-import { getDifferentColor } from "utils/getDifferentColor";
 import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
@@ -333,12 +336,8 @@ const EditNoteScreen: FC<{
         withBackArrow
       />
       <SLinearGradient
-        locations={[0.2, 0.6, 0.8]}
-        colors={[
-          theme.colors.bgColor,
-          getDifferentColor(theme.colors.bgColor, -10),
-          theme.colors.bgColor,
-        ]}
+        locations={BG_GRADIENT_LOCATIONS}
+        colors={BG_GRADIENT_COLORS}
       >
         <SScrollView
           ref={scrollViewRef}

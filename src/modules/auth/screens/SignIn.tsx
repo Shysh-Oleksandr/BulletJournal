@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "react-native";
@@ -16,6 +17,10 @@ import {
   signInWithCredential,
   signOut,
 } from "firebase/auth";
+import {
+  BG_GRADIENT_COLORS,
+  BG_GRADIENT_LOCATIONS,
+} from "modules/app/constants";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
@@ -97,40 +102,49 @@ const SignIn = (): JSX.Element => {
         backgroundColor={theme.colors.bgColor}
       />
 
-      <Container>
-        <Logo
-          source={LogoIcon}
-          width={LOGO_SIZE}
-          height={LOGO_SIZE}
-          resizeMode="contain"
-        />
-        <Typography fontWeight="bold" fontSize="xxl" paddingTop={16}>
-          Bullet Journal
-        </Typography>
-        <Button
-          label="Google"
-          Icon={GOOGLE_ICON}
-          wide
-          bgColor={theme.colors.cyan600}
-          marginTop={50}
-          marginBottom={70}
-          disabled={isLoading}
-          isLoading={isLoading}
-          onPress={() => {
-            addCrashlyticsLog("User pressed the google auth btn");
-            setIsAuthenticating(true);
-            promptAsync();
-          }}
-          labelProps={{
-            fontSize: "xl",
-            fontWeight: "bold",
-            paddingVertical: 12,
-          }}
-        />
-      </Container>
+      <SLinearGradient
+        locations={BG_GRADIENT_LOCATIONS}
+        colors={BG_GRADIENT_COLORS}
+      >
+        <Container>
+          <Logo
+            source={LogoIcon}
+            width={LOGO_SIZE}
+            height={LOGO_SIZE}
+            resizeMode="contain"
+          />
+          <Typography fontWeight="bold" fontSize="xxl" paddingTop={16}>
+            Bullet Journal
+          </Typography>
+          <Button
+            label="Google"
+            Icon={GOOGLE_ICON}
+            wide
+            bgColor={theme.colors.cyan600}
+            marginTop={50}
+            marginBottom={70}
+            disabled={isLoading}
+            isLoading={isLoading}
+            onPress={() => {
+              addCrashlyticsLog("User pressed the google auth btn");
+              setIsAuthenticating(true);
+              promptAsync();
+            }}
+            labelProps={{
+              fontSize: "xl",
+              fontWeight: "bold",
+              paddingVertical: 12,
+            }}
+          />
+        </Container>
+      </SLinearGradient>
     </>
   );
 };
+
+const SLinearGradient = styled(LinearGradient)`
+  flex: 1;
+`;
 
 const Container = styled.View`
   flex: 1;
