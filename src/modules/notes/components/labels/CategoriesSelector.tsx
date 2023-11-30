@@ -131,7 +131,7 @@ const CategoriesSelector = ({
       </SelectedTypeContainer>
       <BottomModal
         title="Choose categories"
-        maxHeight="80%"
+        maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         onClose={onClose}

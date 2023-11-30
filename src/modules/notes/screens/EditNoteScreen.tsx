@@ -54,6 +54,7 @@ import { deleteImagesFromS3 } from "../modules/s3";
 import { notesApi } from "../NotesApi";
 import { getLabels } from "../NotesSlice";
 import { Note, UpdateNoteRequest } from "../types";
+import { cleanHtml } from "../util/cleanHtml";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 
 const contentContainerStyle = {
@@ -142,6 +143,8 @@ const EditNoteScreen: FC<{
   const richTextRef = useRef<RichEditor | null>(null);
   const scrollViewRef = useRef<ScrollView | null>(null);
 
+  const cleanedHtml = useMemo(() => cleanHtml(contentHTML), [contentHTML]);
+
   const currentType = useMemo(
     () =>
       allLabels.find(
@@ -163,7 +166,7 @@ const EditNoteScreen: FC<{
     ...initialNote,
     author: userId,
     title: currentTitle.trim(),
-    content: contentHTML.trim(),
+    content: cleanedHtml.trim(),
     color: currentColor,
     startDate: currentStartDate,
     rating: currentImportance,
@@ -387,7 +390,7 @@ const EditNoteScreen: FC<{
                 setCurrentStartDate={setCurrentStartDate}
               />
               <Section>
-                <WordsCountLabel contentHTML={contentHTML} />
+                <WordsCountLabel contentHTML={cleanedHtml} />
                 <ImagePicker
                   noteId={currentNote._id}
                   setCurrentImages={setCurrentImages}
@@ -453,7 +456,7 @@ const EditNoteScreen: FC<{
             color={currentColor}
             type={currentType}
             category={currentCategories}
-            content={contentHTML}
+            content={cleanedHtml}
             isStarred={isStarred}
             startDate={currentStartDate}
             images={currentImages}

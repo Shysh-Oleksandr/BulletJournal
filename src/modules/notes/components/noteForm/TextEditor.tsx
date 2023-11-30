@@ -14,7 +14,9 @@ import FontFamilyStylesheet from "../../styles/stylesheet";
 
 const { height: screenHeight } = Dimensions.get("window");
 
-const scrollExtraOffsetY = Math.round(screenHeight * 0.3);
+const isBigScreen = screenHeight > 800;
+
+const scrollExtraOffsetY = Math.round(screenHeight * (isBigScreen ? 0.2 : 0.3));
 
 const fontFamily = "Montserrat";
 const editorStyle = {

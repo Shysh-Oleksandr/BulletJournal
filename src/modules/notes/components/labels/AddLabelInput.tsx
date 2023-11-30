@@ -79,6 +79,14 @@ const AddLabelInput = ({
 
     const newLabelId = response.customLabel._id ?? "";
 
+    if (newLabelId) {
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: `The ${relevantLabelName} is created`,
+      });
+    }
+
     setInputValue("");
     setCurrentColor(generateRandomColor());
     onCreate({ ...createLabelData, _id: newLabelId });

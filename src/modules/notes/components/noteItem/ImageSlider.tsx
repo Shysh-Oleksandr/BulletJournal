@@ -59,7 +59,9 @@ const ImageSlider = ({ bgColor, images }: Props): JSX.Element | null => {
   );
 };
 
-const ImagesContainer = styled.ScrollView``;
+const ImagesContainer = styled.ScrollView`
+  margin-bottom: -1px;
+`;
 
 const Cont = styled.View`
   flex-direction: row;
