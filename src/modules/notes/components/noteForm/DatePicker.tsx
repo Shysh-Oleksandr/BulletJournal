@@ -1,3 +1,4 @@
+import { isValid } from "date-fns";
 import React, { useState } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import theme from "theme";
@@ -22,6 +23,10 @@ const DatePicker = ({
   const initialDate = getFormattedDate(currentStartDate);
 
   const [date, setDate] = useState(initialDate);
+
+  const dateValue = new Date(date);
+
+  const relevantDate = isValid(dateValue) ? dateValue : new Date();
 
   const showDatePicker = () => {
     setIsPickerVisible(true);
@@ -51,7 +56,7 @@ const DatePicker = ({
       </ButtonContainer>
       <DateTimePickerModal
         isVisible={isPickerVisible}
-        date={new Date(date)}
+        date={relevantDate}
         accentColor={theme.colors.cyan600}
         mode="datetime"
         onConfirm={handleConfirm}

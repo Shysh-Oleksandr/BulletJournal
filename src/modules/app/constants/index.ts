@@ -1,4 +1,7 @@
 import { Platform } from "react-native";
+import theme from "theme";
+
+import { getDifferentColor } from "utils/getDifferentColor";
 
 export const IS_IOS = Platform.OS === "ios";
 export const IS_ANDROID = Platform.OS === "android";
@@ -23,3 +26,11 @@ export const BIG_BUTTON_HIT_SLOP = {
   top: 20,
   bottom: 20,
 };
+
+export const BG_GRADIENT_COLORS = [
+  theme.colors.bgColor,
+  getDifferentColor(theme.colors.bgColor, -10),
+  theme.colors.bgColor,
+];
+
+export const BG_GRADIENT_LOCATIONS = [0.2, 0.6, 0.8];

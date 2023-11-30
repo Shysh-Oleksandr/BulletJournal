@@ -1,8 +1,7 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
-import { Shadow } from "react-native-shadow-2";
-import theme from "theme";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
@@ -50,7 +49,10 @@ const NoteBody = ({
 
   const isImageSliderScrollable = images && images?.length > 2;
 
-  const textColor = useMemo(() => getDifferentColor(color, 185), [color]);
+  const [textColor, gradientBg] = useMemo(
+    () => [getDifferentColor(color, 100), getDifferentColor(color, 25)],
+    [color],
+  );
 
   const relevantCategories = useMemo(
     () =>
@@ -70,18 +72,17 @@ const NoteBody = ({
   );
 
   return (
-    <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000015">
-      <Container
-        onPress={onPress}
-        disabled={!onPress || isImageSliderScrollable}
-        activeOpacity={0.3}
-      >
-        <ImageSlider images={images} />
+    <Container
+      onPress={onPress}
+      disabled={!onPress || isImageSliderScrollable}
+      activeOpacity={0.3}
+    >
+      <ImageSlider bgColor={color} images={images} />
+      <LinearGradient colors={[color, gradientBg]}>
         <InnerContainer
           onPress={onPress}
           disabled={!onPress || !isImageSliderScrollable}
           activeOpacity={0.3}
-          bgColor={color}
         >
           <Typography fontWeight="bold" fontSize="xl" color={textColor}>
             {title}
@@ -112,21 +113,22 @@ const NoteBody = ({
             ))}
           </LabelsContainer>
         </InnerContainer>
-      </Container>
-    </StyledDropShadow>
+      </LinearGradient>
+    </Container>
   );
 };
 
-const InnerContainer = styled.TouchableOpacity<{
-  bgColor?: string;
-}>`
+const InnerContainer = styled.TouchableOpacity`
   width: 100%;
-  background-color: ${({ bgColor }) => bgColor ?? theme.colors.cyan600};
-
   padding: 16px 16px 12px;
 `;
 
-const Container = styled.TouchableOpacity``;
+const Container = styled.TouchableOpacity`
+  elevation: 12;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+`;
 
 const LabelsContainer = styled.View`
   width: 100%;
@@ -137,12 +139,6 @@ const LabelsContainer = styled.View`
 const ContentContainer = styled.View`
   width: 100%;
   margin-left: 3px;
-`;
-
-const StyledDropShadow = styled(Shadow)`
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
 `;
 
 export default React.memo(NoteBody);
