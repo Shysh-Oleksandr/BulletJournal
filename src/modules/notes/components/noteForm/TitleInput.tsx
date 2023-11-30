@@ -5,10 +5,15 @@ import styled from "styled-components/native";
 
 type Props = {
   currentTitle: string;
+  isNewNote: boolean;
   setCurrentTitle: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TitleInput = ({ currentTitle, setCurrentTitle }: Props): JSX.Element => {
+const TitleInput = ({
+  currentTitle,
+  isNewNote,
+  setCurrentTitle,
+}: Props): JSX.Element => {
   const onChange = (text: string) => {
     setCurrentTitle(text);
   };
@@ -20,6 +25,7 @@ const TitleInput = ({ currentTitle, setCurrentTitle }: Props): JSX.Element => {
         paddingHorizontal={0}
         placeholder="Title"
         isCentered
+        withAutoFocus={isNewNote}
         multiline={currentTitle.length > 30}
         numberOfLines={currentTitle.length > 30 ? 2 : 1}
         maxLength={200}

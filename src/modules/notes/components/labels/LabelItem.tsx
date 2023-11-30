@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useWindowDimensions } from "react-native";
+import Toast from "react-native-toast-message";
 import theme from "theme";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -43,6 +44,8 @@ const LabelItem = ({
   const [name, setName] = useState(label.labelName);
   const [currentColor, setCurrentColor] = useState(label.color);
 
+  const relevantLabelName = label.isCategoryLabel ? "category" : "type";
+
   const saveChanges = useCallback(async () => {
     onEditBtnPress(null);
 
@@ -59,10 +62,24 @@ const LabelItem = ({
 
     updateLabel(updatedType);
 
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: `The ${relevantLabelName} is updated`,
+    });
+
     setTypes((prev) =>
       prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
-  }, [currentColor, name, onEditBtnPress, setTypes, label, updateLabel]);
+  }, [
+    currentColor,
+    name,
+    relevantLabelName,
+    onEditBtnPress,
+    setTypes,
+    label,
+    updateLabel,
+  ]);
 
   const onDelete = useCallback(() => {
     if (isActive) {
@@ -74,9 +91,23 @@ const LabelItem = ({
     logUserEvent(CustomUserEvents.DELETE_LABEL, { labelId: label._id });
     addCrashlyticsLog(`User tries to delete the label ${label._id}`);
 
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: `The ${relevantLabelName} is deleted`,
+    });
+
     setTypes((prev) => prev.filter((item) => item._id !== label._id));
     deleteLabel(label._id);
-  }, [label._id, isActive, onChoose, setTypes, onEditBtnPress, deleteLabel]);
+  }, [
+    label._id,
+    isActive,
+    relevantLabelName,
+    onChoose,
+    setTypes,
+    onEditBtnPress,
+    deleteLabel,
+  ]);
 
   const onPress = useCallback(() => {
     onChoose(label._id);
@@ -103,9 +134,7 @@ const LabelItem = ({
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder={`Enter a ${
-            label.isCategoryLabel ? "category" : "type"
-          } name`}
+          placeholder={`Enter a ${relevantLabelName} name`}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}

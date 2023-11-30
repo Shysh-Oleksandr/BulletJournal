@@ -123,7 +123,7 @@ const TypeSelector = ({
       </SelectedTypeContainer>
       <BottomModal
         title="Choose a type"
-        maxHeight="80%"
+        maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         onClose={onClose}

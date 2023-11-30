@@ -1,0 +1,109 @@
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useMemo } from "react";
+import { Dialog } from "react-native-simple-dialogs";
+import theme from "theme";
+
+import Button from "components/Button";
+import Divider from "components/Divider";
+import Typography from "components/Typography";
+import styled from "styled-components/native";
+import { getDifferentColor } from "utils/getDifferentColor";
+
+type Props = {
+  isDialogVisible: boolean;
+  message: string;
+  title?: string;
+  isDeletion?: boolean;
+  onConfirm: () => void;
+  onDeny?: () => void;
+  setIsDialogVisible: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const ConfirmAlert = ({
+  isDialogVisible,
+  message,
+  title = "Confirm",
+  isDeletion,
+  setIsDialogVisible,
+  onConfirm,
+  onDeny,
+}: Props): JSX.Element => {
+  const [topGradientColor, bottomGradientColor] = useMemo(() => {
+    const relevantColor = isDeletion
+      ? theme.colors.red600
+      : theme.colors.cyan600;
+
+    return [
+      getDifferentColor(relevantColor, 10),
+      getDifferentColor(relevantColor, -15),
+    ];
+  }, [isDeletion]);
+
+  return (
+    <Dialog
+      visible={isDialogVisible}
+      onTouchOutside={() => setIsDialogVisible(false)}
+      animationType="fade"
+      statusBarTranslucent
+      contentStyle={{
+        padding: 0,
+        paddingTop: 0,
+      }}
+      dialogStyle={{
+        borderRadius: 6,
+        elevation: 20,
+      }}
+    >
+      <SLinearGradient colors={[topGradientColor, bottomGradientColor]}>
+        <Typography
+          align="center"
+          fontSize="xxl"
+          fontWeight="semibold"
+          paddingBottom={10}
+          color={theme.colors.white}
+        >
+          {title}
+        </Typography>
+        <Typography align="center" fontSize="md" color={theme.colors.whitish}>
+          {message}
+        </Typography>
+        <Divider marginTop={16} marginBottom={16} />
+        <ButtonsContainer>
+          <Button
+            label="No"
+            width="46%"
+            bgColor={isDeletion ? theme.colors.red500 : undefined}
+            shouldReverseBgColor={!isDeletion}
+            onPress={() => {
+              setIsDialogVisible(false);
+              onDeny?.();
+            }}
+          />
+          <Button
+            label="Yes"
+            width="46%"
+            bgColor={isDeletion ? theme.colors.red500 : undefined}
+            shouldReverseBgColor={!isDeletion}
+            onPress={() => {
+              setIsDialogVisible(false);
+              onConfirm();
+            }}
+          />
+        </ButtonsContainer>
+      </SLinearGradient>
+    </Dialog>
+  );
+};
+
+const ButtonsContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SLinearGradient = styled(LinearGradient)`
+  padding: 20px;
+  border-radius: 6px;
+`;
+
+export default ConfirmAlert;

@@ -1,15 +1,28 @@
+import { LinearGradient } from "expo-linear-gradient";
 import isEqual from "lodash.isequal";
 import { isNil } from "ramda";
-import React, { FC, useCallback, useMemo, useRef, useState } from "react";
-import { Alert, GestureResponderEvent } from "react-native";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { GestureResponderEvent, ScrollView } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
-import { Shadow } from "react-native-shadow-2";
+import Toast from "react-native-toast-message";
 import theme from "theme";
 
-import { RouteProp } from "@react-navigation/native";
+import { EventArg, RouteProp } from "@react-navigation/native";
+import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import logging from "config/logging";
+import {
+  BG_GRADIENT_COLORS,
+  BG_GRADIENT_LOCATIONS,
+} from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
@@ -17,6 +30,7 @@ import { RootStackParamList, Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
 import CategoriesSelector from "../components/labels/CategoriesSelector";
@@ -40,6 +54,7 @@ import { deleteImagesFromS3 } from "../modules/s3";
 import { notesApi } from "../NotesApi";
 import { getLabels } from "../NotesSlice";
 import { Note, UpdateNoteRequest } from "../types";
+import { cleanHtml } from "../util/cleanHtml";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 
 const contentContainerStyle = {
@@ -47,9 +62,25 @@ const contentContainerStyle = {
   paddingBottom: 70,
 };
 
+type NavigationAction = Readonly<{
+  type: string;
+  payload?: object | undefined;
+  source?: string | undefined;
+  target?: string | undefined;
+}>;
+
+type BeforeRemoveEvent = EventArg<
+  "beforeRemove",
+  true,
+  {
+    action: NavigationAction;
+  }
+>;
+
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
+  const [fetchNotes] = notesApi.useLazyFetchNotesQuery();
   const [updateNote] = notesApi.useUpdateNoteMutation();
   const [createNote] = notesApi.useCreateNoteMutation();
   const [deleteNote] = notesApi.useDeleteNoteMutation();
@@ -105,7 +136,15 @@ const EditNoteScreen: FC<{
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
+  const [isLeaveDialogVisible, setIsLeaveDialogVisible] = useState(false);
+  const [leaveNavigationAction, setLeaveNavigationAction] =
+    useState<NavigationAction | null>(null);
+
   const richTextRef = useRef<RichEditor | null>(null);
+  const scrollViewRef = useRef<ScrollView | null>(null);
+
+  const cleanedHtml = useMemo(() => cleanHtml(contentHTML), [contentHTML]);
 
   const currentType = useMemo(
     () =>
@@ -128,7 +167,7 @@ const EditNoteScreen: FC<{
     ...initialNote,
     author: userId,
     title: currentTitle.trim(),
-    content: contentHTML.trim(),
+    content: cleanedHtml.trim(),
     color: currentColor,
     startDate: currentStartDate,
     rating: currentImportance,
@@ -192,23 +231,35 @@ const EditNoteScreen: FC<{
       if (isNewNote) {
         const response = await createNote(updateNoteData).unwrap();
 
-        if (withAlert && response.note) {
+        if (response.note) {
+          const notesResponse = await fetchNotes(userId).unwrap();
+
+          const newNoteId = response.note._id;
+
+          const newNoteIndex = notesResponse.notes.findIndex(
+            (item) => item._id === newNoteId,
+          );
+
           navigation.replace(Routes.EDIT_NOTE, {
-            item: { ...newNote, _id: response.note._id },
+            item: { ...newNote, _id: newNoteId },
+            index: newNoteIndex,
           });
         }
       } else {
         await updateNote(updateNoteData);
+        await fetchNotes(userId);
       }
 
       if (withAlert) {
-        Alert.alert(
-          "Success",
-          `The note is ${isNewNote ? "created" : "updated"}`,
-        );
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `The note is ${isNewNote ? "created" : "updated"}`,
+        });
       }
     } catch (error) {
       logging.error(error);
+      alertError();
       addCrashlyticsLog(error as string);
     } finally {
       // The save btn doesn't change its state without using timeout(for some reason)
@@ -221,37 +272,37 @@ const EditNoteScreen: FC<{
   const deleteNoteHandler = useCallback(async () => {
     if (!_id) return;
 
-    Alert.alert(
-      "Are you sure you want to delete this note?",
-      "It will delete the note permanently. This action cannot be undone",
-      [
-        { text: "No" },
-        {
-          text: "Yes",
-          onPress: async () => {
-            try {
-              logUserEvent(CustomUserEvents.DELETE_NOTE, { noteId: _id });
-              addCrashlyticsLog(`User tries to delete the note ${_id}`);
-              setIsDeleting(true);
-              await deleteNote(_id);
+    try {
+      logUserEvent(CustomUserEvents.DELETE_NOTE, { noteId: _id });
+      addCrashlyticsLog(`User tries to delete the note ${_id}`);
+      setIsDeleting(true);
+      await deleteNote(_id);
+      await fetchNotes(userId);
 
-              const imagesUrlsToDelete = currentImages
-                .map((image) => image.url)
-                .filter((image) => !image.startsWith("file"));
+      const imagesUrlsToDelete = currentImages
+        .map((image) => image.url)
+        .filter((image) => !image.startsWith("file"));
 
-              await deleteImagesFromS3(imagesUrlsToDelete);
-              Alert.alert("Success", "The note is deleted");
-              navigation.navigate(Routes.NOTES);
-            } catch (error) {
-              logging.error(error);
-            } finally {
-              setIsDeleting(false);
-            }
-          },
-        },
-      ],
-    );
-  }, [_id, currentImages, deleteNote, navigation]);
+      await deleteImagesFromS3(imagesUrlsToDelete);
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "The note is deleted",
+      });
+
+      setTimeout(() => {
+        navigation.replace(Routes.NOTES);
+      }, 1000);
+    } catch (error) {
+      logging.error(error);
+      alertError();
+    } finally {
+      setIsDeleting(false);
+    }
+
+    // "It will delete the note permanently. This action cannot be undone",
+  }, [_id, currentImages, deleteNote, fetchNotes, navigation, userId]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
@@ -271,61 +322,70 @@ const EditNoteScreen: FC<{
     [childrenIds],
   );
 
-  const onBackPress = () => {
-    if (!hasChanges) return navigation.goBack();
+  useEffect(() => {
+    const callback = (e: BeforeRemoveEvent) => {
+      if (!hasChanges || isLeaveDialogVisible) {
+        return;
+      }
 
-    Alert.alert("You have unsaved changes", "Do you want to save them?", [
-      { text: "Cancel", isPreferred: true },
-      { text: "No", onPress: navigation.goBack },
-      {
-        text: "Yes",
-        onPress: () => {
-          saveNoteHandler(undefined, false);
-          navigation.goBack();
-        },
-      },
-    ]);
-  };
+      e.preventDefault();
+
+      setIsLeaveDialogVisible(true);
+      setLeaveNavigationAction(e.data.action);
+    };
+
+    navigation.addListener("beforeRemove", callback);
+
+    return () => {
+      navigation.removeListener("beforeRemove", callback);
+    };
+  }, [navigation, hasChanges, isLeaveDialogVisible]);
 
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
-        withBackArrow
         title={`${isNewNote ? "Create" : "Edit"} note`}
-        onBackArrowPress={onBackPress}
+        onBackArrowPress={navigation.goBack}
+        withAddBtn={!isNewNote}
+        withBackArrow
       />
-      <SScrollView
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-        contentContainerStyle={contentContainerStyle}
+      <SLinearGradient
+        locations={BG_GRADIENT_LOCATIONS}
+        colors={BG_GRADIENT_COLORS}
       >
-        <HeaderSection>
-          <ButtonGroup>
-            <StarButton
-              isStarred={isStarred}
-              isDisabled={isLocked}
-              setIsStarred={setIsStarred}
-            />
-            {!isNewNote && (
-              <LockButton
-                isLocked={isLocked}
-                hasChanges={
-                  hasChangesIfIgnoreLocked || (!isLocked && !savedNote.isLocked)
-                }
-                setIsLocked={setIsLocked}
-                saveNoteHandler={saveNoteHandler}
+        <SScrollView
+          ref={scrollViewRef}
+          bounces={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+          contentContainerStyle={contentContainerStyle}
+        >
+          <HeaderSection>
+            <ButtonGroup>
+              <StarButton
+                isStarred={isStarred}
+                isDisabled={isLocked}
+                setIsStarred={setIsStarred}
               />
-            )}
-          </ButtonGroup>
-          <SavingStatusLabel
-            isSaving={isSaving}
-            isLocked={isLocked}
-            hasChanges={hasChanges}
-          />
-        </HeaderSection>
-        <StyledDropShadow distance={10} offset={[0, 5]} startColor="#00000010">
+              {!isNewNote && (
+                <LockButton
+                  isLocked={isLocked}
+                  hasChanges={
+                    hasChangesIfIgnoreLocked ||
+                    (!isLocked && !savedNote.isLocked)
+                  }
+                  setIsLocked={setIsLocked}
+                  saveNoteHandler={saveNoteHandler}
+                />
+              )}
+            </ButtonGroup>
+            <SavingStatusLabel
+              isSaving={isSaving}
+              isLocked={isLocked}
+              hasChanges={hasChanges}
+            />
+          </HeaderSection>
           <Container
             isLocked={isLocked}
             shouldDisplayNeighboringNotes={shouldDisplayNeighboringNotes}
@@ -333,6 +393,7 @@ const EditNoteScreen: FC<{
             <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
               <TitleInput
                 currentTitle={currentTitle}
+                isNewNote={!!isNewNote}
                 setCurrentTitle={setCurrentTitle}
               />
               <DatePicker
@@ -340,7 +401,7 @@ const EditNoteScreen: FC<{
                 setCurrentStartDate={setCurrentStartDate}
               />
               <Section>
-                <WordsCountLabel contentHTML={contentHTML} />
+                <WordsCountLabel contentHTML={cleanedHtml} />
                 <ImagePicker
                   noteId={currentNote._id}
                   setCurrentImages={setCurrentImages}
@@ -369,6 +430,7 @@ const EditNoteScreen: FC<{
               <TextEditor
                 initialContentHtml={content}
                 richTextRef={richTextRef}
+                scrollViewRef={scrollViewRef}
                 containerRef={(component) => {
                   if (component && !isChildrenIdsSet) {
                     setChildrenIds(getAllChildrenIds(component));
@@ -384,7 +446,7 @@ const EditNoteScreen: FC<{
                 isNewNote={!!isNewNote}
                 isLocked={isLocked}
                 saveNote={saveNoteHandler}
-                deleteNote={deleteNoteHandler}
+                deleteNote={() => setIsDeleteDialogVisible(true)}
               />
             </FormContentContainer>
             <ImagesSection
@@ -396,27 +458,51 @@ const EditNoteScreen: FC<{
               <NeighboringNotesLinks index={index} />
             )}
           </Container>
-        </StyledDropShadow>
-        <Typography fontSize="lg" paddingBottom={8}>
-          Preview
-        </Typography>
-        <NoteBody
-          title={currentTitle}
-          rating={currentImportance}
-          color={currentColor}
-          type={currentType}
-          category={currentCategories}
-          content={contentHTML}
-          isStarred={isStarred}
-          startDate={currentStartDate}
-          images={currentImages}
-        />
-      </SScrollView>
+          <Typography fontSize="lg" paddingBottom={8}>
+            Preview
+          </Typography>
+          <NoteBody
+            title={currentTitle}
+            rating={currentImportance}
+            color={currentColor}
+            type={currentType}
+            category={currentCategories}
+            content={cleanedHtml}
+            isStarred={isStarred}
+            startDate={currentStartDate}
+            images={currentImages}
+          />
+        </SScrollView>
+      </SLinearGradient>
+      <ConfirmAlert
+        message="Are you sure you want to delete this note?"
+        isDeletion
+        isDialogVisible={isDeleteDialogVisible}
+        setIsDialogVisible={setIsDeleteDialogVisible}
+        onConfirm={deleteNoteHandler}
+      />
+      <ConfirmAlert
+        message="Do you want to save changes before leaving?"
+        isDialogVisible={isLeaveDialogVisible}
+        setIsDialogVisible={setIsLeaveDialogVisible}
+        onDeny={() =>
+          leaveNavigationAction && navigation.dispatch(leaveNavigationAction)
+        }
+        onConfirm={async () => {
+          await saveNoteHandler(undefined, false);
+
+          leaveNavigationAction && navigation.dispatch(leaveNavigationAction);
+        }}
+      />
     </Wrapper>
   );
 };
 
 const SScrollView = styled.ScrollView``;
+
+const SLinearGradient = styled(LinearGradient)`
+  flex: 1;
+`;
 
 const Wrapper = styled.View`
   flex: 1;
@@ -433,11 +519,8 @@ const Container = styled.View<{
   background-color: ${theme.colors.white};
   border-radius: 6px;
   margin-bottom: 20px;
+  elevation: 16;
   ${({ isLocked }) => isLocked && `border: 1px solid ${theme.colors.cyan600};`}
-`;
-
-const StyledDropShadow = styled(Shadow)`
-  width: 100%;
 `;
 
 const FormContentContainer = styled.View``;

@@ -25,6 +25,7 @@ type Props = {
   selectTextOnFocus?: boolean;
   multiline?: boolean;
   withBorder?: boolean;
+  withAutoFocus?: boolean;
   labelColor?: string;
   fontWeight?: keyof typeof theme.fonts;
   fontSize?: keyof typeof theme.fontSizes;
@@ -57,6 +58,7 @@ const Input = ({
   selectTextOnFocus,
   labelColor = theme.colors.darkBlueText,
   withBorder = true,
+  withAutoFocus,
   multiline,
   maxWidth,
   numberOfLines = 1,
@@ -113,7 +115,10 @@ const Input = ({
         selectTextOnFocus={selectTextOnFocus}
         numberOfLines={numberOfLines}
         multiline={multiline}
+        cursorColor={theme.colors.cyan600}
+        autoCorrect={false}
         labelColor={labelColor}
+        autoFocus={withAutoFocus}
         onChangeText={onChange}
         onSubmitEditing={onSubmitEditing}
         onBlur={handleInputBlur}

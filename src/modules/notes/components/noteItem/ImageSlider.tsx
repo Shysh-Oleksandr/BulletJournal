@@ -15,10 +15,11 @@ const cardWidth = screenWidth - HORIZONTAL_FORM_PADDING * 2;
 const halfCardWidth = cardWidth / 2;
 
 type Props = {
+  bgColor: string;
   images?: Image[];
 };
 
-const ImageSlider = ({ images }: Props): JSX.Element | null => {
+const ImageSlider = ({ bgColor, images }: Props): JSX.Element | null => {
   if (!images || !images.length) return null;
 
   const isOneImage = images.length === 1;
@@ -38,7 +39,11 @@ const ImageSlider = ({ images }: Props): JSX.Element | null => {
     >
       <Cont>
         {images.map(({ _id, url }, index, array) => (
-          <ImageContainer key={_id} isLast={index === array.length - 1}>
+          <ImageContainer
+            key={_id}
+            bgColor={bgColor}
+            isLast={index === array.length - 1}
+          >
             <FastImage
               style={{
                 width: isOneImage ? cardWidth : halfCardWidth,
@@ -54,13 +59,17 @@ const ImageSlider = ({ images }: Props): JSX.Element | null => {
   );
 };
 
-const ImagesContainer = styled.ScrollView``;
+const ImagesContainer = styled.ScrollView`
+  margin-bottom: -1px;
+`;
 
 const Cont = styled.View`
   flex-direction: row;
   align-center: center;
 `;
 
-const ImageContainer = styled.View<{ isLast: boolean }>``;
+const ImageContainer = styled.View<{ isLast: boolean; bgColor: string }>`
+  background-color: ${({ bgColor }) => bgColor};
+`;
 
 export default React.memo(ImageSlider);

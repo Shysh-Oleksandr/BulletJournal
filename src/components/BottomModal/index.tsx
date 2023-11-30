@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import Toast from "react-native-toast-message";
 import theme from "theme";
 
 import Divider from "components/Divider";
@@ -140,6 +141,7 @@ const BottomModal = ({
           </>
         )}
       </SContentContainer>
+      <Toast topOffset={60} visibilityTime={2000} />
     </AnimatedModalContainer>
   );
 };

@@ -16,7 +16,7 @@ type Props = {
   hasNoChanges: boolean;
   isLocked: boolean;
   saveNote: () => Promise<void>;
-  deleteNote: () => Promise<void>;
+  deleteNote: () => void;
 };
 
 const NoteActionButtons = ({

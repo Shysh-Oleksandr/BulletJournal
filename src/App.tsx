@@ -5,6 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -71,6 +72,7 @@ export default function App() {
           <Container onLayout={onLayoutRootView}>
             <Nav />
           </Container>
+          <Toast topOffset={105} visibilityTime={2000} />
         </SafeAreaProvider>
       </Provider>
     </ThemeProvider>

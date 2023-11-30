@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
+import { Dimensions } from "react-native";
 import WheelColorPicker from "react-native-wheel-color-picker";
 
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -7,9 +8,17 @@ import CustomModal from "components/CustomModal";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
-import { getDifferentColor } from "utils/getDifferentColor";
+import { getShadedColor } from "utils/getDifferentColor";
 
 import FormLabel from "./FormLabel";
+
+const screenHeight = Dimensions.get("window").height;
+
+const isSmallScreen = screenHeight < 700;
+const isBigScreen = screenHeight > 800;
+
+const regularModalHeight = isSmallScreen ? "55%" : "45%";
+const modalHeight = isBigScreen ? "40%" : regularModalHeight;
 
 type Props = {
   currentColor: string;
@@ -30,12 +39,8 @@ const ColorPicker = ({
 }: Props): JSX.Element => {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
-  const showPicker = () => {
-    setIsPickerVisible(true);
-  };
-
   const additionalIconColor = useMemo(
-    () => getDifferentColor(currentColor, 80),
+    () => getShadedColor(currentColor, 80),
     [currentColor],
   );
 
@@ -50,6 +55,10 @@ const ColorPicker = ({
     () => debounce(onColorChange, 200),
     [onColorChange],
   );
+
+  const showPicker = () => {
+    setIsPickerVisible(true);
+  };
 
   return (
     <Section isFormItem={isFormItem}>
@@ -77,6 +86,7 @@ const ColorPicker = ({
       <CustomModal
         isVisible={isPickerVisible}
         setIsVisible={setIsPickerVisible}
+        height={modalHeight}
       >
         <PickerContainer>
           <WheelColorPicker
