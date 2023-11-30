@@ -80,6 +80,7 @@ type BeforeRemoveEvent = EventArg<
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
+  const [fetchNotes] = notesApi.useLazyFetchNotesQuery();
   const [updateNote] = notesApi.useUpdateNoteMutation();
   const [createNote] = notesApi.useCreateNoteMutation();
   const [deleteNote] = notesApi.useDeleteNoteMutation();
@@ -230,14 +231,23 @@ const EditNoteScreen: FC<{
       if (isNewNote) {
         const response = await createNote(updateNoteData).unwrap();
 
-        if (withAlert && response.note) {
+        if (response.note) {
+          const notesResponse = await fetchNotes(userId).unwrap();
+
+          const newNoteId = response.note._id;
+
+          const newNoteIndex = notesResponse.notes.findIndex(
+            (item) => item._id === newNoteId,
+          );
+
           navigation.replace(Routes.EDIT_NOTE, {
-            item: { ...newNote, _id: response.note._id },
-            //  TODO: Pass index and fetch notes manually
+            item: { ...newNote, _id: newNoteId },
+            index: newNoteIndex,
           });
         }
       } else {
         await updateNote(updateNoteData);
+        await fetchNotes(userId);
       }
 
       if (withAlert) {
@@ -267,6 +277,7 @@ const EditNoteScreen: FC<{
       addCrashlyticsLog(`User tries to delete the note ${_id}`);
       setIsDeleting(true);
       await deleteNote(_id);
+      await fetchNotes(userId);
 
       const imagesUrlsToDelete = currentImages
         .map((image) => image.url)
@@ -291,7 +302,7 @@ const EditNoteScreen: FC<{
     }
 
     // "It will delete the note permanently. This action cannot be undone",
-  }, [_id, currentImages, deleteNote, navigation]);
+  }, [_id, currentImages, deleteNote, fetchNotes, navigation, userId]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
