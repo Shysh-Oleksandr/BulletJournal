@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -40,6 +47,12 @@ const CategoriesSelector = ({
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedCategories, setSearchedCategories] = useState<CustomLabel[]>(
+    [],
+  );
+  const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
@@ -124,6 +137,25 @@ const CategoriesSelector = ({
     setEditingItemId(null);
   }, []);
 
+  const searchCategories = useCallback(() => {
+    setSearchedCategories(
+      categories.filter((item) =>
+        item.labelName.toLowerCase().includes(trimmedSearchQuery),
+      ),
+    );
+  }, [categories, trimmedSearchQuery]);
+
+  const searchCategoriesDebouncer = useMemo(
+    () => debounce(searchCategories, 300),
+    [searchCategories],
+  );
+
+  useEffect(() => {
+    if (!trimmedSearchQuery) return;
+
+    searchCategoriesDebouncer();
+  }, [searchCategoriesDebouncer, trimmedSearchQuery]);
+
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
@@ -143,9 +175,10 @@ const CategoriesSelector = ({
           allLabels={categories}
           isCategoryLabel
           onCreate={onCreate}
+          setSearchQuery={setSearchQuery}
         />
         <KeyboardAwareFlatList
-          data={categories}
+          data={trimmedSearchQuery ? searchedCategories : categories}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={ItemSeparatorComponent}

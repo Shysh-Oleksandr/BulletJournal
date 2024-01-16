@@ -22,6 +22,7 @@ declare module "styled-components/native" {
       green600: string;
     };
     fontSizes: {
+      xxxl: number;
       xxl: number;
       xl: number;
       lg: number;

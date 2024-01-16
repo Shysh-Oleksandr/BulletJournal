@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import theme from "theme";
 
 import Typography from "components/Typography";
@@ -12,8 +12,10 @@ type Props = {
 };
 
 const NoteLabel = ({ label, color, isLast }: Props): JSX.Element => {
-  const labelBgColor = getDifferentColor(color, 12);
-  const textColor = getDifferentColor(color, 100);
+  const [labelBgColor, textColor] = useMemo(
+    () => [getDifferentColor(color, 12), getDifferentColor(color, 100)],
+    [color],
+  );
 
   return (
     <LabelItemContainer bgColor={labelBgColor} isLast={isLast}>

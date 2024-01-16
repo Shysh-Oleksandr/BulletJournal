@@ -21,7 +21,8 @@ const theme: DefaultTheme = {
     green600: "#16a34a",
   },
   fontSizes: {
-    xxl: 24,
+    xxxl: 28,
+    xxl: 22,
     xl: 20,
     lg: 18,
     md: 16,

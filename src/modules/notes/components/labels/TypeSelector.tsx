@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -40,6 +47,10 @@ const TypeSelector = ({
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedTypes, setSearchedTypes] = useState<CustomLabel[]>([]);
+  const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
@@ -116,6 +127,25 @@ const TypeSelector = ({
     setEditingItemId(null);
   }, []);
 
+  const searchTypes = useCallback(() => {
+    setSearchedTypes(
+      types.filter((item) =>
+        item.labelName.toLowerCase().includes(trimmedSearchQuery),
+      ),
+    );
+  }, [types, trimmedSearchQuery]);
+
+  const searchTypesDebouncer = useMemo(
+    () => debounce(searchTypes, 300),
+    [searchTypes],
+  );
+
+  useEffect(() => {
+    if (!trimmedSearchQuery) return;
+
+    searchTypesDebouncer();
+  }, [searchTypesDebouncer, trimmedSearchQuery]);
+
   return (
     <Section>
       <SelectedTypeContainer onPress={openModal}>
@@ -131,9 +161,13 @@ const TypeSelector = ({
         setCloseTriggered={setCloseTriggered}
         withCloseButtonDivider={false}
       >
-        <AddLabelInput allLabels={types} onCreate={onCreate} />
+        <AddLabelInput
+          setSearchQuery={setSearchQuery}
+          allLabels={types}
+          onCreate={onCreate}
+        />
         <KeyboardAwareFlatList
-          data={types}
+          data={trimmedSearchQuery ? searchedTypes : types}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={ItemSeparatorComponent}
