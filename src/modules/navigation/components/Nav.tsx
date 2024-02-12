@@ -12,6 +12,7 @@ import { IS_ANDROID } from "modules/app/constants";
 import { getIsAuthenticated, getUserData } from "modules/auth/AuthSlice";
 import SignIn from "modules/auth/screens/SignIn";
 import EditNoteScreen from "modules/notes/screens/EditNoteScreen";
+import SearchScreen from "modules/notes/screens/SearchScreen";
 import { useAppSelector } from "store/helpers/storeHooks";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
@@ -79,6 +80,7 @@ const Nav = (): JSX.Element => {
           <>
             <Stack.Screen name={Routes.NOTES} component={NotesScreen} />
             <Stack.Screen name={Routes.EDIT_NOTE} component={EditNoteScreen} />
+            <Stack.Screen name={Routes.SEARCH} component={SearchScreen} />
           </>
         )}
       </Stack.Navigator>

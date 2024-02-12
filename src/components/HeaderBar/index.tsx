@@ -1,21 +1,20 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "theme";
 
-import { AntDesign, Entypo } from "@expo/vector-icons";
-import ConfirmAlert from "components/ConfirmAlert";
+import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
-import { logout } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { getEmptyNote } from "modules/notes/util/getEmptyNote";
-import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
 import LogoIcon from "../../../assets/images/icon.png";
+
+import LogoutBtn from "./components/LogoutBtn";
 
 export const BUTTON_HIT_SLOP = { top: 15, bottom: 15, left: 20, right: 20 };
 
@@ -32,6 +31,7 @@ type Props = {
   bgColor?: string;
   withLogo?: boolean;
   withLogoutBtn?: boolean;
+  withSearch?: boolean;
   withAddBtn?: boolean;
   onBackArrowPress?: () => void;
   onLogoPress?: () => void;
@@ -46,6 +46,7 @@ const HeaderBar = ({
   bgColor = theme.colors.cyan700,
   withLogo,
   withLogoutBtn,
+  withSearch,
   withAddBtn,
   onBackArrowPress,
   onLogoPress,
@@ -53,9 +54,6 @@ const HeaderBar = ({
   const insets = useSafeAreaInsets();
 
   const navigation = useAppNavigation();
-  const dispatch = useAppDispatch();
-
-  const [isDialogVisible, setIsDialogVisible] = useState(false);
 
   const distanceFromTheTop = IS_ANDROID
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
@@ -107,14 +105,15 @@ const HeaderBar = ({
           >
             {title}
           </Title>
-          {withLogoutBtn && (
-            <LogoutButtonContainer
-              onPress={() => setIsDialogVisible(true)}
+          {withSearch && (
+            <SearchButtonContainer
+              onPress={() => navigation.navigate(Routes.SEARCH)}
               hitSlop={SMALL_BUTTON_HIT_SLOP}
             >
-              <Entypo name="log-out" size={24} color={theme.colors.white} />
-            </LogoutButtonContainer>
+              <Ionicons name="search" size={26} color={theme.colors.white} />
+            </SearchButtonContainer>
           )}
+          {withLogoutBtn && <LogoutBtn />}
           {withAddBtn && (
             <AddNoteButtonContainer
               onPress={() => {
@@ -130,12 +129,6 @@ const HeaderBar = ({
           )}
         </HeaderWrapper>
       </LinearGradient>
-      <ConfirmAlert
-        message="Are you sure you want to logout?"
-        isDialogVisible={isDialogVisible}
-        setIsDialogVisible={setIsDialogVisible}
-        onConfirm={() => dispatch(logout())}
-      />
     </Container>
   );
 };
@@ -181,12 +174,10 @@ const LogoContainer = styled.TouchableOpacity`
   margin-left: 5px;
 `;
 
-const LogoutButtonContainer = styled.TouchableOpacity`
-  background-color: ${theme.colors.cyan600};
-  border-radius: 6px;
-  padding: 7px 9px 7px 12px;
+const SearchButtonContainer = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
+  padding-right: 20px;
 `;
 
 const AddNoteButtonContainer = styled.TouchableOpacity`
