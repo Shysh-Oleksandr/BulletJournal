@@ -1,16 +1,11 @@
-import debounce from "lodash.debounce";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import theme from "theme";
 
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import Typography from "components/Typography";
-import {
-  getNotes,
-  getCustomTypes,
-  getCustomCategories,
-} from "modules/notes/NotesSlice";
+import { getCustomCategories, getCustomTypes } from "modules/notes/NotesSlice";
 import { Note } from "modules/notes/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
@@ -19,16 +14,8 @@ import { getPluralLabel } from "utils/getPluralLabel";
 import NoteSeparator from "../noteItem/NoteSeparator";
 
 import FilterName from "./FilterName";
-
-const ALL_TYPE_ID = "ALL_TYPE_ID";
-const ALL_CATEGORY_ID = "ALL_CATEGORY_ID";
-
-const sortOptions = {
-  NEWEST: "Newest",
-  OLDEST: "Oldest",
-  BY_RATING: "By rating",
-  BY_WORDS: "By words",
-};
+import { sortOptions, useSearchNotes } from "./hooks";
+import { ALL_CATEGORY_ID, ALL_TYPE_ID } from "./hooks/useSearchNotes";
 
 type Props = {
   searchedNotes: Note[];
@@ -36,152 +23,39 @@ type Props = {
 };
 
 const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
-  const allNotes = useAppSelector(getNotes);
-
   const types = useAppSelector(getCustomTypes);
   const categories = useAppSelector(getCustomCategories);
 
   const [searchQuery, setSearchQuery] = useState("");
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
-  const [activeTypesIds, setActiveTypesIds] = useState<string[]>([ALL_TYPE_ID]);
-  const [activeCategoriesIds, setActiveCategoriesIds] = useState<string[]>([
-    ALL_CATEGORY_ID,
-  ]);
   const [activeSortOption, setActiveSortOption] = useState(sortOptions.NEWEST);
   const [starredFilter, setStarredFilter] = useState(false);
   const [imagesFilter, setImagesFilter] = useState(false);
 
+  const { activeCategoriesIds, activeTypesIds, onLabelPress } = useSearchNotes({
+    searchQuery,
+    activeSortOption,
+    starredFilter,
+    imagesFilter,
+    onSearch,
+  });
+
+  const firstNoteDateElement = useMemo(
+    () =>
+      searchedNotes.length > 0 ? (
+        <NoteSeparator
+          leadingItem={searchedNotes[0]}
+          trailingItem={searchedNotes[0]}
+          isFirstItem
+        />
+      ) : undefined,
+    [searchedNotes],
+  );
+
   const onChange = (text: string) => {
     setSearchQuery(text);
   };
-
-  const onLabelPress = useCallback(
-    (labelId: string, isTypeLabel = true) => {
-      const state = isTypeLabel ? activeTypesIds : activeCategoriesIds;
-      const setter = isTypeLabel ? setActiveTypesIds : setActiveCategoriesIds;
-      const allLabelId = isTypeLabel ? ALL_TYPE_ID : ALL_CATEGORY_ID;
-
-      if (labelId === allLabelId) {
-        setter([allLabelId]);
-
-        return;
-      }
-
-      if (state.includes(labelId)) {
-        setter((prev) => {
-          const filteredLabels = prev.filter((item) => item !== labelId);
-
-          if (!filteredLabels.length) return [allLabelId];
-
-          return filteredLabels;
-        });
-
-        return;
-      }
-
-      if (state.includes(allLabelId)) {
-        setter((prev) => [
-          ...prev.filter((item) => item !== allLabelId),
-          labelId,
-        ]);
-
-        return;
-      }
-
-      setter((prev) => [...prev, labelId]);
-    },
-    [activeCategoriesIds, activeTypesIds],
-  );
-
-  const firstNoteDateElement =
-    searchedNotes.length > 0 ? (
-      <NoteSeparator
-        leadingItem={searchedNotes[0]}
-        trailingItem={searchedNotes[0]}
-        isFirstItem
-      />
-    ) : undefined;
-
-  const searchCategories = useCallback(() => {
-    const filteredNotes = allNotes
-      .filter((item) => {
-        const titleFilter = item.title
-          .toLowerCase()
-          .includes(trimmedSearchQuery.toLowerCase());
-        const typesFilter =
-          activeTypesIds.includes(ALL_TYPE_ID) ||
-          (item.type?._id && activeTypesIds.includes(item.type._id));
-
-        const categoriesFilter =
-          activeCategoriesIds.includes(ALL_CATEGORY_ID) ||
-          item.category.some((categoryItem) =>
-            activeCategoriesIds.includes(categoryItem._id),
-          );
-
-        const _starredFilter = !starredFilter || item.isStarred;
-        const _imagesFilter = !imagesFilter || item.images.length > 0;
-
-        return (
-          titleFilter &&
-          typesFilter &&
-          categoriesFilter &&
-          _starredFilter &&
-          _imagesFilter
-        );
-      })
-      .slice()
-      .sort((a, b) => {
-        switch (activeSortOption) {
-          case sortOptions.OLDEST:
-            return a.startDate - b.startDate;
-
-          case sortOptions.BY_RATING:
-            return b.rating - a.rating;
-
-          case sortOptions.BY_WORDS:
-            return b.content.length - a.content.length;
-
-          default:
-            return b.startDate - a.startDate;
-        }
-      });
-
-    onSearch(filteredNotes);
-  }, [
-    allNotes,
-    onSearch,
-    trimmedSearchQuery,
-    activeTypesIds,
-    activeCategoriesIds,
-    starredFilter,
-    imagesFilter,
-    activeSortOption,
-  ]);
-
-  const searchNotesDebouncer = useMemo(
-    () => debounce(searchCategories, 500),
-    [searchCategories],
-  );
-
-  // TODO: optimize it
-  useEffect(() => {
-    if (
-      !trimmedSearchQuery &&
-      !activeTypesIds.length &&
-      !activeCategoriesIds.length &&
-      !activeSortOption
-    )
-      return;
-
-    searchNotesDebouncer();
-  }, [
-    activeCategoriesIds.length,
-    activeSortOption,
-    activeTypesIds.length,
-    searchNotesDebouncer,
-    trimmedSearchQuery,
-  ]);
 
   return (
     <>
