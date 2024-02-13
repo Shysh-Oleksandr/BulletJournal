@@ -37,7 +37,8 @@
       "expo-router",
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
-      "expo-image-picker"
+      "expo-image-picker",
+      "./plugins/custom-android-styles.js"
     ],
     "experiments": {
       "typedRoutes": true
