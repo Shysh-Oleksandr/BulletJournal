@@ -49,9 +49,8 @@ const CategoriesSelector = ({
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchedCategories, setSearchedCategories] = useState<CustomLabel[]>(
-    [],
-  );
+  const [searchedCategories, setSearchedCategories] =
+    useState<CustomLabel[]>(categories);
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
@@ -115,6 +114,7 @@ const CategoriesSelector = ({
         label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
+        allLabels={categories}
         currentNoteColor={currentColor}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
@@ -126,6 +126,7 @@ const CategoriesSelector = ({
       currentCategoriesIds,
       editingItemId,
       currentColor,
+      categories,
       onChoose,
       onSelectColor,
       onEditBtnPress,
@@ -135,15 +136,21 @@ const CategoriesSelector = ({
   const onClose = useCallback(() => {
     setIsVisible(false);
     setEditingItemId(null);
+    setSearchQuery("");
   }, []);
 
-  const searchCategories = useCallback(() => {
-    setSearchedCategories(
-      categories.filter((item) =>
-        item.labelName.toLowerCase().includes(trimmedSearchQuery),
-      ),
-    );
-  }, [categories, trimmedSearchQuery]);
+  const searchCategories = useCallback(
+    (searchQuery: string) => {
+      const trimmedSearchQuery = searchQuery.trim().toLowerCase();
+
+      setSearchedCategories(
+        categories.filter((item) =>
+          item.labelName.toLowerCase().includes(trimmedSearchQuery),
+        ),
+      );
+    },
+    [categories],
+  );
 
   const searchCategoriesDebouncer = useMemo(
     () => debounce(searchCategories, 300),
@@ -151,10 +158,8 @@ const CategoriesSelector = ({
   );
 
   useEffect(() => {
-    if (!trimmedSearchQuery) return;
-
-    searchCategoriesDebouncer();
-  }, [searchCategoriesDebouncer, trimmedSearchQuery]);
+    searchCategoriesDebouncer(searchQuery);
+  }, [searchQuery, searchCategoriesDebouncer]);
 
   return (
     <Section>

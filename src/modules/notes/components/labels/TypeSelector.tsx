@@ -49,7 +49,7 @@ const TypeSelector = ({
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchedTypes, setSearchedTypes] = useState<CustomLabel[]>([]);
+  const [searchedTypes, setSearchedTypes] = useState<CustomLabel[]>(types);
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
@@ -106,6 +106,7 @@ const TypeSelector = ({
         isActive={item._id === currentTypeId}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
+        allLabels={types}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
         setTypes={setTypes}
@@ -115,6 +116,7 @@ const TypeSelector = ({
     [
       currentTypeId,
       editingItemId,
+      types,
       currentColor,
       onChoose,
       onSelectColor,
@@ -125,15 +127,21 @@ const TypeSelector = ({
   const onClose = useCallback(() => {
     setIsVisible(false);
     setEditingItemId(null);
+    setSearchQuery("");
   }, []);
 
-  const searchTypes = useCallback(() => {
-    setSearchedTypes(
-      types.filter((item) =>
-        item.labelName.toLowerCase().includes(trimmedSearchQuery),
-      ),
-    );
-  }, [types, trimmedSearchQuery]);
+  const searchTypes = useCallback(
+    (searchQuery: string) => {
+      const trimmedSearchQuery = searchQuery.trim().toLowerCase();
+
+      setSearchedTypes(
+        types.filter((item) =>
+          item.labelName.toLowerCase().includes(trimmedSearchQuery),
+        ),
+      );
+    },
+    [types],
+  );
 
   const searchTypesDebouncer = useMemo(
     () => debounce(searchTypes, 300),
@@ -141,10 +149,8 @@ const TypeSelector = ({
   );
 
   useEffect(() => {
-    if (!trimmedSearchQuery) return;
-
-    searchTypesDebouncer();
-  }, [searchTypesDebouncer, trimmedSearchQuery]);
+    searchTypesDebouncer(searchQuery);
+  }, [searchQuery, searchTypesDebouncer]);
 
   return (
     <Section>

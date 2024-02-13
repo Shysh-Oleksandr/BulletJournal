@@ -90,10 +90,10 @@ const AddLabelInput = ({
       });
     }
 
+    onCreate({ ...createLabelData, _id: newLabelId });
     setInputValue("");
     setSearchQuery?.("");
     setCurrentColor(generateRandomColor());
-    onCreate({ ...createLabelData, _id: newLabelId });
   }, [
     inputValue,
     userId,
@@ -123,6 +123,7 @@ const AddLabelInput = ({
         isCentered
         inputRef={inputRef}
         onChange={onChange}
+        onSubmitEditing={saveChanges}
         minHeight={62}
         paddingHorizontal={50}
       />
