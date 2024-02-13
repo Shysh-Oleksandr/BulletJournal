@@ -1,10 +1,11 @@
-import { isValid } from "date-fns";
-import React, { useState } from "react";
+import { isValid, parse } from "date-fns";
+import React, { useMemo, useState } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
+import { NOTE_DATE_FORMAT } from "modules/notes/data";
 import styled from "styled-components/native";
 
 import { getFormattedDate } from "../../util/getFormattedDate";
@@ -20,13 +21,13 @@ const DatePicker = ({
 }: Props): JSX.Element => {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
-  const initialDate = getFormattedDate(currentStartDate);
+  const [date, setDate] = useState(getFormattedDate(currentStartDate));
 
-  const [date, setDate] = useState(initialDate);
+  const relevantDate = useMemo(() => {
+    const dateValue = parse(date, NOTE_DATE_FORMAT, new Date());
 
-  const dateValue = new Date(date);
-
-  const relevantDate = isValid(dateValue) ? dateValue : new Date();
+    return isValid(dateValue) ? dateValue : new Date();
+  }, [date]);
 
   const showDatePicker = () => {
     setIsPickerVisible(true);

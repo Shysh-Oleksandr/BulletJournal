@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -40,6 +47,11 @@ const CategoriesSelector = ({
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedCategories, setSearchedCategories] =
+    useState<CustomLabel[]>(categories);
+  const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
@@ -102,6 +114,7 @@ const CategoriesSelector = ({
         label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
+        allLabels={categories}
         currentNoteColor={currentColor}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
@@ -113,6 +126,7 @@ const CategoriesSelector = ({
       currentCategoriesIds,
       editingItemId,
       currentColor,
+      categories,
       onChoose,
       onSelectColor,
       onEditBtnPress,
@@ -122,7 +136,30 @@ const CategoriesSelector = ({
   const onClose = useCallback(() => {
     setIsVisible(false);
     setEditingItemId(null);
+    setSearchQuery("");
   }, []);
+
+  const searchCategories = useCallback(
+    (searchQuery: string) => {
+      const trimmedSearchQuery = searchQuery.trim().toLowerCase();
+
+      setSearchedCategories(
+        categories.filter((item) =>
+          item.labelName.toLowerCase().includes(trimmedSearchQuery),
+        ),
+      );
+    },
+    [categories],
+  );
+
+  const searchCategoriesDebouncer = useMemo(
+    () => debounce(searchCategories, 300),
+    [searchCategories],
+  );
+
+  useEffect(() => {
+    searchCategoriesDebouncer(searchQuery);
+  }, [searchQuery, searchCategoriesDebouncer]);
 
   return (
     <Section>
@@ -143,9 +180,10 @@ const CategoriesSelector = ({
           allLabels={categories}
           isCategoryLabel
           onCreate={onCreate}
+          setSearchQuery={setSearchQuery}
         />
         <KeyboardAwareFlatList
-          data={categories}
+          data={trimmedSearchQuery ? searchedCategories : categories}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={ItemSeparatorComponent}

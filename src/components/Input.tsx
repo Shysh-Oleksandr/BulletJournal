@@ -35,6 +35,7 @@ type Props = {
   numberOfLines?: number;
   paddingHorizontal?: number;
   paddingVertical?: number;
+  borderRadius?: number;
   onIconPress?: () => void;
   onChange: (text: string) => void;
   onSubmitEditing?: (
@@ -66,6 +67,7 @@ const Input = ({
   minHeight = 40,
   paddingHorizontal = 20,
   paddingVertical = 8,
+  borderRadius = 0,
   onIconPress,
   onChange,
   onSubmitEditing,
@@ -93,6 +95,7 @@ const Input = ({
       withBorder={withBorder}
       maxWidth={maxWidth}
       minHeight={minHeight}
+      borderRadius={borderRadius}
     >
       {!!placeholder && !value.length && (
         <PlaceholderContainer pointerEvents="none">
@@ -143,6 +146,7 @@ const InputWrapper = styled.KeyboardAvoidingView<{
   bgColor: string;
   maxWidth?: number;
   minHeight: number;
+  borderRadius: number;
 }>`
   justify-content: center;
   align-items: center;
@@ -152,6 +156,7 @@ const InputWrapper = styled.KeyboardAvoidingView<{
   border-bottom-width: ${({ isFocused }) => (isFocused ? 3 : 2)}px;
   border-color: ${({ isFocused }) =>
     isFocused ? theme.colors.cyan400 : theme.colors.cyan200};
+  border-radius: ${({ borderRadius }) => borderRadius}px;
 
   ${({ maxWidth }) => maxWidth && `max-width: ${maxWidth}px;`}
   ${({ withBorder }) => !withBorder && `border-bottom-width: 0;`}
