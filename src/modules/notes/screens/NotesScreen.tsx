@@ -143,7 +143,7 @@ const NotesScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withLogo withLogoutBtn onLogoPress={scrollToTop} />
+      <HeaderBar withLogo withSearch withLogoutBtn onLogoPress={scrollToTop} />
       <AddButton />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}

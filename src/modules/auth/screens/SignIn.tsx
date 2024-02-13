@@ -113,7 +113,7 @@ const SignIn = (): JSX.Element => {
             height={LOGO_SIZE}
             resizeMode="contain"
           />
-          <Typography fontWeight="bold" fontSize="xxl" paddingTop={16}>
+          <Typography fontWeight="bold" fontSize="xxxl" paddingTop={16}>
             Bullet Journal
           </Typography>
           <Button
@@ -131,7 +131,7 @@ const SignIn = (): JSX.Element => {
               promptAsync();
             }}
             labelProps={{
-              fontSize: "xl",
+              fontSize: "xxl",
               fontWeight: "bold",
               paddingVertical: 12,
             }}

@@ -22,12 +22,14 @@ type Props = {
   allLabels: CustomLabel[];
   isCategoryLabel?: boolean;
   onCreate: (newLabel: CustomLabel) => void;
+  setSearchQuery?: (query: string) => void;
 };
 
 const AddLabelInput = ({
   allLabels,
   isCategoryLabel = false,
   onCreate,
+  setSearchQuery,
 }: Props): JSX.Element => {
   const [createLabel] = notesApi.useCreateLabelMutation();
 
@@ -44,6 +46,7 @@ const AddLabelInput = ({
 
   const onChange = (text: string) => {
     setInputValue(text);
+    setSearchQuery?.(text);
   };
 
   const saveChanges = useCallback(async () => {
@@ -87,9 +90,10 @@ const AddLabelInput = ({
       });
     }
 
-    setInputValue("");
-    setCurrentColor(generateRandomColor());
     onCreate({ ...createLabelData, _id: newLabelId });
+    setInputValue("");
+    setSearchQuery?.("");
+    setCurrentColor(generateRandomColor());
   }, [
     inputValue,
     userId,
@@ -98,6 +102,7 @@ const AddLabelInput = ({
     currentColor,
     createLabel,
     onCreate,
+    setSearchQuery,
     relevantLabelName,
   ]);
 
@@ -118,6 +123,7 @@ const AddLabelInput = ({
         isCentered
         inputRef={inputRef}
         onChange={onChange}
+        onSubmitEditing={saveChanges}
         minHeight={62}
         paddingHorizontal={50}
       />

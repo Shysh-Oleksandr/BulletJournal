@@ -21,6 +21,7 @@ type Props = {
   isActive: boolean;
   isEditing: boolean;
   currentNoteColor: string;
+  allLabels: CustomLabel[];
   onChoose: (typeId: string | null, shouldCloseModal?: boolean) => void;
   onEditBtnPress: (typeId: string | null) => void;
   setTypes: React.Dispatch<React.SetStateAction<CustomLabel[]>>;
@@ -32,6 +33,7 @@ const LabelItem = ({
   isActive,
   isEditing,
   currentNoteColor,
+  allLabels,
   onChoose,
   onEditBtnPress,
   setTypes,
@@ -47,6 +49,16 @@ const LabelItem = ({
   const relevantLabelName = label.isCategoryLabel ? "category" : "type";
 
   const saveChanges = useCallback(async () => {
+    if (allLabels.some((item) => item.labelName === name)) {
+      Toast.show({
+        type: "error",
+        text1: "Failure",
+        text2: `The ${relevantLabelName} "${name}" already exists`,
+      });
+
+      return;
+    }
+
     onEditBtnPress(null);
 
     if (label.color === currentColor && label.labelName === name) return;
@@ -72,13 +84,14 @@ const LabelItem = ({
       prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
   }, [
+    allLabels,
+    onEditBtnPress,
+    label,
     currentColor,
     name,
-    relevantLabelName,
-    onEditBtnPress,
-    setTypes,
-    label,
     updateLabel,
+    relevantLabelName,
+    setTypes,
   ]);
 
   const onDelete = useCallback(() => {

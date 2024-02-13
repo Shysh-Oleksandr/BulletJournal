@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -40,6 +47,10 @@ const TypeSelector = ({
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedTypes, setSearchedTypes] = useState<CustomLabel[]>(types);
+  const trimmedSearchQuery = searchQuery.trim().toLowerCase();
 
   const flatListRef = useRef<KeyboardAwareFlatList>(null);
 
@@ -95,6 +106,7 @@ const TypeSelector = ({
         isActive={item._id === currentTypeId}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
+        allLabels={types}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
         setTypes={setTypes}
@@ -104,6 +116,7 @@ const TypeSelector = ({
     [
       currentTypeId,
       editingItemId,
+      types,
       currentColor,
       onChoose,
       onSelectColor,
@@ -114,7 +127,30 @@ const TypeSelector = ({
   const onClose = useCallback(() => {
     setIsVisible(false);
     setEditingItemId(null);
+    setSearchQuery("");
   }, []);
+
+  const searchTypes = useCallback(
+    (searchQuery: string) => {
+      const trimmedSearchQuery = searchQuery.trim().toLowerCase();
+
+      setSearchedTypes(
+        types.filter((item) =>
+          item.labelName.toLowerCase().includes(trimmedSearchQuery),
+        ),
+      );
+    },
+    [types],
+  );
+
+  const searchTypesDebouncer = useMemo(
+    () => debounce(searchTypes, 300),
+    [searchTypes],
+  );
+
+  useEffect(() => {
+    searchTypesDebouncer(searchQuery);
+  }, [searchQuery, searchTypesDebouncer]);
 
   return (
     <Section>
@@ -131,9 +167,13 @@ const TypeSelector = ({
         setCloseTriggered={setCloseTriggered}
         withCloseButtonDivider={false}
       >
-        <AddLabelInput allLabels={types} onCreate={onCreate} />
+        <AddLabelInput
+          setSearchQuery={setSearchQuery}
+          allLabels={types}
+          onCreate={onCreate}
+        />
         <KeyboardAwareFlatList
-          data={types}
+          data={trimmedSearchQuery ? searchedTypes : types}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={ItemSeparatorComponent}
