@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -9,7 +10,6 @@ import { getCustomCategories, getCustomTypes } from "modules/notes/NotesSlice";
 import { Note } from "modules/notes/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
-import { getPluralLabel } from "utils/getPluralLabel";
 
 import NoteSeparator from "../noteItem/NoteSeparator";
 
@@ -23,6 +23,8 @@ type Props = {
 };
 
 const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const types = useAppSelector(getCustomTypes);
   const categories = useAppSelector(getCustomCategories);
 
@@ -62,7 +64,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
       <InputContainer>
         <Input
           value={searchQuery}
-          placeholder="Enter a note's title"
+          placeholder={t("search.enterNotesTitle")}
           isCentered
           bgColor={theme.colors.white}
           labelColor={theme.colors.darkBlueText}
@@ -82,7 +84,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         )}
       </InputContainer>
 
-      <FilterName label="Types" />
+      <FilterName label={t("search.types")} />
       <LabelsContainer>
         <LabelItemContainer
           active={activeTypesIds.includes(ALL_TYPE_ID)}
@@ -101,7 +103,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         ))}
       </LabelsContainer>
 
-      <FilterName label="Categories" />
+      <FilterName label={t("search.categories")} />
       <LabelsContainer>
         <LabelItemContainer
           active={activeCategoriesIds.includes(ALL_CATEGORY_ID)}
@@ -135,7 +137,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         ))}
       </LabelsContainer>
 
-      <FilterName label="Sort" />
+      <FilterName label={t("search.sort")} />
       <LabelsContainer>
         {Object.values(sortOptions).map((sortOption) => (
           <LabelItemContainer
@@ -156,7 +158,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
           paddingTop={10}
           paddingBottom={20}
         >
-          {getPluralLabel(searchedNotes.length, "note")} found:
+          {t("search.notesFound", { count: searchedNotes.length })}
         </Typography>
       )}
 

@@ -4,7 +4,7 @@
     "slug": "bulletjournal",
     "owner": "oleksandrshysh",
     "originalFullName": "@frankmelward/bulletjournal",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "orientation": "portrait",
     "icon": "./assets/images/mainIcon.png",
     "scheme": "com.frankmelward.bulletjournal",
@@ -15,10 +15,11 @@
       "backgroundColor": "#0891b2"
     },
     "androidStatusBar": {
-      "barStyle": "light-content",
-      "translucent": true
+      "barStyle": "light-content"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.frankmelward.bulletjournal"
@@ -29,7 +30,7 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 11,
+      "versionCode": 12,
       "googleServicesFile": "./google-services.json",
       "package": "com.frankmelward.bulletjournal"
     },
@@ -38,7 +39,8 @@
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
       "expo-image-picker",
-      "./plugins/custom-android-styles.js"
+      "./plugins/custom-android-styles.js",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

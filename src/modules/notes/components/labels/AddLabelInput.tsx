@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import Toast from "react-native-toast-message";
 import theme from "theme";
@@ -31,6 +32,8 @@ const AddLabelInput = ({
   onCreate,
   setSearchQuery,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [createLabel] = notesApi.useCreateLabelMutation();
 
   const userId = useAppSelector(getUserId);
@@ -42,7 +45,7 @@ const AddLabelInput = ({
 
   const isEmpty = !inputValue.length;
 
-  const relevantLabelName = isCategoryLabel ? "category" : "type";
+  const relevantLabelName = t(isCategoryLabel ? "note.category" : "note.type");
 
   const onChange = (text: string) => {
     setInputValue(text);
@@ -61,8 +64,11 @@ const AddLabelInput = ({
     if (allLabels.some((item) => item.labelName === label)) {
       Toast.show({
         type: "error",
-        text1: "Failure",
-        text2: `The ${relevantLabelName} "${label}" already exists`,
+        text1: t("general.failure"),
+        text2: t("note.labelAlreadyExists", {
+          relevantLabelName,
+          name,
+        }),
       });
 
       return;
@@ -85,8 +91,8 @@ const AddLabelInput = ({
     if (newLabelId) {
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: `The ${relevantLabelName} is created`,
+        text1: t("general.success"),
+        text2: t("note.labelUpdated", { relevantLabelName }),
       });
     }
 
@@ -103,6 +109,7 @@ const AddLabelInput = ({
     createLabel,
     onCreate,
     setSearchQuery,
+    t,
     relevantLabelName,
   ]);
 
@@ -119,7 +126,7 @@ const AddLabelInput = ({
       )}
       <Input
         value={inputValue}
-        placeholder={`Enter a new ${relevantLabelName}`}
+        placeholder={t("note.enterNewLabel", { relevantLabelName })}
         isCentered
         inputRef={inputRef}
         onChange={onChange}

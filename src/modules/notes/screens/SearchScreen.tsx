@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import { FlashList } from "@shopify/flash-list";
 import HeaderBar from "components/HeaderBar";
@@ -34,6 +35,8 @@ const ITEMS_PER_PAGE = 10;
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 
 const SearchScreen = (): JSX.Element => {
+  const { t } = useTranslation();
+
   const allNotes = useAppSelector(getNotes);
 
   const flashListRef = useRef<FlashList<Note>>(null);
@@ -63,10 +66,10 @@ const SearchScreen = (): JSX.Element => {
         paddingTop={10}
         align="center"
       >
-        No results found
+        {t("search.noResults")}
       </Typography>
     ),
-    [],
+    [t],
   );
 
   const loadMoreData = useCallback(() => {
@@ -99,7 +102,7 @@ const SearchScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withBackArrow withAddBtn title="Search" />
+      <HeaderBar withBackArrow withAddBtn title={t("search.search")} />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}

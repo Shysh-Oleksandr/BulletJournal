@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { GestureResponderEvent, ScrollView } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import Toast from "react-native-toast-message";
@@ -85,6 +86,7 @@ const EditNoteScreen: FC<{
   const [createNote] = notesApi.useCreateNoteMutation();
   const [deleteNote] = notesApi.useDeleteNoteMutation();
 
+  const { t } = useTranslation();
   const navigation = useAppNavigation();
 
   const userId = useAppSelector(getUserId) ?? "";
@@ -220,7 +222,7 @@ const EditNoteScreen: FC<{
 
     const updateNoteData: UpdateNoteRequest = {
       ...currentNote,
-      title: currentNote.title || "Note",
+      title: currentNote.title || t("note.Note"),
       type: currentTypeId,
       category: currentCategoriesIds,
       isLocked: shouldLock ?? currentNote.isLocked,
@@ -253,8 +255,8 @@ const EditNoteScreen: FC<{
       if (withAlert) {
         Toast.show({
           type: "success",
-          text1: "Success",
-          text2: `The note is ${isNewNote ? "created" : "updated"}`,
+          text1: t("general.success"),
+          text2: t(isNewNote ? "note.createdInfo" : "note.updatedInfo"),
         });
       }
     } catch (error) {
@@ -287,8 +289,8 @@ const EditNoteScreen: FC<{
 
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: "The note is deleted",
+        text1: t("general.success"),
+        text2: t("note.deletedInfo"),
       });
 
       setTimeout(() => {
@@ -302,7 +304,7 @@ const EditNoteScreen: FC<{
     }
 
     // "It will delete the note permanently. This action cannot be undone",
-  }, [_id, currentImages, deleteNote, fetchNotes, navigation, userId]);
+  }, [_id, currentImages, deleteNote, fetchNotes, navigation, t, userId]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
@@ -344,7 +346,9 @@ const EditNoteScreen: FC<{
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
-        title={`${isNewNote ? "Create" : "Edit"} note`}
+        title={`${isNewNote ? t("note.create") : t("note.edit")} ${t(
+          "note.note",
+        )}`}
         onBackArrowPress={navigation.goBack}
         withAddBtn={!isNewNote}
         withBackArrow
@@ -459,7 +463,7 @@ const EditNoteScreen: FC<{
             )}
           </Container>
           <Typography fontSize="lg" paddingBottom={8}>
-            Preview
+            {t("note.preview")}
           </Typography>
           <NoteBody
             title={currentTitle}
@@ -475,14 +479,14 @@ const EditNoteScreen: FC<{
         </SScrollView>
       </SLinearGradient>
       <ConfirmAlert
-        message="Are you sure you want to delete this note?"
+        message={t("note.deleteConfirmation")}
         isDeletion
         isDialogVisible={isDeleteDialogVisible}
         setIsDialogVisible={setIsDeleteDialogVisible}
         onConfirm={deleteNoteHandler}
       />
       <ConfirmAlert
-        message="Do you want to save changes before leaving?"
+        message={t("note.saveBeforeLeaving")}
         isDialogVisible={isLeaveDialogVisible}
         setIsDialogVisible={setIsLeaveDialogVisible}
         onDeny={() =>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Input from "components/Input";
 import styled from "styled-components/native";
@@ -14,6 +15,8 @@ const TitleInput = ({
   isNewNote,
   setCurrentTitle,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const onChange = (text: string) => {
     setCurrentTitle(text);
   };
@@ -23,7 +26,7 @@ const TitleInput = ({
       <Input
         value={currentTitle}
         paddingHorizontal={0}
-        placeholder="Title"
+        placeholder={t("note.title")}
         isCentered
         withAutoFocus={isNewNote}
         multiline={currentTitle.length > 30}

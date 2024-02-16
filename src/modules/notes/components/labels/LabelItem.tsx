@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 import Toast from "react-native-toast-message";
 import theme from "theme";
@@ -39,6 +40,8 @@ const LabelItem = ({
   setTypes,
   onSelectColor,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [updateLabel] = notesApi.useUpdateLabelMutation();
   const [deleteLabel] = notesApi.useDeleteLabelMutation();
 
@@ -46,14 +49,19 @@ const LabelItem = ({
   const [name, setName] = useState(label.labelName);
   const [currentColor, setCurrentColor] = useState(label.color);
 
-  const relevantLabelName = label.isCategoryLabel ? "category" : "type";
+  const relevantLabelName = t(
+    label.isCategoryLabel ? "note.category" : "note.type",
+  );
 
   const saveChanges = useCallback(async () => {
     if (allLabels.some((item) => item.labelName === name)) {
       Toast.show({
         type: "error",
-        text1: "Failure",
-        text2: `The ${relevantLabelName} "${name}" already exists`,
+        text1: t("general.failure"),
+        text2: t("note.labelAlreadyExists", {
+          relevantLabelName,
+          name,
+        }),
       });
 
       return;
@@ -76,8 +84,8 @@ const LabelItem = ({
 
     Toast.show({
       type: "success",
-      text1: "Success",
-      text2: `The ${relevantLabelName} is updated`,
+      text1: t("general.success"),
+      text2: t("note.labelUpdated", { relevantLabelName }),
     });
 
     setTypes((prev) =>
@@ -92,6 +100,7 @@ const LabelItem = ({
     updateLabel,
     relevantLabelName,
     setTypes,
+    t,
   ]);
 
   const onDelete = useCallback(() => {
@@ -106,20 +115,21 @@ const LabelItem = ({
 
     Toast.show({
       type: "success",
-      text1: "Success",
-      text2: `The ${relevantLabelName} is deleted`,
+      text1: t("general.success"),
+      text2: t("note.labelDeleted", { relevantLabelName }),
     });
 
     setTypes((prev) => prev.filter((item) => item._id !== label._id));
     deleteLabel(label._id);
   }, [
-    label._id,
     isActive,
+    label._id,
+    t,
     relevantLabelName,
-    onChoose,
     setTypes,
-    onEditBtnPress,
     deleteLabel,
+    onChoose,
+    onEditBtnPress,
   ]);
 
   const onPress = useCallback(() => {
@@ -147,7 +157,7 @@ const LabelItem = ({
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder={`Enter a ${relevantLabelName} name`}
+          placeholder={t("note.enterLabelName", { relevantLabelName })}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}

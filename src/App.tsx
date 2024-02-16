@@ -3,6 +3,7 @@ import { loadAsync } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
+import { I18nextProvider } from "react-i18next";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -14,6 +15,7 @@ import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
+import i18n from "./localization/i18n";
 import Nav from "./modules/navigation/components/Nav";
 import theme from "./theme";
 
@@ -66,15 +68,17 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Provider store={store}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="light-content" backgroundColor="transparent" />
-          <Container onLayout={onLayoutRootView}>
-            <Nav />
-          </Container>
-          <Toast topOffset={105} visibilityTime={2000} />
-        </SafeAreaProvider>
-      </Provider>
+      <I18nextProvider i18n={i18n}>
+        <Provider store={store}>
+          <SafeAreaProvider>
+            <StatusBar barStyle="light-content" backgroundColor="transparent" />
+            <Container onLayout={onLayoutRootView}>
+              <Nav />
+            </Container>
+            <Toast topOffset={105} visibilityTime={2000} />
+          </SafeAreaProvider>
+        </Provider>
+      </I18nextProvider>
     </ThemeProvider>
   );
 }

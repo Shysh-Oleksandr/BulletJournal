@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
 import WheelColorPicker from "react-native-wheel-color-picker";
 
@@ -37,6 +38,8 @@ const ColorPicker = ({
   setCurrentColor,
   onPress,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
   const additionalIconColor = useMemo(
@@ -98,7 +101,7 @@ const ColorPicker = ({
           />
         </PickerContainer>
       </CustomModal>
-      {isFormItem && <FormLabel label="Color" />}
+      {isFormItem && <FormLabel label={t("note.color")} />}
     </Section>
   );
 };

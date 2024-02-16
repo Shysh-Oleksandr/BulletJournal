@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import theme from "theme";
 
@@ -57,6 +58,8 @@ const BottomModal = ({
   setIsVisible,
   withDividerBelowHeader = true,
 }: PropsWithChildren<Props>): JSX.Element => {
+  const { t } = useTranslation();
+
   const modalHeight = useMemo(() => {
     if (maxHeight && !height) {
       return "auto";
@@ -135,7 +138,7 @@ const BottomModal = ({
               onPress={closeModal}
             >
               <Typography fontWeight="semibold" uppercase>
-                Close
+                {t("general.close")}
               </Typography>
             </CloseButtonContainer>
           </>

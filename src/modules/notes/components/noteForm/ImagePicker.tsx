@@ -1,5 +1,6 @@
 import * as ExpoImagePicker from "expo-image-picker";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -22,6 +23,8 @@ type Props = {
 };
 
 const ImagePicker = ({ noteId, setCurrentImages }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const userId = useAppSelector(getUserId);
 
   const onPress = async (isCamera = false) => {
@@ -78,7 +81,7 @@ const ImagePicker = ({ noteId, setCurrentImages }: Props): JSX.Element => {
         </ButtonContainer>
       </ButtonsContainer>
 
-      <FormLabel label="Images" />
+      <FormLabel label={t("note.images")} />
     </Section>
   );
 };

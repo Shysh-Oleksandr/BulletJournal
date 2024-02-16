@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -32,6 +33,8 @@ type Props = {
 };
 
 const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
+  const { t } = useTranslation();
+
   const navigation = useAppNavigation();
 
   const allNotes = useAppSelector(getNotes);
@@ -70,11 +73,11 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
         <LabelContainer>
           {LEFT_ICON}
           <Typography fontWeight="semibold" uppercase fontSize="sm">
-            {prevNote ? "Previous" : "Create"}
+            {t(prevNote ? "note.previous" : "note.create")}
           </Typography>
         </LabelContainer>
         <Typography fontSize="xs" numberOfLines={2}>
-          {prevNote ? prevNote.title : "A new note"}
+          {prevNote ? prevNote.title : t("note.newNote")}
         </Typography>
       </PrevNoteContainer>
       <VerticalDivider />
@@ -92,7 +95,7 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
                 uppercase
                 fontSize="sm"
               >
-                Next
+                {t("note.next")}
               </Typography>
               {RIGHT_ICON}
             </LabelContainer>
