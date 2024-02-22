@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
@@ -16,45 +17,49 @@ const DeleteItemModal: React.FC<DeleteItemModalProps> = ({
   confirmMessage,
   noHandler,
   yesHandler,
-}) => (
-  <ConfirmItemDelete>
-    <ConfirmItemDeleteMessageWrap>
-      <Typography
-        fontSize="xs"
-        fontWeight="light"
-        color={theme.colors.white}
-        lineHeight={12}
-      >
-        {warningMessage}
-      </Typography>
-      <Typography fontSize="sm" color={theme.colors.white} lineHeight={14}>
-        {confirmMessage}
-      </Typography>
-    </ConfirmItemDeleteMessageWrap>
-    <ConfirmItemDeleteButton onPress={noHandler} testID="deleteItemModalNo">
-      <Typography
-        fontSize="sm"
-        fontWeight="bold"
-        uppercase
-        color={theme.colors.red600}
-        lineHeight={17}
-      >
-        No
-      </Typography>
-    </ConfirmItemDeleteButton>
-    <ConfirmItemDeleteButton onPress={yesHandler} testID="deleteItemModalYes">
-      <Typography
-        fontSize="sm"
-        fontWeight="bold"
-        uppercase
-        color={theme.colors.red600}
-        lineHeight={17}
-      >
-        Yes
-      </Typography>
-    </ConfirmItemDeleteButton>
-  </ConfirmItemDelete>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <ConfirmItemDelete>
+      <ConfirmItemDeleteMessageWrap>
+        <Typography
+          fontSize="xs"
+          fontWeight="light"
+          color={theme.colors.white}
+          lineHeight={12}
+        >
+          {warningMessage}
+        </Typography>
+        <Typography fontSize="sm" color={theme.colors.white} lineHeight={14}>
+          {confirmMessage}
+        </Typography>
+      </ConfirmItemDeleteMessageWrap>
+      <ConfirmItemDeleteButton onPress={noHandler} testID="deleteItemModalNo">
+        <Typography
+          fontSize="sm"
+          fontWeight="bold"
+          uppercase
+          color={theme.colors.red600}
+          lineHeight={17}
+        >
+          {t("general.no")}
+        </Typography>
+      </ConfirmItemDeleteButton>
+      <ConfirmItemDeleteButton onPress={yesHandler} testID="deleteItemModalYes">
+        <Typography
+          fontSize="sm"
+          fontWeight="bold"
+          uppercase
+          color={theme.colors.red600}
+          lineHeight={17}
+        >
+          {t("general.yes")}
+        </Typography>
+      </ConfirmItemDeleteButton>
+    </ConfirmItemDelete>
+  );
+};
 
 const ConfirmItemDelete = styled.View`
   flex: 1;

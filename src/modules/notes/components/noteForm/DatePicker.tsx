@@ -5,7 +5,7 @@ import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { NOTE_DATE_FORMAT } from "modules/notes/data";
+import { NOTE_DATE_TIME_FORMAT } from "modules/notes/data";
 import styled from "styled-components/native";
 
 import { getFormattedDate } from "../../util/getFormattedDate";
@@ -24,7 +24,7 @@ const DatePicker = ({
   const [date, setDate] = useState(getFormattedDate(currentStartDate));
 
   const relevantDate = useMemo(() => {
-    const dateValue = parse(date, NOTE_DATE_FORMAT, new Date());
+    const dateValue = parse(date, NOTE_DATE_TIME_FORMAT, new Date());
 
     return isValid(dateValue) ? dateValue : new Date();
   }, [date]);

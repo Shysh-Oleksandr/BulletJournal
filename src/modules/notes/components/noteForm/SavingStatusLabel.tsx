@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -31,13 +32,15 @@ const SavingStatusLabel = ({
   hasChanges,
   isLocked,
 }: Props): JSX.Element | null => {
+  const { t } = useTranslation();
+
   const label = useMemo(() => {
-    if (isSaving) return "Saving...";
+    if (isSaving) return t("note.saving");
 
-    if (hasChanges) return "Not saved";
+    if (hasChanges) return t("note.notSaved");
 
-    return "Locked";
-  }, [hasChanges, isSaving]);
+    return t("note.locked");
+  }, [hasChanges, isSaving, t]);
 
   const Icon = useMemo(() => {
     if (isSaving) return SavingIcon;

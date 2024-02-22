@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { Animated, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import style from "styled-components";
@@ -34,6 +35,8 @@ const SwipeableItem = ({
   onPress,
   onDelete,
 }: PropsWithChildren<Props>): JSX.Element => {
+  const { t } = useTranslation();
+
   const [isRightSideSwiped, setIsRightSideSwiped] = useState(false);
   const [isLeftSideSwiped, setIsLeftSwiped] = useState(false);
 
@@ -79,13 +82,13 @@ const SwipeableItem = ({
 
     return (
       <DeleteItemModal
-        warningMessage="Are you sure?"
-        confirmMessage="Delete selected item?"
+        warningMessage={t("general.areYouSure")}
+        confirmMessage={t("note.deleteSelected")}
         yesHandler={handleDeleteSubmit}
         noHandler={() => swipeRef.current?.close()}
       />
     );
-  }, [handleDeleteSubmit, isLeftSideSwiped, isRightSideSwiped]);
+  }, [handleDeleteSubmit, isLeftSideSwiped, isRightSideSwiped, t]);
 
   return (
     <GestureHandlerRootView>

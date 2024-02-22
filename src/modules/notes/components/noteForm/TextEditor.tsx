@@ -1,5 +1,6 @@
 import debounce from "lodash.debounce";
 import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, Dimensions } from "react-native";
 import {
   RichEditor,
@@ -41,6 +42,8 @@ const TextEditor = ({
   scrollViewRef,
   setContentHTML,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const richTextHandle = useCallback(
     (text: string) => {
       setContentHTML(text);
@@ -94,7 +97,7 @@ const TextEditor = ({
       <RichEditor
         ref={richTextRef}
         onChange={richTextHandleDebouncer}
-        placeholder="Write your note here..."
+        placeholder={t("note.editorPlaceholder")}
         initialContentHTML={initialContentHtml}
         initialHeight={250}
         onCursorPosition={onCursorPosition}

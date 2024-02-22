@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
@@ -9,6 +10,8 @@ import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 const LogoutBtn = (): JSX.Element => {
+  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
@@ -22,7 +25,7 @@ const LogoutBtn = (): JSX.Element => {
         <Entypo name="log-out" size={24} color={theme.colors.white} />
       </LogoutButtonContainer>
       <ConfirmAlert
-        message="Are you sure you want to logout?"
+        message={t("auth.logoutConfirmation")}
         isDialogVisible={isDialogVisible}
         setIsDialogVisible={setIsDialogVisible}
         onConfirm={() => dispatch(logout())}

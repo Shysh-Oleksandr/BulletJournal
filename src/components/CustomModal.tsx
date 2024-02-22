@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal } from "react-native";
 
 import styled from "styled-components/native";
@@ -21,6 +22,8 @@ const CustomModal = ({
   setIsVisible,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
+  const { t } = useTranslation();
+
   const dismissModal = () => {
     setIsVisible(false);
   };
@@ -57,7 +60,7 @@ const CustomModal = ({
             <ModalFooterContainer>
               <CloseButton onPress={dismissModal} hitSlop={BUTTON_HIT_SLOP}>
                 <Typography fontWeight="bold" align="center" uppercase>
-                  Close
+                  {t("general.close")}
                 </Typography>
               </CloseButton>
             </ModalFooterContainer>

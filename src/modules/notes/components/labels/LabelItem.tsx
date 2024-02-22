@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 import Toast from "react-native-toast-message";
 import theme from "theme";
@@ -21,7 +22,6 @@ type Props = {
   isActive: boolean;
   isEditing: boolean;
   currentNoteColor: string;
-  allLabels: CustomLabel[];
   onChoose: (typeId: string | null, shouldCloseModal?: boolean) => void;
   onEditBtnPress: (typeId: string | null) => void;
   setTypes: React.Dispatch<React.SetStateAction<CustomLabel[]>>;
@@ -33,12 +33,13 @@ const LabelItem = ({
   isActive,
   isEditing,
   currentNoteColor,
-  allLabels,
   onChoose,
   onEditBtnPress,
   setTypes,
   onSelectColor,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [updateLabel] = notesApi.useUpdateLabelMutation();
   const [deleteLabel] = notesApi.useDeleteLabelMutation();
 
@@ -46,20 +47,14 @@ const LabelItem = ({
   const [name, setName] = useState(label.labelName);
   const [currentColor, setCurrentColor] = useState(label.color);
 
-  const relevantLabelName = label.isCategoryLabel ? "category" : "type";
-
   const saveChanges = useCallback(async () => {
-    if (allLabels.some((item) => item.labelName === name)) {
-      Toast.show({
-        type: "error",
-        text1: "Failure",
-        text2: `The ${relevantLabelName} "${name}" already exists`,
-      });
+    onEditBtnPress(null);
+
+    if (name.trim() === "") {
+      setName(label.labelName);
 
       return;
     }
-
-    onEditBtnPress(null);
 
     if (label.color === currentColor && label.labelName === name) return;
 
@@ -76,23 +71,16 @@ const LabelItem = ({
 
     Toast.show({
       type: "success",
-      text1: "Success",
-      text2: `The ${relevantLabelName} is updated`,
+      text1: t("general.success"),
+      text2: t(
+        label.isCategoryLabel ? "note.categoryUpdated" : "note.typeUpdated",
+      ),
     });
 
     setTypes((prev) =>
       prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
-  }, [
-    allLabels,
-    onEditBtnPress,
-    label,
-    currentColor,
-    name,
-    updateLabel,
-    relevantLabelName,
-    setTypes,
-  ]);
+  }, [onEditBtnPress, label, currentColor, name, updateLabel, setTypes, t]);
 
   const onDelete = useCallback(() => {
     if (isActive) {
@@ -106,20 +94,23 @@ const LabelItem = ({
 
     Toast.show({
       type: "success",
-      text1: "Success",
-      text2: `The ${relevantLabelName} is deleted`,
+      text1: t("general.success"),
+      text2: t(
+        label.isCategoryLabel ? "note.categoryDeleted" : "note.typeDeleted",
+      ),
     });
 
     setTypes((prev) => prev.filter((item) => item._id !== label._id));
     deleteLabel(label._id);
   }, [
-    label._id,
     isActive,
-    relevantLabelName,
-    onChoose,
+    label._id,
+    label.isCategoryLabel,
+    t,
     setTypes,
-    onEditBtnPress,
     deleteLabel,
+    onChoose,
+    onEditBtnPress,
   ]);
 
   const onPress = useCallback(() => {
@@ -147,7 +138,11 @@ const LabelItem = ({
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder={`Enter a ${relevantLabelName} name`}
+          placeholder={t(
+            label.isCategoryLabel
+              ? "note.enterCategoryName"
+              : "note.enterTypeName",
+          )}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}

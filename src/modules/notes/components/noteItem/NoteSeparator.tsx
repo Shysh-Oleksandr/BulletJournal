@@ -1,7 +1,9 @@
+import { format } from "date-fns";
 import React from "react";
 import theme from "theme";
 
 import Typography from "components/Typography";
+import { NOTE_DATE_FORMAT } from "modules/notes/data";
 import styled from "styled-components/native";
 
 import { Note } from "../../types";
@@ -19,9 +21,10 @@ const NoteSeparator = ({
 }: Props): JSX.Element | null => {
   if (!leadingItem || !trailingItem) return null;
 
-  const date = new Date(trailingItem.startDate).toDateString();
+  const date = format(new Date(trailingItem.startDate), NOTE_DATE_FORMAT);
 
-  const isTheSameDate = new Date(leadingItem.startDate).toDateString() === date;
+  const isTheSameDate =
+    format(new Date(leadingItem.startDate), NOTE_DATE_FORMAT) === date;
 
   if (isTheSameDate && !isFirstItem) return <VerticalLine />;
 
