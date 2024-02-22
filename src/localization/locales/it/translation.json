@@ -1,21 +1,21 @@
 {
   "general": {
-    "yes": "SÌ",
-    "no": "NO",
+    "yes": "Sì",
+    "no": "No",
     "close": "Chiudere",
     "confirm": "Confermare",
     "success": "Successo",
     "failure": "Fallimento",
     "somethingWrong": "Qualcosa è andato storto",
     "tryAgain": "Per favore riprova",
-    "areYouSure": "Sei sicuro?"
+    "areYouSure": "È sicuro?"
   },
   "auth": {
-    "logoutConfirmation": "Sei sicuro di voler uscire?"
+    "logoutConfirmation": "È sicuro di voler uscire?"
   },
   "note": {
     "create": "Creare",
-    "update": "Aggiornamento",
+    "update": "Aggiornare",
     "delete": "Eliminare",
     "edit": "Modificare",
     "createNote": "Crea una nota",
@@ -23,12 +23,12 @@
     "previous": "Precedente",
     "next": "Prossimo",
     "preview": "Anteprima",
-    "note": "Nota",
+    "note": "nota",
     "Note": "Nota",
     "deletedInfo": "La nota viene eliminata",
     "createdInfo": "La nota viene creata",
     "updatedInfo": "La nota è aggiornata",
-    "deleteConfirmation": "Sei sicuro di voler eliminare questa nota?",
+    "deleteConfirmation": "È sicuro di voler eliminare questa nota?",
     "saveBeforeLeaving": "Vuoi salvare le modifiche prima di uscire?",
     "saving": "Salvataggio...",
     "notSaved": "Non salvato",
@@ -67,11 +67,11 @@
     "search": "Ricerca",
     "types": "Tipi",
     "categories": "Categorie",
-    "sort": "Ordinare",
+    "sort": "Ordine",
     "notesFound": "{{count}} nota trovata:",
     "notesFound_plural": "{{count}} note trovate:",
     "enterNotesTitle": "Inserisci il titolo di una nota",
-    "noResults": "nessun risultato trovato",
+    "noResults": "Nessun risultato trovato",
     "all": "Tutto",
     "newest": "Più recente",
     "oldest": "Il più antico",

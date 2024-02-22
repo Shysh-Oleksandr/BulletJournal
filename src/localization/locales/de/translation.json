@@ -18,8 +18,8 @@
     "update": "Aktualisieren",
     "delete": "Löschen",
     "edit": "Bearbeiten",
-    "createNote": "Erstellen Sie eine Notiz",
-    "editNote": "Bearbeiten Sie eine Notiz",
+    "createNote": "Eine Notiz erstellen",
+    "editNote": "Eine Notiz erstellen bearbeiten",
     "previous": "Vorherige",
     "next": "Nächste",
     "preview": "Vorschau",
@@ -64,10 +64,10 @@
     "addNote": "Füg ein Notiz hinzu"
   },
   "search": {
-    "search": "Suchen",
+    "search": "Suche",
     "types": "Typen",
     "categories": "Kategorien",
-    "sort": "Sortieren",
+    "sort": "Sortierung",
     "notesFound": "{{count}} Notiz gefunden:",
     "notesFound_plural": "{{count}} Notizen gefunden:",
     "enterNotesTitle": "Geben Sie den Titel einer Notiz ein",
@@ -76,7 +76,7 @@
     "newest": "Neueste",
     "oldest": "Älteste",
     "byRating": "Nach Bewertung",
-    "byWords": "Mit Worten",
+    "byWords": "Nach Worten",
     "resetFilters": "Filter zurücksetzen"
   }
 }
