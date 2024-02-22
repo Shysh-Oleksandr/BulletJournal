@@ -74,6 +74,7 @@ const TypeSelector = ({
     (newLabel: CustomLabel) => {
       setCurrentTypeId(newLabel._id);
       setTypes((prev) => [...prev, newLabel]);
+      setEditingItemId(null);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd(true);
@@ -109,7 +110,6 @@ const TypeSelector = ({
         isActive={item._id === currentTypeId}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
-        allLabels={types}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
         setTypes={setTypes}
@@ -119,7 +119,6 @@ const TypeSelector = ({
     [
       currentTypeId,
       editingItemId,
-      types,
       currentColor,
       onChoose,
       onSelectColor,

@@ -79,6 +79,7 @@ const CategoriesSelector = ({
     (newLabel: CustomLabel) => {
       setCurrentCategoriesIds((prev) => [...prev, newLabel._id]);
       setCategories((prev) => [...prev, newLabel]);
+      setEditingItemId(null);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd(true);
@@ -117,7 +118,6 @@ const CategoriesSelector = ({
         label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
-        allLabels={categories}
         currentNoteColor={currentColor}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
@@ -129,7 +129,6 @@ const CategoriesSelector = ({
       currentCategoriesIds,
       editingItemId,
       currentColor,
-      categories,
       onChoose,
       onSelectColor,
       onEditBtnPress,

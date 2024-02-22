@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
@@ -16,13 +16,19 @@ import NoteSeparator from "../noteItem/NoteSeparator";
 import FilterName from "./FilterName";
 import { sortOptions, useSearchNotes } from "./hooks";
 import { ALL_CATEGORY_ID, ALL_TYPE_ID } from "./hooks/useSearchNotes";
+import { getLocalizedSortOptionName } from "./utils/getLocalizedSortOptionName";
 
 type Props = {
   searchedNotes: Note[];
+  isResetTriggered: boolean;
   onSearch: (filteredNotes: Note[]) => void;
 };
 
-const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
+const Filters = ({
+  searchedNotes,
+  isResetTriggered,
+  onSearch,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const types = useAppSelector(getCustomTypes);
@@ -35,13 +41,14 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
   const [starredFilter, setStarredFilter] = useState(false);
   const [imagesFilter, setImagesFilter] = useState(false);
 
-  const { activeCategoriesIds, activeTypesIds, onLabelPress } = useSearchNotes({
-    searchQuery,
-    activeSortOption,
-    starredFilter,
-    imagesFilter,
-    onSearch,
-  });
+  const { activeCategoriesIds, activeTypesIds, onLabelPress, resetLabels } =
+    useSearchNotes({
+      searchQuery,
+      activeSortOption,
+      starredFilter,
+      imagesFilter,
+      onSearch,
+    });
 
   const firstNoteDateElement = useMemo(
     () =>
@@ -58,6 +65,16 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
   const onChange = (text: string) => {
     setSearchQuery(text);
   };
+
+  useEffect(() => {
+    if (!isResetTriggered) return;
+
+    setSearchQuery("");
+    setActiveSortOption(sortOptions.NEWEST);
+    setStarredFilter(false);
+    setImagesFilter(false);
+    resetLabels();
+  }, [isResetTriggered, resetLabels]);
 
   return (
     <>
@@ -90,7 +107,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
           active={activeTypesIds.includes(ALL_TYPE_ID)}
           onPress={() => onLabelPress(ALL_TYPE_ID)}
         >
-          <Typography color={theme.colors.white}>All</Typography>
+          <Typography color={theme.colors.white}>{t("search.all")}</Typography>
         </LabelItemContainer>
         {types.map(({ _id, labelName }) => (
           <LabelItemContainer
@@ -109,7 +126,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
           active={activeCategoriesIds.includes(ALL_CATEGORY_ID)}
           onPress={() => onLabelPress(ALL_CATEGORY_ID, false)}
         >
-          <Typography color={theme.colors.white}>All</Typography>
+          <Typography color={theme.colors.white}>{t("search.all")}</Typography>
         </LabelItemContainer>
 
         <LabelItemContainer
@@ -145,7 +162,9 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
             active={activeSortOption === sortOption}
             onPress={() => setActiveSortOption(sortOption)}
           >
-            <Typography color={theme.colors.white}>{sortOption}</Typography>
+            <Typography color={theme.colors.white}>
+              {getLocalizedSortOptionName(sortOption)}
+            </Typography>
           </LabelItemContainer>
         ))}
       </LabelsContainer>

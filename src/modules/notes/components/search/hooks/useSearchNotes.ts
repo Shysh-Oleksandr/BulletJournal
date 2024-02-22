@@ -37,6 +37,11 @@ export const useSearchNotes = ({
     ALL_CATEGORY_ID,
   ]);
 
+  const resetLabels = useCallback(() => {
+    setActiveTypesIds([ALL_TYPE_ID]);
+    setActiveCategoriesIds([ALL_CATEGORY_ID]);
+  }, []);
+
   const onLabelPress = useCallback(
     (labelId: string, isTypeLabel = true) => {
       const state = isTypeLabel ? activeTypesIds : activeCategoriesIds;
@@ -158,5 +163,5 @@ export const useSearchNotes = ({
     starredFilter,
   ]);
 
-  return { activeTypesIds, activeCategoriesIds, onLabelPress };
+  return { activeTypesIds, activeCategoriesIds, onLabelPress, resetLabels };
 };

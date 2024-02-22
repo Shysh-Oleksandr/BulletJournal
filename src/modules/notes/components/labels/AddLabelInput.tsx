@@ -45,8 +45,6 @@ const AddLabelInput = ({
 
   const isEmpty = !inputValue.length;
 
-  const relevantLabelName = t(isCategoryLabel ? "note.category" : "note.type");
-
   const onChange = (text: string) => {
     setInputValue(text);
     setSearchQuery?.(text);
@@ -65,10 +63,12 @@ const AddLabelInput = ({
       Toast.show({
         type: "error",
         text1: t("general.failure"),
-        text2: t("note.labelAlreadyExists", {
-          relevantLabelName,
-          name,
-        }),
+        text2: t(
+          isCategoryLabel
+            ? "note.categoryAlreadyExists"
+            : "note.typeAlreadyExists",
+          { label },
+        ),
       });
 
       return;
@@ -92,7 +92,7 @@ const AddLabelInput = ({
       Toast.show({
         type: "success",
         text1: t("general.success"),
-        text2: t("note.labelUpdated", { relevantLabelName }),
+        text2: t(isCategoryLabel ? "note.categoryCreated" : "note.typeCreated"),
       });
     }
 
@@ -110,7 +110,6 @@ const AddLabelInput = ({
     onCreate,
     setSearchQuery,
     t,
-    relevantLabelName,
   ]);
 
   return (
@@ -126,7 +125,9 @@ const AddLabelInput = ({
       )}
       <Input
         value={inputValue}
-        placeholder={t("note.enterNewLabel", { relevantLabelName })}
+        placeholder={t(
+          isCategoryLabel ? "note.enterNewCategory" : "note.enterNewType",
+        )}
         isCentered
         inputRef={inputRef}
         onChange={onChange}

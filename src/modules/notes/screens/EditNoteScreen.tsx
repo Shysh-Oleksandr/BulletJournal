@@ -346,9 +346,7 @@ const EditNoteScreen: FC<{
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
-        title={`${isNewNote ? t("note.create") : t("note.edit")} ${t(
-          "note.note",
-        )}`}
+        title={isNewNote ? t("note.createNote") : t("note.editNote")}
         onBackArrowPress={navigation.goBack}
         withAddBtn={!isNewNote}
         withBackArrow

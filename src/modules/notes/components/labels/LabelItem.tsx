@@ -22,7 +22,6 @@ type Props = {
   isActive: boolean;
   isEditing: boolean;
   currentNoteColor: string;
-  allLabels: CustomLabel[];
   onChoose: (typeId: string | null, shouldCloseModal?: boolean) => void;
   onEditBtnPress: (typeId: string | null) => void;
   setTypes: React.Dispatch<React.SetStateAction<CustomLabel[]>>;
@@ -34,7 +33,6 @@ const LabelItem = ({
   isActive,
   isEditing,
   currentNoteColor,
-  allLabels,
   onChoose,
   onEditBtnPress,
   setTypes,
@@ -49,25 +47,14 @@ const LabelItem = ({
   const [name, setName] = useState(label.labelName);
   const [currentColor, setCurrentColor] = useState(label.color);
 
-  const relevantLabelName = t(
-    label.isCategoryLabel ? "note.category" : "note.type",
-  );
-
   const saveChanges = useCallback(async () => {
-    if (allLabels.some((item) => item.labelName === name)) {
-      Toast.show({
-        type: "error",
-        text1: t("general.failure"),
-        text2: t("note.labelAlreadyExists", {
-          relevantLabelName,
-          name,
-        }),
-      });
+    onEditBtnPress(null);
+
+    if (name.trim() === "") {
+      setName(label.labelName);
 
       return;
     }
-
-    onEditBtnPress(null);
 
     if (label.color === currentColor && label.labelName === name) return;
 
@@ -85,23 +72,15 @@ const LabelItem = ({
     Toast.show({
       type: "success",
       text1: t("general.success"),
-      text2: t("note.labelUpdated", { relevantLabelName }),
+      text2: t(
+        label.isCategoryLabel ? "note.categoryUpdated" : "note.typeUpdated",
+      ),
     });
 
     setTypes((prev) =>
       prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
-  }, [
-    allLabels,
-    onEditBtnPress,
-    label,
-    currentColor,
-    name,
-    updateLabel,
-    relevantLabelName,
-    setTypes,
-    t,
-  ]);
+  }, [onEditBtnPress, label, currentColor, name, updateLabel, setTypes, t]);
 
   const onDelete = useCallback(() => {
     if (isActive) {
@@ -116,7 +95,9 @@ const LabelItem = ({
     Toast.show({
       type: "success",
       text1: t("general.success"),
-      text2: t("note.labelDeleted", { relevantLabelName }),
+      text2: t(
+        label.isCategoryLabel ? "note.categoryDeleted" : "note.typeDeleted",
+      ),
     });
 
     setTypes((prev) => prev.filter((item) => item._id !== label._id));
@@ -124,8 +105,8 @@ const LabelItem = ({
   }, [
     isActive,
     label._id,
+    label.isCategoryLabel,
     t,
-    relevantLabelName,
     setTypes,
     deleteLabel,
     onChoose,
@@ -157,7 +138,11 @@ const LabelItem = ({
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder={t("note.enterLabelName", { relevantLabelName })}
+          placeholder={t(
+            label.isCategoryLabel
+              ? "note.enterCategoryName"
+              : "note.enterTypeName",
+          )}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}

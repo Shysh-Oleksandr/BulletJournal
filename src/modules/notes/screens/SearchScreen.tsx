@@ -7,8 +7,10 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import theme from "theme";
 
 import { FlashList } from "@shopify/flash-list";
+import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import {
@@ -48,6 +50,8 @@ const SearchScreen = (): JSX.Element => {
   );
   const [paginatedNotes, setPaginatedNotes] = useState(searchedNotes);
 
+  const [isResetTriggered, setIsResetTriggered] = useState(false);
+
   const onSearch = useCallback((filteredNotes: Note[]) => {
     setSearchedNotes(filteredNotes);
     setPaginatedNotes(filteredNotes.slice(0, ITEMS_PER_PAGE));
@@ -55,19 +59,38 @@ const SearchScreen = (): JSX.Element => {
   }, []);
 
   const ListHeaderComponent = useMemo(
-    () => <Filters searchedNotes={searchedNotes} onSearch={onSearch} />,
-    [onSearch, searchedNotes],
+    () => (
+      <Filters
+        searchedNotes={searchedNotes}
+        isResetTriggered={isResetTriggered}
+        onSearch={onSearch}
+      />
+    ),
+    [onSearch, isResetTriggered, searchedNotes],
   );
   const ListEmptyComponent = useMemo(
     () => (
-      <Typography
-        fontWeight="semibold"
-        fontSize="xl"
-        paddingTop={10}
-        align="center"
-      >
-        {t("search.noResults")}
-      </Typography>
+      <EmptyContainer>
+        <Typography
+          fontWeight="semibold"
+          fontSize="xl"
+          paddingTop={10}
+          align="center"
+        >
+          {t("search.noResults")}
+        </Typography>
+        <Button
+          label={t("search.resetFilters")}
+          marginTop={20}
+          labelProps={{ fontSize: "lg" }}
+          bgColor={theme.colors.cyan600}
+          onPress={() => {
+            setIsResetTriggered(true);
+
+            requestAnimationFrame(() => setIsResetTriggered(false));
+          }}
+        />
+      </EmptyContainer>
     ),
     [t],
   );
@@ -132,6 +155,10 @@ const SearchScreen = (): JSX.Element => {
 
 const SLinearGradient = styled(LinearGradient)`
   flex: 1;
+`;
+
+const EmptyContainer = styled.View`
+  align-items: center;
 `;
 
 export default SearchScreen;
