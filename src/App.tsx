@@ -71,7 +71,7 @@ export default function App() {
       <I18nextProvider i18n={i18n}>
         <Provider store={store}>
           <SafeAreaProvider>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" />
+            <StatusBar barStyle="light-content" backgroundColor="#157f9d" />
             <Container onLayout={onLayoutRootView}>
               <Nav />
             </Container>

@@ -66,7 +66,10 @@ const HeaderBar = ({
 
   return (
     <Container>
-      <LinearGradient colors={[topGradientColor, bottomGradientColor]}>
+      <LinearGradient
+        start={{ x: 0.5, y: 0.1 }}
+        colors={[topGradientColor, bottomGradientColor]}
+      >
         <CoverView height={distanceFromTheTop} />
         <HeaderWrapper
           marginBottom={marginBottom}
