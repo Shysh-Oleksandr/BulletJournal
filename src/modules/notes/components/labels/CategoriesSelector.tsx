@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -41,6 +42,8 @@ const CategoriesSelector = ({
   setCurrentCategoriesIds,
   setCurrentColor,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const initialCategories = useAppSelector(getCustomCategories);
 
   const [categories, setCategories] = useState(initialCategories);
@@ -76,6 +79,7 @@ const CategoriesSelector = ({
     (newLabel: CustomLabel) => {
       setCurrentCategoriesIds((prev) => [...prev, newLabel._id]);
       setCategories((prev) => [...prev, newLabel]);
+      setEditingItemId(null);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd(true);
@@ -114,7 +118,6 @@ const CategoriesSelector = ({
         label={item}
         isActive={currentCategoriesIds?.includes(item._id)}
         isEditing={item._id === editingItemId}
-        allLabels={categories}
         currentNoteColor={currentColor}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
@@ -126,7 +129,6 @@ const CategoriesSelector = ({
       currentCategoriesIds,
       editingItemId,
       currentColor,
-      categories,
       onChoose,
       onSelectColor,
       onEditBtnPress,
@@ -167,7 +169,7 @@ const CategoriesSelector = ({
         <Typography align="center">{selectedCategoriesLabel}</Typography>
       </SelectedTypeContainer>
       <BottomModal
-        title="Choose categories"
+        title={t("note.chooseCategories")}
         maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
@@ -196,7 +198,7 @@ const CategoriesSelector = ({
           extraHeight={150}
         />
       </BottomModal>
-      <FormLabel label="Categories" bottomOffset={-13} />
+      <FormLabel label={t("note.categories")} bottomOffset={-13} />
     </Section>
   );
 };

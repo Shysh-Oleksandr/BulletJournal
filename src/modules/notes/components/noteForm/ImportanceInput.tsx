@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import Input from "components/Input";
 import Typography from "components/Typography";
@@ -15,6 +16,8 @@ const ImportanceInput = ({
   currentImportance,
   setCurrentImportance,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [inputValue, setInputValue] = useState(
     currentImportance?.toString() ?? "",
   );
@@ -68,7 +71,7 @@ const ImportanceInput = ({
       <Typography fontSize="xl" paddingLeft={3} paddingTop={7}>
         /10
       </Typography>
-      <FormLabel label="Importance" />
+      <FormLabel label={t("note.importance")} />
     </Section>
   );
 };

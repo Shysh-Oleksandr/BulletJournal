@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { ListRenderItem } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import theme from "theme";
@@ -41,6 +42,8 @@ const TypeSelector = ({
   setCurrentTypeId,
   setCurrentColor,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const initialTypes = useAppSelector(getCustomTypes);
 
   const [types, setTypes] = useState(initialTypes);
@@ -71,6 +74,7 @@ const TypeSelector = ({
     (newLabel: CustomLabel) => {
       setCurrentTypeId(newLabel._id);
       setTypes((prev) => [...prev, newLabel]);
+      setEditingItemId(null);
 
       setTimeout(() => {
         flatListRef.current?.scrollToEnd(true);
@@ -106,7 +110,6 @@ const TypeSelector = ({
         isActive={item._id === currentTypeId}
         isEditing={item._id === editingItemId}
         currentNoteColor={currentColor}
-        allLabels={types}
         onChoose={onChoose}
         onEditBtnPress={onEditBtnPress}
         setTypes={setTypes}
@@ -116,7 +119,6 @@ const TypeSelector = ({
     [
       currentTypeId,
       editingItemId,
-      types,
       currentColor,
       onChoose,
       onSelectColor,
@@ -158,7 +160,7 @@ const TypeSelector = ({
         <Typography align="center">{currentType?.labelName ?? ""}</Typography>
       </SelectedTypeContainer>
       <BottomModal
-        title="Choose a type"
+        title={t("note.chooseType")}
         maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
@@ -186,7 +188,7 @@ const TypeSelector = ({
           extraHeight={150}
         />
       </BottomModal>
-      <FormLabel label="Type" bottomOffset={-13} />
+      <FormLabel label={t("note.Type")} bottomOffset={-13} />
     </Section>
   );
 };

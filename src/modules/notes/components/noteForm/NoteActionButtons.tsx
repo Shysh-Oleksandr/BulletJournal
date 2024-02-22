@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
@@ -27,39 +28,43 @@ const NoteActionButtons = ({
   isLocked,
   saveNote,
   deleteNote,
-}: Props): JSX.Element => (
-  <>
-    <Button
-      label={isNewNote ? "Create" : "Update"}
-      onPress={saveNote}
-      bgColor={theme.colors.cyan600}
-      marginTop={20}
-      disabled={isLocked || hasNoChanges || isSaving || isDeleting}
-      isLoading={isSaving}
-      labelProps={{
-        fontWeight: "bold",
-        fontSize: "xl",
-        paddingHorizontal: 8,
-      }}
-      Icon={SaveIcon}
-    />
-    {!isNewNote && (
+}: Props): JSX.Element => {
+  const { t } = useTranslation();
+
+  return (
+    <>
       <Button
-        label="Delete"
-        onPress={deleteNote}
-        bgColor={theme.colors.red600}
-        marginTop={8}
-        disabled={isLocked || isSaving || isDeleting}
-        isLoading={isDeleting}
+        label={t(isNewNote ? "note.create" : "note.update")}
+        onPress={saveNote}
+        bgColor={theme.colors.cyan600}
+        marginTop={20}
+        disabled={isLocked || hasNoChanges || isSaving || isDeleting}
+        isLoading={isSaving}
         labelProps={{
           fontWeight: "bold",
           fontSize: "xl",
           paddingHorizontal: 8,
         }}
-        Icon={DeleteIcon}
+        Icon={SaveIcon}
       />
-    )}
-  </>
-);
+      {!isNewNote && (
+        <Button
+          label={t("note.delete")}
+          onPress={deleteNote}
+          bgColor={theme.colors.red600}
+          marginTop={8}
+          disabled={isLocked || isSaving || isDeleting}
+          isLoading={isDeleting}
+          labelProps={{
+            fontWeight: "bold",
+            fontSize: "xl",
+            paddingHorizontal: 8,
+          }}
+          Icon={DeleteIcon}
+        />
+      )}
+    </>
+  );
+};
 
 export default NoteActionButtons;

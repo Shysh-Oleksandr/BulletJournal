@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "react-native-simple-dialogs";
 import theme from "theme";
 
@@ -22,12 +23,14 @@ type Props = {
 const ConfirmAlert = ({
   isDialogVisible,
   message,
-  title = "Confirm",
+  title,
   isDeletion,
   setIsDialogVisible,
   onConfirm,
   onDeny,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const [topGradientColor, bottomGradientColor] = useMemo(() => {
     const relevantColor = isDeletion
       ? theme.colors.red600
@@ -62,7 +65,7 @@ const ConfirmAlert = ({
           paddingBottom={10}
           color={theme.colors.white}
         >
-          {title}
+          {title ?? t("general.confirm")}
         </Typography>
         <Typography align="center" fontSize="md" color={theme.colors.whitish}>
           {message}
@@ -70,7 +73,7 @@ const ConfirmAlert = ({
         <Divider marginTop={16} marginBottom={16} />
         <ButtonsContainer>
           <Button
-            label="No"
+            label={t("general.no")}
             width="46%"
             bgColor={isDeletion ? theme.colors.red500 : undefined}
             shouldReverseBgColor={!isDeletion}
@@ -80,7 +83,7 @@ const ConfirmAlert = ({
             }}
           />
           <Button
-            label="Yes"
+            label={t("general.yes")}
             width="46%"
             bgColor={isDeletion ? theme.colors.red500 : undefined}
             shouldReverseBgColor={!isDeletion}

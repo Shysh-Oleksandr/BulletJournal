@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import Typography from "components/Typography";
 import removeMarkdown from "modules/notes/util/removeMarkdown";
@@ -12,6 +13,8 @@ type Props = {
 };
 
 const WordsCountLabel = ({ contentHTML }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const wordsCount = useMemo(
     () => getContentWords(removeMarkdown(contentHTML)),
     [contentHTML],
@@ -24,7 +27,7 @@ const WordsCountLabel = ({ contentHTML }: Props): JSX.Element => {
           {wordsCount}
         </Typography>
       </TextContainer>
-      <FormLabel label="Words" />
+      <FormLabel label={t("note.words")} />
     </Section>
   );
 };

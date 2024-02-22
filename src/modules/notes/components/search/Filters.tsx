@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -9,20 +10,27 @@ import { getCustomCategories, getCustomTypes } from "modules/notes/NotesSlice";
 import { Note } from "modules/notes/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
-import { getPluralLabel } from "utils/getPluralLabel";
 
 import NoteSeparator from "../noteItem/NoteSeparator";
 
 import FilterName from "./FilterName";
 import { sortOptions, useSearchNotes } from "./hooks";
 import { ALL_CATEGORY_ID, ALL_TYPE_ID } from "./hooks/useSearchNotes";
+import { getLocalizedSortOptionName } from "./utils/getLocalizedSortOptionName";
 
 type Props = {
   searchedNotes: Note[];
+  isResetTriggered: boolean;
   onSearch: (filteredNotes: Note[]) => void;
 };
 
-const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
+const Filters = ({
+  searchedNotes,
+  isResetTriggered,
+  onSearch,
+}: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const types = useAppSelector(getCustomTypes);
   const categories = useAppSelector(getCustomCategories);
 
@@ -33,13 +41,14 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
   const [starredFilter, setStarredFilter] = useState(false);
   const [imagesFilter, setImagesFilter] = useState(false);
 
-  const { activeCategoriesIds, activeTypesIds, onLabelPress } = useSearchNotes({
-    searchQuery,
-    activeSortOption,
-    starredFilter,
-    imagesFilter,
-    onSearch,
-  });
+  const { activeCategoriesIds, activeTypesIds, onLabelPress, resetLabels } =
+    useSearchNotes({
+      searchQuery,
+      activeSortOption,
+      starredFilter,
+      imagesFilter,
+      onSearch,
+    });
 
   const firstNoteDateElement = useMemo(
     () =>
@@ -57,12 +66,22 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
     setSearchQuery(text);
   };
 
+  useEffect(() => {
+    if (!isResetTriggered) return;
+
+    setSearchQuery("");
+    setActiveSortOption(sortOptions.NEWEST);
+    setStarredFilter(false);
+    setImagesFilter(false);
+    resetLabels();
+  }, [isResetTriggered, resetLabels]);
+
   return (
     <>
       <InputContainer>
         <Input
           value={searchQuery}
-          placeholder="Enter a note's title"
+          placeholder={t("search.enterNotesTitle")}
           isCentered
           bgColor={theme.colors.white}
           labelColor={theme.colors.darkBlueText}
@@ -82,13 +101,13 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         )}
       </InputContainer>
 
-      <FilterName label="Types" />
+      <FilterName label={t("search.types")} />
       <LabelsContainer>
         <LabelItemContainer
           active={activeTypesIds.includes(ALL_TYPE_ID)}
           onPress={() => onLabelPress(ALL_TYPE_ID)}
         >
-          <Typography color={theme.colors.white}>All</Typography>
+          <Typography color={theme.colors.white}>{t("search.all")}</Typography>
         </LabelItemContainer>
         {types.map(({ _id, labelName }) => (
           <LabelItemContainer
@@ -101,13 +120,13 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         ))}
       </LabelsContainer>
 
-      <FilterName label="Categories" />
+      <FilterName label={t("search.categories")} />
       <LabelsContainer>
         <LabelItemContainer
           active={activeCategoriesIds.includes(ALL_CATEGORY_ID)}
           onPress={() => onLabelPress(ALL_CATEGORY_ID, false)}
         >
-          <Typography color={theme.colors.white}>All</Typography>
+          <Typography color={theme.colors.white}>{t("search.all")}</Typography>
         </LabelItemContainer>
 
         <LabelItemContainer
@@ -135,7 +154,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
         ))}
       </LabelsContainer>
 
-      <FilterName label="Sort" />
+      <FilterName label={t("search.sort")} />
       <LabelsContainer>
         {Object.values(sortOptions).map((sortOption) => (
           <LabelItemContainer
@@ -143,7 +162,9 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
             active={activeSortOption === sortOption}
             onPress={() => setActiveSortOption(sortOption)}
           >
-            <Typography color={theme.colors.white}>{sortOption}</Typography>
+            <Typography color={theme.colors.white}>
+              {getLocalizedSortOptionName(sortOption)}
+            </Typography>
           </LabelItemContainer>
         ))}
       </LabelsContainer>
@@ -156,7 +177,7 @@ const Filters = ({ searchedNotes, onSearch }: Props): JSX.Element => {
           paddingTop={10}
           paddingBottom={20}
         >
-          {getPluralLabel(searchedNotes.length, "note")} found:
+          {t("search.notesFound", { count: searchedNotes.length })}
         </Typography>
       )}
 

@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
@@ -44,6 +45,8 @@ const ITEMS_PER_PAGE = 10;
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 
 const NotesScreen = (): JSX.Element => {
+  const { t } = useTranslation();
+
   const [fetchNotes, { isLoading: isNotesLoading }] =
     notesApi.useLazyFetchNotesQuery();
   const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
@@ -67,10 +70,10 @@ const NotesScreen = (): JSX.Element => {
     () => (
       <>
         <Typography fontWeight="semibold" fontSize="xl" align="center">
-          You don't have any notes yet
+          {t("note.noNotesInfo")}
         </Typography>
         <Button
-          label="Add a note"
+          label={t("note.addNote")}
           marginTop={20}
           labelProps={{ fontSize: "xl", fontWeight: "bold" }}
           onPress={() =>
@@ -83,7 +86,7 @@ const NotesScreen = (): JSX.Element => {
         />
       </>
     ),
-    [navigation],
+    [navigation, t],
   );
 
   const ListHeaderComponent = useMemo(
