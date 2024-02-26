@@ -24,6 +24,7 @@
     "next": "Next",
     "preview": "Preview",
     "note": "note",
+    "notes": "Notes",
     "Note": "Note",
     "deletedInfo": "The note is deleted",
     "createdInfo": "The note is created",
@@ -78,5 +79,8 @@
     "byRating": "By rating",
     "byWords": "By words",
     "resetFilters": "Reset filters"
+  },
+  "calendar": {
+    "calendar": "Calendar"
   }
 }

@@ -4,7 +4,7 @@
     "slug": "bulletjournal",
     "owner": "oleksandrshysh",
     "originalFullName": "@frankmelward/bulletjournal",
-    "version": "1.1.4",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/mainIcon.png",
     "scheme": "com.frankmelward.bulletjournal",
@@ -13,9 +13,6 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
       "backgroundColor": "#0891b2"
-    },
-    "androidStatusBar": {
-      "barStyle": "light-content"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,7 +27,7 @@
         "backgroundImage": "./assets/images/iconBg.png",
         "backgroundColor": "#354352"
       },
-      "versionCode": 12,
+      "versionCode": 13,
       "googleServicesFile": "./google-services.json",
       "package": "com.frankmelward.bulletjournal"
     },
