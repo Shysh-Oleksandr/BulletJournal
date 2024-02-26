@@ -3436,6 +3436,15 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
+"@react-navigation/bottom-tabs@^6.5.14":
+  version "6.5.14"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-6.5.14.tgz#8e09c30c66cc9adb0cc281b4db7313a1197b1f79"
+  integrity sha512-3gDVwuaPQIxkJm3PI5vATDr9Un3Z0tplfkzM/TWL2igE0Kd/hymWz0jZppBJbuKi+Q25i/74b+3VOVKuiE43AQ==
+  dependencies:
+    "@react-navigation/elements" "^1.3.24"
+    color "^4.2.3"
+    warn-once "^0.1.0"
+
 "@react-navigation/bottom-tabs@~6.5.7":
   version "6.5.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-6.5.9.tgz#d132e787b58b23dedfeb19b586f9467613a0c6bf"
@@ -3461,6 +3470,11 @@
   version "1.3.19"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-1.3.19.tgz#18a4a754836af19c20d987e8ffc4f8b0ee2cbece"
   integrity sha512-7hLvSYKPuDS070pza5gd43WDX7QgfuEmuTWNbCJhKdWlLudYmq3qzxGCBwCfO2dEI6+p8tla5wruaWiGKAbTYw==
+
+"@react-navigation/elements@^1.3.24":
+  version "1.3.24"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-1.3.24.tgz#184eabb869338dd268761e9d0f3a4c96f8e322f3"
+  integrity sha512-zgZV50qjlv3/N+MzNV0DIRmtg30IZcR0+LaTQRP/OxLtveQkgUG6wIEKl6SXO2ykC9yF9V82msdCzKl9uPSQCA==
 
 "@react-navigation/native-stack@^6.9.8", "@react-navigation/native-stack@~6.9.12":
   version "6.9.14"
@@ -7608,7 +7622,7 @@ hermes-profile-transformer@^0.0.6:
   dependencies:
     source-map "^0.7.3"
 
-hoist-non-react-statics@^3.0.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
+hoist-non-react-statics@^3.0.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
@@ -9302,7 +9316,7 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-memoize-one@^5.0.0:
+memoize-one@^5.0.0, memoize-one@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
   integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
@@ -9762,6 +9776,11 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+moment@^2.29.4:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
 ms@2.0.0:
   version "2.0.0"
@@ -10493,7 +10512,7 @@ prompts@^2.0.1, prompts@^2.2.1, prompts@^2.3.2, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@15.8.1, prop-types@^15.5.7, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@*, prop-types@15.8.1, prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -10713,6 +10732,21 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-calendars@^1.1303.0:
+  version "1.1303.0"
+  resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.1303.0.tgz#72f82135947c75c194ab893549e53de69ed27667"
+  integrity sha512-afR9D+EbJQe/YnlXRly/4pqkM7iXSziaKUZz1EoKWk3R0D+sela5LknziXIiM1XFDCpYk5ZJ3cjnTed0MjxVKg==
+  dependencies:
+    hoist-non-react-statics "^3.3.1"
+    lodash "^4.17.15"
+    memoize-one "^5.2.1"
+    prop-types "^15.5.10"
+    react-native-swipe-gestures "^1.0.5"
+    recyclerlistview "^4.0.0"
+    xdate "^0.8.0"
+  optionalDependencies:
+    moment "^2.29.4"
+
 react-native-devsettings@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/react-native-devsettings/-/react-native-devsettings-1.0.5.tgz#3ee079fea99338a2b00de293340c8d11629f16dd"
@@ -10828,6 +10862,11 @@ react-native-svg@13.9.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+
+react-native-swipe-gestures@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz#a172cb0f3e7478ccd681fd36b8bfbcdd098bde7c"
+  integrity sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==
 
 react-native-toast-message@^2.1.7:
   version "2.1.7"
@@ -11009,7 +11048,7 @@ recast@^0.21.0:
     source-map "~0.6.1"
     tslib "^2.0.1"
 
-recyclerlistview@4.2.0:
+recyclerlistview@4.2.0, recyclerlistview@^4.0.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-4.2.0.tgz#a140149aaa470c9787a1426452651934240d69ef"
   integrity sha512-uuBCi0c+ggqHKwrzPX4Z/mJOzsBbjZEAwGGmlwpD/sD7raXixdAbdJ6BTcAmuWG50Cg4ru9p12M94Njwhr/27A==
@@ -12937,6 +12976,11 @@ xcode@^3.0.1:
   dependencies:
     simple-plist "^1.1.0"
     uuid "^7.0.3"
+
+xdate@^0.8.0:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/xdate/-/xdate-0.8.2.tgz#d7b033c00485d02695baf0044f4eacda3fc961a3"
+  integrity sha512-sNBlLfOC8S3V0vLDEUianQOXcTsc9j4lfeKU/klHe0RjHAYn0CXsSttumTot8dzalboV8gZbH38B+WcCIBjhFQ==
 
 xml-name-validator@^4.0.0:
   version "4.0.0"

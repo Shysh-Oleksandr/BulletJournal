@@ -24,6 +24,7 @@
     "next": "Siguiente",
     "preview": "Vista previa",
     "note": "nota",
+    "notes": "Notas",
     "Note": "Nota",
     "deletedInfo": "La nota esta eliminada",
     "createdInfo": "Se crea la nota",
@@ -78,5 +79,31 @@
     "byRating": "Por importancia",
     "byWords": "Por palabras",
     "resetFilters": "Restablecer filtros"
+  },
+  "calendar": {
+    "calendar": "Calendario",
+    "monthNames": {
+      "jan": "Enero",
+      "feb": "Febrero",
+      "mar": "Marzo",
+      "apr": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "aug": "Agosto",
+      "sept": "Septiembre",
+      "oct": "Octubre",
+      "nov": "Noviembre",
+      "dec": "Diciembre"
+    },
+    "dayNames": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sab",
+      "sun": "Dom"
+    }
   }
 }

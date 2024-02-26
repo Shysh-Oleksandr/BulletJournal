@@ -7,7 +7,7 @@ import Button from "components/Button";
 
 const SaveIcon = <Entypo name="save" size={20} color={theme.colors.white} />;
 const DeleteIcon = (
-  <MaterialIcons name="delete" size={20} color={theme.colors.white} />
+  <MaterialIcons name="delete" size={22} color={theme.colors.white} />
 );
 
 type Props = {
