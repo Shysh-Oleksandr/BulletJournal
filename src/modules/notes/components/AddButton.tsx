@@ -60,7 +60,7 @@ const SLinearGradient = styled(LinearGradient)`
 const Container = styled.View`
   z-index: 9999;
   position: absolute;
-  bottom: 25px;
+  bottom: 65px;
   right: 20px;
 `;
 

@@ -36,7 +36,7 @@ import { getEmptyNote } from "../util/getEmptyNote";
 
 const contentContainerStyle = {
   paddingTop: 30,
-  paddingBottom: 40,
+  paddingBottom: 80,
   paddingHorizontal: 20,
 };
 

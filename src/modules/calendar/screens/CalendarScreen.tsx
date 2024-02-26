@@ -25,7 +25,7 @@ import Calendar from "../components/Calendar";
 
 const contentContainerStyle = {
   paddingTop: 30,
-  paddingBottom: 40,
+  paddingBottom: 80,
   paddingHorizontal: 20,
 };
 

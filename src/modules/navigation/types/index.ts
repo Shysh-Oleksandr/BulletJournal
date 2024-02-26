@@ -22,3 +22,8 @@ export type RootStackParamList = {
   [Routes.CALENDAR]: undefined;
   [Routes.MAIN]: undefined;
 };
+
+export enum TabBarRouteNumber {
+  notes = 0,
+  calendar = 1,
+}

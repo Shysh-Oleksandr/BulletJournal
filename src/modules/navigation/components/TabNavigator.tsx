@@ -9,6 +9,8 @@ import NotesScreen from "modules/notes/screens/NotesScreen";
 
 import { Routes } from "../types";
 
+import TabBar from "./TabBar";
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator: React.FC = () => (
@@ -19,6 +21,9 @@ const TabNavigator: React.FC = () => (
       tabBarInactiveBackgroundColor: theme.colors.bgColor,
       tabBarActiveTintColor: theme.colors.white,
     }}
+    tabBar={(props) => (
+      <TabBar currentScreen={props.navigation.getState().index} />
+    )}
   >
     <Tab.Screen
       name={Routes.NOTES}
