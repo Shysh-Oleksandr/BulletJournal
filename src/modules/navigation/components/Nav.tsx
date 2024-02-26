@@ -16,8 +16,9 @@ import SearchScreen from "modules/notes/screens/SearchScreen";
 import { useAppSelector } from "store/helpers/storeHooks";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
-import NotesScreen from "../../notes/screens/NotesScreen";
 import { RootStackParamList, Routes } from "../types";
+
+import TabNavigator from "./TabNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -72,13 +73,12 @@ const Nav = (): JSX.Element => {
           animationTypeForReplace: "push",
           animation: "slide_from_right",
         }}
-        initialRouteName={Routes.NOTES}
       >
         {!isAuthenticated ? (
           <Stack.Screen name={Routes.SIGN_IN} component={SignIn} />
         ) : (
           <>
-            <Stack.Screen name={Routes.NOTES} component={NotesScreen} />
+            <Stack.Screen name={Routes.MAIN} component={TabNavigator} />
             <Stack.Screen name={Routes.EDIT_NOTE} component={EditNoteScreen} />
             <Stack.Screen name={Routes.SEARCH} component={SearchScreen} />
           </>

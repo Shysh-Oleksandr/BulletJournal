@@ -92,7 +92,7 @@ const EditNoteScreen: FC<{
   const userId = useAppSelector(getUserId) ?? "";
   const allLabels = useAppSelector(getLabels);
 
-  const { item: initialNote, index, isNewNote } = route.params;
+  const { item: initialNote, index, isNewNote, date } = route.params;
 
   const shouldDisplayNeighboringNotes = !isNil(index);
 
@@ -120,7 +120,9 @@ const EditNoteScreen: FC<{
   );
 
   const [currentTitle, setCurrentTitle] = useState(title);
-  const [currentStartDate, setCurrentStartDate] = useState(startDate);
+  const [currentStartDate, setCurrentStartDate] = useState(
+    isNewNote ? date ?? startDate : startDate,
+  );
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);
   const [currentTypeId, setCurrentTypeId] = useState(defaultNoteType);
@@ -294,7 +296,7 @@ const EditNoteScreen: FC<{
       });
 
       setTimeout(() => {
-        navigation.replace(Routes.NOTES);
+        navigation.pop();
       }, 1000);
     } catch (error) {
       logging.error(error);
@@ -347,7 +349,6 @@ const EditNoteScreen: FC<{
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         title={isNewNote ? t("note.createNote") : t("note.editNote")}
-        onBackArrowPress={navigation.goBack}
         withAddBtn={!isNewNote}
         withBackArrow
       />

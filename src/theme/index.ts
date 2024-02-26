@@ -15,6 +15,7 @@ const theme: DefaultTheme = {
     blackText: "#00092e",
     editorText: "#184f63",
     gray: "#c9c1c1",
+    darkGray: "#8e8e9c",
     whitish: "#bdffff",
     red600: "#c31515",
     red500: "#f52a2a",
