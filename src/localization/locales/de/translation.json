@@ -24,6 +24,7 @@
     "next": "Nächste",
     "preview": "Vorschau",
     "note": "Notiz",
+    "notes": "Notizen",
     "Note": "Notiz",
     "deletedInfo": "Die Notiz wird gelöscht",
     "createdInfo": "Die Notiz wird erstellt",
@@ -78,5 +79,31 @@
     "byRating": "Nach Bewertung",
     "byWords": "Nach Worten",
     "resetFilters": "Filter zurücksetzen"
+  },
+  "calendar": {
+    "calendar": "Kalender",
+    "monthNames": {
+      "jan": "Januar",
+      "feb": "Februar",
+      "mar": "Marsch",
+      "apr": "April",
+      "may": "Mai",
+      "june": "Juni",
+      "july": "Juli",
+      "aug": "August",
+      "sept": "September",
+      "oct": "Oktober",
+      "nov": "November",
+      "dec": "Dezember"
+    },
+    "dayNames": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    }
   }
 }

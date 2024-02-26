@@ -81,6 +81,29 @@
     "resetFilters": "Reset filters"
   },
   "calendar": {
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "monthNames": {
+      "jan": "January",
+      "feb": "February",
+      "mar": "March",
+      "apr": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "aug": "August",
+      "sept": "September",
+      "oct": "October",
+      "nov": "November",
+      "dec": "December"
+    }, 
+    "dayNames": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
   }
 }

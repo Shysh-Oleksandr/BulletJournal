@@ -11,10 +11,13 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { CALENDAR_THEME, SIMPLE_DATE_FORMAT } from "../data";
+import { configureCalendarLocale } from "../data/calendarLocaleConfig";
 import { getMarkedDates } from "../util/getMarkedDates";
 
 const today = startOfToday();
 const todayString = format(today, SIMPLE_DATE_FORMAT);
+
+configureCalendarLocale();
 
 const CALENDAR_STYLES: StyleProp<ViewStyle> = {
   height: 335,
@@ -53,6 +56,7 @@ const Calendar = ({ selectedDate, setSelectedDate }: Props): JSX.Element => {
         theme={CALENDAR_THEME}
         current={todayString}
         enableSwipeMonths
+        firstDay={1}
         onDayPress={(day) => {
           setSelectedDate(
             parse(day.dateString, SIMPLE_DATE_FORMAT, new Date()),
