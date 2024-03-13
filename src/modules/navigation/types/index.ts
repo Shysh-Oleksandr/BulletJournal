@@ -7,6 +7,7 @@ export enum Routes {
   SEARCH = "search",
   MAIN = "main",
   CALENDAR = "calendar",
+  HABITS = "habits",
 }
 
 export type RootStackParamList = {
@@ -20,10 +21,12 @@ export type RootStackParamList = {
   };
   [Routes.SEARCH]: undefined;
   [Routes.CALENDAR]: undefined;
+  [Routes.HABITS]: undefined;
   [Routes.MAIN]: undefined;
 };
 
 export enum TabBarRouteNumber {
   notes = 0,
   calendar = 1,
+  habits = 2,
 }

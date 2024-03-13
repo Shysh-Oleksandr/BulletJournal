@@ -20,6 +20,9 @@ const theme: DefaultTheme = {
     red600: "#c31515",
     red500: "#f52a2a",
     green600: "#16a34a",
+    policeBlue: "#1b5266",
+    darkSkyBlue: "#89c5cc",
+    bubbles: "#ebfbfc",
   },
   fontSizes: {
     xxxl: 28,
