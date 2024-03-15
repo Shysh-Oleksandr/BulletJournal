@@ -1,3 +1,4 @@
+import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useMemo } from "react";
 import theme from "theme";
@@ -8,17 +9,34 @@ import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
+import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { Habit } from "../types";
+import { habitsApi } from "../HabitsApi";
+import { updateHabitLog } from "../HabitsSlice";
+import { Habit, HabitLog, HabitTypes } from "../types";
 
 type Props = {
   habit: Habit;
-  isActive: boolean;
+  selectedDate: number;
 };
 
-const HabitItem = ({ habit, isActive }: Props): JSX.Element => {
+const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
+  const [updateHabit] = habitsApi.useUpdateHabitMutation();
+
   const navigation = useAppNavigation();
+  const dispatch = useAppDispatch();
+
+  const value = 10;
+
+  const isActive = useMemo(
+    () =>
+      habit.logs.some(
+        (log) =>
+          log.percentageCompleted >= 100 && isSameDay(log.date, selectedDate),
+      ),
+    [habit.logs, selectedDate],
+  );
 
   const bgGradientColors = useMemo(
     () =>
@@ -30,15 +48,60 @@ const HabitItem = ({ habit, isActive }: Props): JSX.Element => {
 
   const color = isActive ? theme.colors.policeBlue : theme.colors.darkBlueText;
 
+  const onCardPress = useCallback(() => {
+    const hasLog = habit.logs.some((log) => isSameDay(log.date, selectedDate));
+
+    const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
+
+    const amountPercentageCompleted = habit.amountTarget
+      ? Math.round((value / habit.amountTarget) * 100)
+      : 0;
+
+    const updatedLogs: HabitLog[] = hasLog
+      ? habit.logs.map((log) => {
+          if (!isSameDay(log.date, selectedDate)) return log;
+
+          const checkedPercentageCompleted =
+            log.percentageCompleted === 100 ? 0 : 100;
+
+          const percentageCompleted = isCheckHabitType
+            ? checkedPercentageCompleted
+            : amountPercentageCompleted;
+
+          return {
+            ...log,
+            percentageCompleted,
+            amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
+          } as HabitLog;
+        })
+      : [
+          ...habit.logs,
+          {
+            date: selectedDate,
+            percentageCompleted: isCheckHabitType
+              ? 100
+              : amountPercentageCompleted,
+            amount: isCheckHabitType ? 1 : value,
+            amountTarget: habit.amountTarget ?? undefined,
+          },
+        ];
+
+    dispatch(updateHabitLog({ habitId: habit._id, updatedLogs }));
+
+    updateHabit({ ...habit, logs: updatedLogs });
+  }, [habit, selectedDate, dispatch, updateHabit]);
+
   const onDetailsPress = useCallback(() => {
     navigation.navigate(Routes.EDIT_HABIT, { item: habit });
   }, [navigation, habit]);
 
   return (
-    <Container activeOpacity={0.5}>
+    <Container activeOpacity={0.5} onPress={onCardPress}>
       <BgContainer colors={bgGradientColors}>
         <InfoContainer>
-          <Checkbox isActive={isActive} />
+          {habit.habitType === HabitTypes.CHECK && (
+            <Checkbox isActive={isActive} />
+          )}
           <Typography color={color} paddingLeft={16} fontWeight="semibold">
             {habit.label}
           </Typography>

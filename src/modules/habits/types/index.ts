@@ -29,6 +29,11 @@ export enum HabitTypes {
   TIME = "TIME",
 }
 
+export type UpdateHabitLogPayload = {
+  habitId: string;
+  updatedLogs: HabitLog[];
+};
+
 export type FetchHabitsResponse = {
   count: number;
   habits: Habit[];

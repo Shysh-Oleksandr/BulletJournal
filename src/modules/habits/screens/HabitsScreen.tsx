@@ -1,4 +1,3 @@
-import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -80,14 +79,9 @@ const HabitsScreen = (): JSX.Element => {
     [navigateToCreateHabitScreen, t],
   );
 
-  const renderItem: ListRenderItem<Habit> = ({ item }) => (
-    <HabitItem
-      habit={item}
-      isActive={item.logs.some(
-        (log) =>
-          log.percentageCompleted >= 100 && isSameDay(log.date, selectedDate),
-      )}
-    />
+  const renderItem: ListRenderItem<Habit> = useCallback(
+    ({ item }) => <HabitItem habit={item} selectedDate={selectedDate} />,
+    [selectedDate],
   );
 
   return (
