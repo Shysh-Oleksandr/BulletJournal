@@ -1,6 +1,6 @@
 import { startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 
-export const getWeekDatesByDate = (date: Date): Date[] => {
+export const getWeekDatesByDate = (date: number): number[] => {
   const startOfCurrentWeek = startOfWeek(date, { weekStartsOn: 1 });
   const endOfCurrentWeek = endOfWeek(date, { weekStartsOn: 1 });
 
@@ -9,5 +9,5 @@ export const getWeekDatesByDate = (date: Date): Date[] => {
     end: endOfCurrentWeek,
   });
 
-  return datesOfWeek;
+  return datesOfWeek.map((date) => date.getTime());
 };

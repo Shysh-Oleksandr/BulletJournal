@@ -9,4 +9,5 @@ export enum Method {
 export enum TAG {
   NOTES = "NOTES",
   LABEL = "LABEL",
+  HABITS = "HABITS",
 }

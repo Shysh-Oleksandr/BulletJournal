@@ -1,10 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import theme from "theme";
 
-import { Entypo, FontAwesome } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import Checkbox from "components/Checkbox";
 import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
+import { useAppNavigation } from "modules/navigation/NavigationService";
+import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 
 import { Habit } from "../types";
@@ -15,6 +18,8 @@ type Props = {
 };
 
 const HabitItem = ({ habit, isActive }: Props): JSX.Element => {
+  const navigation = useAppNavigation();
+
   const bgGradientColors = useMemo(
     () =>
       isActive
@@ -25,24 +30,20 @@ const HabitItem = ({ habit, isActive }: Props): JSX.Element => {
 
   const color = isActive ? theme.colors.policeBlue : theme.colors.darkBlueText;
 
+  const onDetailsPress = useCallback(() => {
+    navigation.navigate(Routes.EDIT_HABIT, { item: habit });
+  }, [navigation, habit]);
+
   return (
     <Container activeOpacity={0.5}>
       <BgContainer colors={bgGradientColors}>
         <InfoContainer>
-          <CheckboxContainer isActive={isActive}>
-            {isActive && (
-              <FontAwesome
-                name="check"
-                color={theme.colors.white}
-                size={theme.fontSizes.sm}
-              />
-            )}
-          </CheckboxContainer>
-          <Typography color={color} fontWeight="semibold">
+          <Checkbox isActive={isActive} />
+          <Typography color={color} paddingLeft={16} fontWeight="semibold">
             {habit.label}
           </Typography>
         </InfoContainer>
-        <MoreContainer hitSlop={BIG_BUTTON_HIT_SLOP}>
+        <MoreContainer hitSlop={BIG_BUTTON_HIT_SLOP} onPress={onDetailsPress}>
           <Entypo
             name="dots-three-horizontal"
             color={color}
@@ -78,18 +79,6 @@ const MoreContainer = styled.TouchableOpacity`
 const InfoContainer = styled.View`
   flex-direction: row;
   align-items: center;
-`;
-
-const CheckboxContainer = styled.View<{ isActive: boolean }>`
-  padding: 2px;
-  width: 24px;
-  height: 24px;
-  background-color: ${({ isActive }) =>
-    isActive ? theme.colors.cyan500 : theme.colors.gray};
-  border-radius: 6px;
-  margin-right: 16px;
-  align-items: center;
-  justify-content: center;
 `;
 
 export default HabitItem;

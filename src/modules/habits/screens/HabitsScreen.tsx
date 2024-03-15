@@ -1,6 +1,6 @@
-import { addDays, isSameDay, startOfToday } from "date-fns";
+import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
@@ -12,67 +12,21 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
+import { useAppNavigation } from "modules/navigation/NavigationService";
+import { Routes } from "modules/navigation/types";
+import AddButton, { ContentItem } from "modules/notes/components/AddButton";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import HabitItem from "../components/HabitItem";
 import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
+import { EMPTY_HABIT } from "../data";
+import { getHabits } from "../HabitsSlice";
 import { Habit } from "../types";
-
-const today = startOfToday();
-
-const HABITS: Habit[] = [
-  {
-    _id: "1",
-    author: "6523fc221cfea2898fce9252",
-    label: "Wake up early",
-    description: "Until sunrise",
-    color: theme.colors.darkBlueText,
-    goal: 30,
-    startDate: addDays(today, -1).getTime(),
-    logs: [
-      { date: today.getTime(), completed: false },
-      {
-        date: addDays(today, -1).getTime(),
-        completed: true,
-      },
-    ],
-  },
-  {
-    _id: "2",
-    author: "6523fc221cfea2898fce9252",
-    label: "Drink water",
-    description: "More than 2l a day",
-    color: theme.colors.cyan600,
-    goal: 40,
-    startDate: today.getTime(),
-    logs: [
-      { date: today.getTime(), completed: true },
-      {
-        date: addDays(today, -1).getTime(),
-        completed: false,
-      },
-    ],
-  },
-  {
-    _id: "3",
-    author: "6523fc221cfea2898fce9252",
-    label: "Eat healthy",
-    color: theme.colors.green600,
-    goal: 60,
-    startDate: addDays(today, -3).getTime(),
-    logs: [
-      { date: today.getTime(), completed: true },
-      {
-        date: addDays(today, -2).getTime(),
-        completed: true,
-      },
-    ],
-  },
-];
 
 const contentContainerStyle = {
   paddingTop: 20,
-  paddingBottom: 80,
+  paddingBottom: 130,
   paddingHorizontal: 20,
 };
 
@@ -80,26 +34,32 @@ const keyExtractor = (item: Habit, i: number) => `${i}-${item._id}`;
 
 const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
+  const navigation = useAppNavigation();
 
-  const [habits] = useState(HABITS);
+  const habits = useAppSelector(getHabits);
+
   const [extraData, setExtraData] = useState<any>(null);
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date().getTime());
 
-  const addNewHabit = () => {};
+  const navigateToCreateHabitScreen = useCallback(() => {
+    navigation.navigate(Routes.EDIT_HABIT, {
+      item: EMPTY_HABIT,
+      isNewHabit: true,
+    });
+  }, [navigation]);
 
   const ListHeaderComponent = useMemo(
     () => (
       <HabitsWeekCalendar
-        habits={habits}
         selectedDate={selectedDate}
-        setSelectedDate={(val: Date) => {
+        setSelectedDate={(val: number) => {
           setSelectedDate(val);
           setExtraData(val);
         }}
       />
     ),
-    [selectedDate, habits],
+    [selectedDate],
   );
 
   const ListEmptyComponent = useMemo(
@@ -112,30 +72,28 @@ const HabitsScreen = (): JSX.Element => {
           label={t("habits.addHabit")}
           marginTop={10}
           labelProps={{ fontSize: "xl", fontWeight: "bold" }}
-          onPress={addNewHabit}
+          onPress={navigateToCreateHabitScreen}
           bgColor={theme.colors.cyan600}
         />
       </EmptyContainer>
     ),
-    [t],
+    [navigateToCreateHabitScreen, t],
   );
 
   const renderItem: ListRenderItem<Habit> = ({ item }) => (
     <HabitItem
       habit={item}
       isActive={item.logs.some(
-        (log) => log.completed && isSameDay(log.date, selectedDate),
+        (log) =>
+          log.percentageCompleted >= 100 && isSameDay(log.date, selectedDate),
       )}
     />
   );
 
   return (
     <>
-      <HeaderBar
-        title={t("habits.habits")}
-        withAddBtn
-        onAddBtnPress={addNewHabit}
-      />
+      <HeaderBar title={t("habits.habits")} />
+      <AddButton contentItem={ContentItem.HABIT} />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}

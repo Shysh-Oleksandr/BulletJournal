@@ -4,6 +4,7 @@ import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
 import { CustomUserEvents } from "modules/app/types";
+import { EMPTY_HABIT } from "modules/habits/data";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -19,23 +20,50 @@ const BOTTOM_GRADIENT_COLOR = getDifferentColor(BG_COLOR, -15);
 
 const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR];
 
-const AddButton = (): JSX.Element => {
+export enum ContentItem {
+  NOTE,
+  HABIT,
+}
+
+type Props = {
+  contentItem?: ContentItem;
+};
+
+const AddButton = ({ contentItem = ContentItem.NOTE }: Props): JSX.Element => {
   const navigation = useAppNavigation();
+
+  const onPress = () => {
+    logUserEvent(CustomUserEvents.ADD_ICON_PRESS);
+
+    switch (contentItem) {
+      case ContentItem.NOTE:
+        navigation.navigate(Routes.EDIT_NOTE, {
+          item: getEmptyNote(),
+          isNewNote: true,
+        });
+        break;
+
+      case ContentItem.HABIT:
+        navigation.navigate(Routes.EDIT_HABIT, {
+          item: EMPTY_HABIT,
+          isNewHabit: true,
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
 
   return (
     <Container>
-      <IconContainer
-        onPress={() => {
-          logUserEvent(CustomUserEvents.ADD_ICON_PRESS);
-
-          navigation.navigate(Routes.EDIT_NOTE, {
-            item: getEmptyNote(),
-            isNewNote: true,
-          });
-        }}
-      >
+      <IconContainer onPress={onPress}>
         <SLinearGradient colors={COLORS}>
-          <Entypo name="edit" size={34} color={theme.colors.white} />
+          <Entypo
+            name={contentItem === ContentItem.NOTE ? "edit" : "plus"}
+            size={contentItem === ContentItem.NOTE ? 34 : 42}
+            color={theme.colors.white}
+          />
         </SLinearGradient>
       </IconContainer>
     </Container>

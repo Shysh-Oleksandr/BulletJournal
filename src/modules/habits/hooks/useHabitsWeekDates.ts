@@ -1,17 +1,24 @@
 import { addDays, isAfter, isSameDay, startOfToday } from "date-fns";
 import { useMemo } from "react";
 
-import { Habit } from "../types";
+import { useAppSelector } from "store/helpers/storeHooks";
+
+import { getHabits } from "../HabitsSlice";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
 const today = startOfToday();
 
-export const useHabitsWeekDates = (selectedDate: Date, habits: Habit[]) => {
+export const useHabitsWeekDates = (selectedDate: number) => {
+  const habits = useAppSelector(getHabits);
+
   const { weekDates, ...arrowsData } = useMemo(() => {
     const weekDates = getWeekDatesByDate(selectedDate);
 
-    const nextWeekFirstDay = addDays(weekDates[weekDates.length - 1], 1);
-    const prevWeekLastDay = addDays(weekDates[0], -1);
+    const nextWeekFirstDay = addDays(
+      weekDates[weekDates.length - 1],
+      1,
+    ).getTime();
+    const prevWeekLastDay = addDays(weekDates[0], -1).getTime();
 
     const isNextWeekDisabled = isAfter(nextWeekFirstDay, today);
 
@@ -27,7 +34,10 @@ export const useHabitsWeekDates = (selectedDate: Date, habits: Habit[]) => {
     () =>
       weekDates.map((date) => {
         const completedHabitsCount = habits.filter((habit) =>
-          habit.logs.some((log) => log.completed && isSameDay(log.date, date)),
+          habit.logs.some(
+            (log) =>
+              log.percentageCompleted >= 100 && isSameDay(log.date, date),
+          ),
         ).length;
 
         return {

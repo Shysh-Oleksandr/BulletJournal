@@ -16,10 +16,10 @@ const CIRCLE_WIDTH = 5;
 const BG_GRADIENT_COLORS = [theme.colors.darkSkyBlue, theme.colors.cyan500];
 
 type Props = {
-  date: Date;
+  date: number;
   progress: number;
   isActive: boolean;
-  setSelectedDate: (val: Date) => void;
+  setSelectedDate: (val: number) => void;
 };
 
 const WeekCalendarItem = ({

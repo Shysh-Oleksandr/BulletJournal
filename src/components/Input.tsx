@@ -22,6 +22,7 @@ type Props = {
   inputRef?: React.MutableRefObject<TextInput | null>;
   Icon?: JSX.Element;
   keyboardType?: KeyboardType;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   selectTextOnFocus?: boolean;
   multiline?: boolean;
   withBorder?: boolean;
@@ -53,6 +54,7 @@ const Input = ({
   isCentered = false,
   inputRef,
   keyboardType,
+  autoCapitalize,
   Icon,
   fontWeight,
   fontSize,
@@ -126,6 +128,7 @@ const Input = ({
         onSubmitEditing={onSubmitEditing}
         onBlur={handleInputBlur}
         onFocus={handleInputFocus}
+        autoCapitalize={autoCapitalize}
       />
       {Icon && (
         <IconContainer

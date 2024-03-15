@@ -8,20 +8,17 @@ import Typography from "components/Typography";
 import styled from "styled-components/native";
 
 import { useHabitsWeekDates } from "../hooks/useHabitsWeekDates";
-import { Habit } from "../types";
 
 import WeekCalendarItem from "./WeekCalendarItem";
 
-const today = startOfToday();
+const today = startOfToday().getTime();
 
 type Props = {
-  habits: Habit[];
-  selectedDate: Date;
-  setSelectedDate: (val: Date) => void;
+  selectedDate: number;
+  setSelectedDate: (val: number) => void;
 };
 
 const HabitsWeekCalendar = ({
-  habits,
   selectedDate,
   setSelectedDate,
 }: Props): JSX.Element => {
@@ -32,7 +29,7 @@ const HabitsWeekCalendar = ({
     prevWeekLastDay,
     nextWeekFirstDay,
     isNextWeekDisabled,
-  } = useHabitsWeekDates(selectedDate, habits);
+  } = useHabitsWeekDates(selectedDate);
 
   return (
     <Container>
@@ -97,7 +94,7 @@ const HabitsWeekCalendar = ({
       <CalendarContainer>
         {mappedWeekDates.map(({ date, progress }) => (
           <WeekCalendarItem
-            key={date.getTime()}
+            key={date}
             date={date}
             progress={progress}
             isActive={isSameDay(date, selectedDate)}
