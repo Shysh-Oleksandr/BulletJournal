@@ -23,6 +23,7 @@ const theme: DefaultTheme = {
     policeBlue: "#1b5266",
     darkSkyBlue: "#89c5cc",
     bubbles: "#ebfbfc",
+    crystal: "#add5d9",
   },
   fontSizes: {
     xxxl: 28,

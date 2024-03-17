@@ -62,7 +62,7 @@ const HabitTypeSelector = ({
   return (
     <Container>
       <Typography
-        fontWeight="bold"
+        fontWeight="semibold"
         fontSize="lg"
         paddingBottom={8}
         align="center"

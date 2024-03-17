@@ -52,7 +52,9 @@ const WeekCalendarItem = ({
           width={CIRCLE_WIDTH}
           rotation={0}
           tintColor={theme.colors.cyan500}
-          backgroundColor={isDisabled ? theme.colors.gray : "#add5d9"}
+          backgroundColor={
+            isDisabled ? theme.colors.gray : theme.colors.crystal
+          }
         >
           {() => (
             <InnerContainer>

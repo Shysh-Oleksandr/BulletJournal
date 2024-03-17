@@ -43,7 +43,7 @@ const HabitTargetSelector = ({
   return (
     <Container>
       <HalfContainer>
-        <Typography fontWeight="bold" fontSize="lg" paddingRight={8}>
+        <Typography fontWeight="semibold" fontSize="lg" paddingRight={8}>
           {label}
         </Typography>
       </HalfContainer>
@@ -60,12 +60,7 @@ const HabitTargetSelector = ({
           fontSize="lg"
           onChange={onChange}
         />
-        <Typography
-          fontWeight="semibold"
-          fontSize="lg"
-          paddingLeft={8}
-          numberOfLines={1}
-        >
+        <Typography fontSize="lg" paddingLeft={8} numberOfLines={1}>
           {t("habits.days")}
         </Typography>
       </AmountContainer>

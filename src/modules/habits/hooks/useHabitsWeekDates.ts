@@ -33,16 +33,30 @@ export const useHabitsWeekDates = (selectedDate: number) => {
   const mappedWeekDates = useMemo(
     () =>
       weekDates.map((date) => {
-        const completedHabitsCount = habits.filter((habit) =>
-          habit.logs.some(
+        const mandatoryHabits = habits.filter((habit) =>
+          habit.frequency.weekdays.some(
+            (weekday) => new Date(weekday).getDay() === new Date(date).getDay(),
+          ),
+        );
+
+        const completedHabitsCount = mandatoryHabits.filter((habit) => {
+          const isMandatoryForSelectedDate = habit.frequency.weekdays.some(
+            (weekday) => new Date(weekday).getDay() === new Date(date).getDay(),
+          );
+
+          const isCompleted = habit.logs.some(
             (log) =>
               log.percentageCompleted >= 100 && isSameDay(log.date, date),
-          ),
-        ).length;
+          );
+
+          return isMandatoryForSelectedDate && isCompleted;
+        }).length;
 
         return {
           date,
-          progress: Math.round((completedHabitsCount / habits.length) * 100),
+          progress: Math.round(
+            (completedHabitsCount / mandatoryHabits.length) * 100,
+          ),
         };
       }),
     [habits, weekDates],

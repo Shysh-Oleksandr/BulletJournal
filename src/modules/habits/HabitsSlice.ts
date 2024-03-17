@@ -1,3 +1,5 @@
+import createCachedSelector from "re-reselect";
+
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { logout } from "modules/auth/AuthSlice";
 
@@ -57,3 +59,32 @@ export default HabitsReducer;
 
 // Selectors
 export const getHabits = (state: RootState): Habit[] => state[STATE_KEY].habits;
+
+export const getHabitsBySelectedDate = createCachedSelector(
+  getHabits,
+  (_: RootState, selectedDate: number) => selectedDate,
+  (habits, selectedDate) => {
+    const selectedWeekday = new Date(selectedDate).getDay();
+
+    const mandatoryHabits: Habit[] = [];
+    const optionalHabits: Habit[] = [];
+
+    habits.forEach((habit) => {
+      const isMandatoryForSelectedDate = habit.frequency.weekdays.some(
+        (weekday) => new Date(weekday).getDay() === selectedWeekday,
+      );
+
+      isMandatoryForSelectedDate
+        ? mandatoryHabits.push(habit)
+        : optionalHabits.push(habit);
+    });
+
+    const firstOptionalHabitId =
+      optionalHabits.length > 0 ? optionalHabits[0]._id : null;
+
+    return {
+      habitsBySelectedDate: [...mandatoryHabits, ...optionalHabits],
+      firstOptionalHabitId,
+    };
+  },
+)((_: RootState, selectedDate: number) => selectedDate);

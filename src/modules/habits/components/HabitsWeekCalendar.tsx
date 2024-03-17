@@ -1,5 +1,6 @@
 import { format, isSameDay, isToday, startOfToday } from "date-fns";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -22,6 +23,8 @@ const HabitsWeekCalendar = ({
   selectedDate,
   setSelectedDate,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const isTodaySelected = isToday(selectedDate);
 
   const {
@@ -46,7 +49,8 @@ const HabitsWeekCalendar = ({
               }
               fontWeight="bold"
             >
-              Today{` `}
+              {t("habits.today")}
+              {` `}
               {!isTodaySelected && (
                 <FontAwesome5
                   name="arrow-right"

@@ -20,12 +20,12 @@ import styled from "styled-components/native";
 import HabitItem from "../components/HabitItem";
 import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
-import { getHabits } from "../HabitsSlice";
+import { getHabitsBySelectedDate } from "../HabitsSlice";
 import { Habit } from "../types";
 
 const contentContainerStyle = {
   paddingTop: 20,
-  paddingBottom: 130,
+  paddingBottom: 185,
   paddingHorizontal: 20,
 };
 
@@ -35,11 +35,13 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const habits = useAppSelector(getHabits);
-
   const [extraData, setExtraData] = useState<any>(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
+
+  const { habitsBySelectedDate, firstOptionalHabitId } = useAppSelector(
+    (state) => getHabitsBySelectedDate(state, selectedDate),
+  );
 
   const navigateToCreateHabitScreen = useCallback(() => {
     navigation.navigate(Routes.EDIT_HABIT, {
@@ -80,8 +82,14 @@ const HabitsScreen = (): JSX.Element => {
   );
 
   const renderItem: ListRenderItem<Habit> = useCallback(
-    ({ item }) => <HabitItem habit={item} selectedDate={selectedDate} />,
-    [selectedDate],
+    ({ item }) => (
+      <HabitItem
+        habit={item}
+        selectedDate={selectedDate}
+        isFirstOptionalHabitId={item._id === firstOptionalHabitId}
+      />
+    ),
+    [selectedDate, firstOptionalHabitId],
   );
 
   return (
@@ -93,13 +101,13 @@ const HabitsScreen = (): JSX.Element => {
         colors={BG_GRADIENT_COLORS}
       >
         <FlashList
-          data={habits}
+          data={habitsBySelectedDate}
           renderItem={renderItem}
           extraData={extraData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}
           ListHeaderComponent={ListHeaderComponent}
-          estimatedItemSize={300}
+          estimatedItemSize={155}
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"

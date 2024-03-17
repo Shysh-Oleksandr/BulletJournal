@@ -24,6 +24,7 @@ declare module "styled-components/native" {
       policeBlue: string;
       darkSkyBlue: string;
       bubbles: string;
+      crystal: string;
     };
     fontSizes: {
       xxxl: number;

@@ -43,7 +43,7 @@ const HabitFrequencySelector = ({
     <Container>
       <DailyRepeatButton onPress={onDailyRepeatButtonPress}>
         <Typography
-          fontWeight="bold"
+          fontWeight="semibold"
           fontSize="lg"
           paddingRight={8}
           align="center"

@@ -116,11 +116,11 @@ const EditHabitScreen: FC<{
     try {
       if (isNewHabit) {
         await createHabit(updateHabitData).unwrap();
-
-        withAlert && navigation.goBack();
       } else {
         await updateHabit(updateHabitData);
       }
+
+      withAlert && navigation.goBack();
 
       if (withAlert) {
         Toast.show({

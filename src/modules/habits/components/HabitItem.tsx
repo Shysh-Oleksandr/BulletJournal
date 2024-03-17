@@ -1,35 +1,57 @@
 import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Easing } from "react-native";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { TextInput } from "react-native-gesture-handler";
 import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
 import Checkbox from "components/Checkbox";
+import Input from "components/Input";
 import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
-import { useAppDispatch } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { habitsApi } from "../HabitsApi";
-import { updateHabitLog } from "../HabitsSlice";
-import { Habit, HabitLog, HabitTypes } from "../types";
+import { useHabitTags } from "../hooks/useHabitTags";
+import { useUpdateHabitLog } from "../hooks/useUpdateHabitLog";
+import { Habit, HabitTypes } from "../types";
+
+const CIRCLE_SIZE = 42;
+const CIRCLE_WIDTH = 5;
 
 type Props = {
   habit: Habit;
   selectedDate: number;
+  isFirstOptionalHabitId?: boolean;
 };
 
-const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
-
+const HabitItem = ({
+  habit,
+  selectedDate,
+  isFirstOptionalHabitId,
+}: Props): JSX.Element => {
+  const { t } = useTranslation();
   const navigation = useAppNavigation();
-  const dispatch = useAppDispatch();
 
-  const value = 10;
+  const inputRef = useRef<TextInput | null>(null);
 
-  const isActive = useMemo(
+  const { inputValue, currentLog, onChange, updateLog } = useUpdateHabitLog({
+    habit,
+    selectedDate,
+  });
+
+  const isTodaySelected = useMemo(
+    () => isSameDay(selectedDate, new Date()),
+    [selectedDate],
+  );
+
+  const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
+
+  const isCompleted = useMemo(
     () =>
       habit.logs.some(
         (log) =>
@@ -38,83 +60,151 @@ const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
     [habit.logs, selectedDate],
   );
 
+  const color = isCompleted
+    ? theme.colors.policeBlue
+    : theme.colors.darkBlueText;
+
   const bgGradientColors = useMemo(
     () =>
-      isActive
+      isCompleted
         ? [theme.colors.cyan300, theme.colors.cyan500]
         : [theme.colors.white, theme.colors.cyan300],
-    [isActive],
+    [isCompleted],
   );
 
-  const color = isActive ? theme.colors.policeBlue : theme.colors.darkBlueText;
+  const tags = useHabitTags({ habit, amountTarget: currentLog?.amountTarget });
+
+  const inputFontSize = useMemo(() => {
+    if (inputValue.length < 3) return "md";
+
+    if (inputValue.length < 4) return "sm";
+
+    if (inputValue.length < 5) return "xs";
+
+    return "xxs";
+  }, [inputValue.length]);
 
   const onCardPress = useCallback(() => {
-    const hasLog = habit.logs.some((log) => isSameDay(log.date, selectedDate));
+    if (isCheckHabitType) {
+      updateLog();
 
-    const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
+      return;
+    }
 
-    const amountPercentageCompleted = habit.amountTarget
-      ? Math.round((value / habit.amountTarget) * 100)
-      : 0;
-
-    const updatedLogs: HabitLog[] = hasLog
-      ? habit.logs.map((log) => {
-          if (!isSameDay(log.date, selectedDate)) return log;
-
-          const checkedPercentageCompleted =
-            log.percentageCompleted === 100 ? 0 : 100;
-
-          const percentageCompleted = isCheckHabitType
-            ? checkedPercentageCompleted
-            : amountPercentageCompleted;
-
-          return {
-            ...log,
-            percentageCompleted,
-            amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
-          } as HabitLog;
-        })
-      : [
-          ...habit.logs,
-          {
-            date: selectedDate,
-            percentageCompleted: isCheckHabitType
-              ? 100
-              : amountPercentageCompleted,
-            amount: isCheckHabitType ? 1 : value,
-            amountTarget: habit.amountTarget ?? undefined,
-          },
-        ];
-
-    dispatch(updateHabitLog({ habitId: habit._id, updatedLogs }));
-
-    updateHabit({ ...habit, logs: updatedLogs });
-  }, [habit, selectedDate, dispatch, updateHabit]);
+    inputRef.current?.focus();
+  }, [isCheckHabitType, updateLog]);
 
   const onDetailsPress = useCallback(() => {
     navigation.navigate(Routes.EDIT_HABIT, { item: habit });
   }, [navigation, habit]);
 
   return (
-    <Container activeOpacity={0.5} onPress={onCardPress}>
-      <BgContainer colors={bgGradientColors}>
-        <InfoContainer>
-          {habit.habitType === HabitTypes.CHECK && (
-            <Checkbox isActive={isActive} />
+    <>
+      {isFirstOptionalHabitId && (
+        <Typography
+          fontWeight="semibold"
+          fontSize="lg"
+          paddingTop={16}
+          paddingBottom={16}
+        >
+          {t(
+            isTodaySelected
+              ? "habits.optionalHabitsToday"
+              : "habits.optionalHabitsThatDay",
           )}
-          <Typography color={color} paddingLeft={16} fontWeight="semibold">
-            {habit.label}
-          </Typography>
-        </InfoContainer>
-        <MoreContainer hitSlop={BIG_BUTTON_HIT_SLOP} onPress={onDetailsPress}>
-          <Entypo
-            name="dots-three-horizontal"
-            color={color}
-            size={theme.fontSizes.xxl}
-          />
-        </MoreContainer>
-      </BgContainer>
-    </Container>
+        </Typography>
+      )}
+
+      <Container activeOpacity={0.5} onPress={onCardPress}>
+        <BgContainer colors={bgGradientColors}>
+          <RowContainer>
+            <InfoContainer>
+              <AnimatedCircularProgress
+                duration={600}
+                easing={Easing.ease}
+                fill={currentLog?.percentageCompleted ?? 0}
+                size={CIRCLE_SIZE}
+                width={CIRCLE_WIDTH}
+                rotation={0}
+                tintColor={theme.colors.cyan500}
+                backgroundColor={theme.colors.crystal}
+              >
+                {() => (
+                  <InnerContainer isCompleted={isCompleted}>
+                    {isCheckHabitType ? (
+                      <Checkbox
+                        isActive={isCompleted}
+                        borderRadius={0}
+                        size={CIRCLE_SIZE}
+                        iconSize={theme.fontSizes.md}
+                        bgColor="transparent"
+                      />
+                    ) : (
+                      <>
+                        <Input
+                          value={inputValue}
+                          inputRef={inputRef}
+                          isCentered
+                          paddingHorizontal={0}
+                          maxLength={7}
+                          numberOfLines={1}
+                          keyboardType="number-pad"
+                          fontWeight="semibold"
+                          labelColor={isCompleted ? theme.colors.white : color}
+                          bgColor={
+                            isCompleted ? theme.colors.cyan500 : "transparent"
+                          }
+                          selectTextOnFocus
+                          fontSize={inputFontSize}
+                          onChange={onChange}
+                          onBlur={updateLog}
+                        />
+                      </>
+                    )}
+                  </InnerContainer>
+                )}
+              </AnimatedCircularProgress>
+
+              <LabelContainer>
+                <Typography
+                  color={color}
+                  paddingLeft={14}
+                  paddingRight={6}
+                  numberOfLines={2}
+                  fontWeight="semibold"
+                >
+                  {habit.label}
+                </Typography>
+              </LabelContainer>
+            </InfoContainer>
+            <MoreContainer
+              hitSlop={BIG_BUTTON_HIT_SLOP}
+              onPress={onDetailsPress}
+            >
+              <Entypo
+                name="dots-three-horizontal"
+                color={color}
+                size={theme.fontSizes.xxl}
+              />
+            </MoreContainer>
+          </RowContainer>
+          <TagsContainer>
+            {tags.map((tag, index) => (
+              <TagContainer key={index} isActive={isCompleted}>
+                <Typography
+                  color={color}
+                  fontWeight="semibold"
+                  align="center"
+                  fontSize="xs"
+                >
+                  {tag}
+                </Typography>
+              </TagContainer>
+            ))}
+          </TagsContainer>
+        </BgContainer>
+      </Container>
+    </>
   );
 };
 
@@ -123,12 +213,17 @@ const Container = styled.TouchableOpacity`
   elevation: 10;
   border-radius: 8px;
   background-color: ${theme.colors.white};
+  width: 100%;
 `;
 
 const BgContainer = styled(LinearGradient)`
   width: 100%;
   border-radius: 8px;
-  padding: 20px 20px;
+  padding: 20px 16px 12px;
+`;
+
+const RowContainer = styled.View`
+  width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -142,6 +237,38 @@ const MoreContainer = styled.TouchableOpacity`
 const InfoContainer = styled.View`
   flex-direction: row;
   align-items: center;
+  flex: 1;
 `;
 
-export default HabitItem;
+const InnerContainer = styled.View<{ isCompleted: boolean }>`
+  border-radius: 999px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ isCompleted }) =>
+    isCompleted ? theme.colors.cyan500 : "transparent"};
+  padding: 1px;
+`;
+
+const LabelContainer = styled.View`
+  flex: 1;
+`;
+
+const TagsContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+`;
+
+const TagContainer = styled.View<{ isActive: boolean }>`
+  z-index: 20;
+  padding: 3px 6px;
+  background-color: ${({ isActive }) =>
+    isActive ? `${theme.colors.cyan400}70` : `${theme.colors.cyan500}25`};
+  border-radius: 6px;
+`;
+
+export default React.memo(HabitItem);
