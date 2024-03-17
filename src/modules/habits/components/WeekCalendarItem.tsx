@@ -8,6 +8,8 @@ import theme from "theme";
 import Typography from "components/Typography";
 import styled from "styled-components/native";
 
+import { getLocalizedWeekDay } from "../utils/getLocalizedWeekDay";
+
 const today = startOfToday();
 
 const CIRCLE_SIZE = 40;
@@ -59,7 +61,7 @@ const WeekCalendarItem = ({
           {() => (
             <InnerContainer>
               <Typography fontSize="xs" fontWeight="semibold" uppercase>
-                {format(date, "EEEEEE")}
+                {getLocalizedWeekDay(date).slice(0, 2)}
               </Typography>
             </InnerContainer>
           )}
