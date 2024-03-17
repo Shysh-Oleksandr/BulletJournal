@@ -8,6 +8,7 @@ import { RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import LeaveConfirmAlert from "components/LeaveConfirmAlert";
+import Typography from "components/Typography";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
@@ -22,6 +23,7 @@ import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
+import HabitBody from "../components/HabitBody";
 import HabitFrequencySelector from "../components/habitForm/HabitFrequencySelector";
 import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
@@ -202,9 +204,6 @@ const EditHabitScreen: FC<{
             withAutoFocus={!!isNewHabit}
             setCurrentTitle={setCurrentLabel}
           />
-          {/* <ColorSelectorContainer>
-          <Typography>Color selection</Typography>
-        </ColorSelectorContainer> */}
           <HabitTypeSelector
             selectedType={selectedType}
             currentAmount={currentAmount}
@@ -236,6 +235,15 @@ const EditHabitScreen: FC<{
             deleteItem={() => setIsDeleteDialogVisible(true)}
           />
         </ContentContainer>
+        <Typography fontSize="lg" paddingBottom={8}>
+          {t("note.preview")}
+        </Typography>
+        <HabitBody
+          habit={currentHabit}
+          inputValue={currentHabit.amountTarget?.toString() ?? "0"}
+          isCompleted
+          percentageCompleted={100}
+        />
       </SScrollView>
       <ConfirmAlert
         message={t("habits.deleteConfirmation")}

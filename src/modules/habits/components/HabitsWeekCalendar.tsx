@@ -45,7 +45,7 @@ const HabitsWeekCalendar = ({
             <Typography
               fontSize="xxl"
               color={
-                isTodaySelected ? theme.colors.blackText : theme.colors.gray
+                isTodaySelected ? theme.colors.darkBlueText : theme.colors.gray
               }
               fontWeight="bold"
             >
