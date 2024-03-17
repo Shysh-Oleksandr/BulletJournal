@@ -1,23 +1,17 @@
 import { LinearGradient } from "expo-linear-gradient";
 import isEqual from "lodash.isequal";
 import { isNil } from "ramda";
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GestureResponderEvent, ScrollView } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import Toast from "react-native-toast-message";
 import theme from "theme";
 
-import { EventArg, RouteProp } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
+import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
 import {
@@ -38,12 +32,12 @@ import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
+import FormActionButtons from "../components/noteForm/FormActionButtons";
 import ImagePicker from "../components/noteForm/ImagePicker";
 import ImagesSection from "../components/noteForm/ImagesSection";
 import ImportanceInput from "../components/noteForm/ImportanceInput";
 import LockButton from "../components/noteForm/LockButton";
 import NeighboringNotesLinks from "../components/noteForm/NeighboringNotesLinks";
-import NoteActionButtons from "../components/noteForm/NoteActionButtons";
 import SavingStatusLabel from "../components/noteForm/SavingStatusLabel";
 import StarButton from "../components/noteForm/StarButton";
 import TextEditor from "../components/noteForm/TextEditor";
@@ -62,21 +56,6 @@ const contentContainerStyle = {
   paddingHorizontal: 20,
   paddingBottom: 70,
 };
-
-type NavigationAction = Readonly<{
-  type: string;
-  payload?: object | undefined;
-  source?: string | undefined;
-  target?: string | undefined;
-}>;
-
-type BeforeRemoveEvent = EventArg<
-  "beforeRemove",
-  true,
-  {
-    action: NavigationAction;
-  }
->;
 
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
@@ -141,9 +120,6 @@ const EditNoteScreen: FC<{
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
-  const [isLeaveDialogVisible, setIsLeaveDialogVisible] = useState(false);
-  const [leaveNavigationAction, setLeaveNavigationAction] =
-    useState<NavigationAction | null>(null);
 
   const richTextRef = useRef<RichEditor | null>(null);
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -194,11 +170,7 @@ const EditNoteScreen: FC<{
   const handleImages = useHandleImagesOnSave(currentImages, savedNote);
 
   const saveNoteHandler = async (shouldLock?: boolean, withAlert = true) => {
-    if (!userId) {
-      logging.error("The user doesn't have an id");
-
-      return;
-    }
+    if (!userId) return;
 
     setIsSaving(true);
 
@@ -304,8 +276,6 @@ const EditNoteScreen: FC<{
     } finally {
       setIsDeleting(false);
     }
-
-    // "It will delete the note permanently. This action cannot be undone",
   }, [_id, currentImages, deleteNote, fetchNotes, navigation, t, userId]);
 
   const onStartShouldSetResponder = useCallback(
@@ -325,25 +295,6 @@ const EditNoteScreen: FC<{
     },
     [childrenIds],
   );
-
-  useEffect(() => {
-    const callback = (e: BeforeRemoveEvent) => {
-      if (!hasChanges || isLeaveDialogVisible) {
-        return;
-      }
-
-      e.preventDefault();
-
-      setIsLeaveDialogVisible(true);
-      setLeaveNavigationAction(e.data.action);
-    };
-
-    navigation.addListener("beforeRemove", callback);
-
-    return () => {
-      navigation.removeListener("beforeRemove", callback);
-    };
-  }, [navigation, hasChanges, isLeaveDialogVisible]);
 
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
@@ -396,7 +347,7 @@ const EditNoteScreen: FC<{
             <FormContentContainer pointerEvents={isLocked ? "none" : "auto"}>
               <TitleInput
                 currentTitle={currentTitle}
-                isNewNote={!!isNewNote}
+                withAutoFocus={!!isNewNote}
                 setCurrentTitle={setCurrentTitle}
               />
               <DatePicker
@@ -442,14 +393,14 @@ const EditNoteScreen: FC<{
                 }}
                 setContentHTML={setContentHTML}
               />
-              <NoteActionButtons
+              <FormActionButtons
                 isSaving={isSaving}
-                hasNoChanges={!hasChanges || currentTitle.trim() === ""}
+                disabled={!hasChanges || currentTitle.trim() === ""}
                 isDeleting={isDeleting}
-                isNewNote={!!isNewNote}
+                isNewItem={!!isNewNote}
                 isLocked={isLocked}
-                saveNote={saveNoteHandler}
-                deleteNote={() => setIsDeleteDialogVisible(true)}
+                saveItem={saveNoteHandler}
+                deleteItem={() => setIsDeleteDialogVisible(true)}
               />
             </FormContentContainer>
             <ImagesSection
@@ -484,17 +435,10 @@ const EditNoteScreen: FC<{
         setIsDialogVisible={setIsDeleteDialogVisible}
         onConfirm={deleteNoteHandler}
       />
-      <ConfirmAlert
-        message={t("note.saveBeforeLeaving")}
-        isDialogVisible={isLeaveDialogVisible}
-        setIsDialogVisible={setIsLeaveDialogVisible}
-        onDeny={() =>
-          leaveNavigationAction && navigation.dispatch(leaveNavigationAction)
-        }
+      <LeaveConfirmAlert
+        hasChanges={hasChanges}
         onConfirm={async () => {
           await saveNoteHandler(undefined, false);
-
-          leaveNavigationAction && navigation.dispatch(leaveNavigationAction);
         }}
       />
     </Wrapper>

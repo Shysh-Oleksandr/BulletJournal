@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { IS_ANDROID } from "modules/app/constants";
 import { getIsAuthenticated, getUserData } from "modules/auth/AuthSlice";
 import SignIn from "modules/auth/screens/SignIn";
+import EditHabitScreen from "modules/habits/screens/EditHabitScreen";
 import EditNoteScreen from "modules/notes/screens/EditNoteScreen";
 import SearchScreen from "modules/notes/screens/SearchScreen";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -80,6 +81,10 @@ const Nav = (): JSX.Element => {
           <>
             <Stack.Screen name={Routes.MAIN} component={TabNavigator} />
             <Stack.Screen name={Routes.EDIT_NOTE} component={EditNoteScreen} />
+            <Stack.Screen
+              name={Routes.EDIT_HABIT}
+              component={EditHabitScreen}
+            />
             <Stack.Screen name={Routes.SEARCH} component={SearchScreen} />
           </>
         )}

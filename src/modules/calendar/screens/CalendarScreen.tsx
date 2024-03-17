@@ -1,6 +1,6 @@
 import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
@@ -36,8 +36,6 @@ const CalendarScreen = (): JSX.Element => {
   const navigation = useAppNavigation();
 
   const allNotes = useAppSelector(getNotes);
-
-  const flashListRef = useRef<FlashList<Note>>(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -101,12 +99,10 @@ const CalendarScreen = (): JSX.Element => {
           ListEmptyComponent={ListEmptyComponent}
           ListHeaderComponent={ListHeaderComponent}
           ItemSeparatorComponent={NoteSeparator}
-          onEndReachedThreshold={0.1}
           estimatedItemSize={300}
           contentContainerStyle={contentContainerStyle}
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
-          ref={flashListRef}
           bounces={false}
         />
       </SLinearGradient>

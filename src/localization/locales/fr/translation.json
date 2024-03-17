@@ -61,7 +61,7 @@
     "editorPlaceholder": "Écrivez votre note ici...",
     "deleteSelected": "Supprimer l'élément sélectionné?",
     "newNote": "Une nouvelle note",
-    "noNotesInfo": "Vous n'avez pas encore de notes",
+    "noNotesInfo": "Vous n'avez pas encore ajouté de notes",
     "addNote": "Ajouter une note"
   },
   "search": {
@@ -105,5 +105,37 @@
       "sat": "Sam",
       "sun": "Dim"
     }
+  },
+  "habits": {
+    "habits": "Habitudes",
+    "habit": "Habitude",
+    "noHabitsText": "Vous n'avez pas encore ajouté d'habitudes",
+    "addHabit": "Ajouter une habitude",
+    "createHabit": "Créer une habitude",
+    "editHabit": "Modifier une habitude",
+    "type": "Type",
+    "today": "Aujourd'hui",
+    "target": "Objectif",
+    "units": "Unités",
+    "unitsAmountPlaceholder": "e.g. km",
+    "unitsTimePlaceholder": "e.g. minutes",
+    "defaultTimeUnits": "minutes",
+    "check": "Oui/Non",
+    "amount": "Quantité",
+    "time": "Temps",
+    "streakTarget": "Objectif de la série",
+    "overallTarget": "Objectif global",
+    "days": "jours",
+    "repeatEveryday": "Répéter tous les jours",
+    "createdInfo": "L'habitude est créée",
+    "updatedInfo": "L'habitude est mise à jour",
+    "deletedInfo": "L'habitude est supprimée",
+    "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette habitude?",
+    "optionalHabitsToday": "Habitudes facultatives pour aujourd'hui:",
+    "optionalHabitsThatDay": "Habitudes facultatives pour cette journée:",
+    "targetAmount": "Objectif:",
+    "streakDays": "Série: {{count}}/{{target}} jours",
+    "overallDays": "Total: {{value}}/{{count}} jours",
+    "longestStreak": "La plus longue série: {{count}} jours"
   }
 }

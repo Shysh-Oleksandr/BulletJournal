@@ -13,32 +13,32 @@ const DeleteIcon = (
 type Props = {
   isSaving: boolean;
   isDeleting: boolean;
-  isNewNote: boolean;
-  hasNoChanges: boolean;
-  isLocked: boolean;
-  saveNote: () => Promise<void>;
-  deleteNote: () => void;
+  isNewItem: boolean;
+  disabled?: boolean;
+  isLocked?: boolean;
+  saveItem: () => Promise<void>;
+  deleteItem: () => void;
 };
 
-const NoteActionButtons = ({
+const FormActionButtons = ({
   isSaving,
   isDeleting,
-  isNewNote,
-  hasNoChanges,
+  isNewItem,
+  disabled,
   isLocked,
-  saveNote,
-  deleteNote,
+  saveItem,
+  deleteItem,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   return (
     <>
       <Button
-        label={t(isNewNote ? "note.create" : "note.update")}
-        onPress={saveNote}
+        label={t(isNewItem ? "note.create" : "note.update")}
+        onPress={saveItem}
         bgColor={theme.colors.cyan600}
         marginTop={20}
-        disabled={isLocked || hasNoChanges || isSaving || isDeleting}
+        disabled={isLocked || disabled || isSaving || isDeleting}
         isLoading={isSaving}
         labelProps={{
           fontWeight: "bold",
@@ -47,10 +47,10 @@ const NoteActionButtons = ({
         }}
         Icon={SaveIcon}
       />
-      {!isNewNote && (
+      {!isNewItem && (
         <Button
           label={t("note.delete")}
-          onPress={deleteNote}
+          onPress={deleteItem}
           bgColor={theme.colors.red600}
           marginTop={8}
           disabled={isLocked || isSaving || isDeleting}
@@ -67,4 +67,4 @@ const NoteActionButtons = ({
   );
 };
 
-export default NoteActionButtons;
+export default FormActionButtons;

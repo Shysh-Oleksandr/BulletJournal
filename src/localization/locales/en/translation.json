@@ -61,7 +61,7 @@
     "editorPlaceholder": "Write your note here...",
     "deleteSelected": "Delete selected item?",
     "newNote": "A new note",
-    "noNotesInfo": "You don't have any notes yet",
+    "noNotesInfo": "You haven't added any notes yet",
     "addNote": "Add a note"
   },
   "search": {
@@ -105,5 +105,37 @@
       "sat": "Sat",
       "sun": "Sun"
     }
+  },
+  "habits": {
+    "habits": "Habits",
+    "habit": "Habit",
+    "noHabitsText": "You haven't added any habits yet",
+    "addHabit": "Add a habit",
+    "createHabit": "Create a habit",
+    "editHabit": "Edit a habit",
+    "type": "Type",
+    "today": "Today",
+    "target": "Target",
+    "units": "Units",
+    "unitsAmountPlaceholder": "e.g. reps",
+    "unitsTimePlaceholder": "e.g. mins",
+    "defaultTimeUnits": "mins",
+    "check": "Check",
+    "amount": "Amount",
+    "time": "Time",
+    "streakTarget": "Streak target",
+    "overallTarget": "Overall target",
+    "days": "days",
+    "repeatEveryday": "Repeat everyday",
+    "createdInfo": "The habit is created",
+    "updatedInfo": "The habit is updated",
+    "deletedInfo": "The habit is deleted",
+    "deleteConfirmation": "Are you sure you want to delete this habit?",
+    "optionalHabitsToday": "Optional habits for today:",
+    "optionalHabitsThatDay": "Optional habits for that day:",
+    "targetAmount": "Target:",
+    "streakDays": "Streak: {{count}}/{{target}} days",
+    "overallDays": "Overall: {{value}}/{{count}} days",
+    "longestStreak": "Longest streak: {{count}} days"
   }
 }
