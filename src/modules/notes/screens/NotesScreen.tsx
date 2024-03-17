@@ -20,6 +20,7 @@ import {
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
+import { habitsApi } from "modules/habits/HabitsApi";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -50,6 +51,7 @@ const NotesScreen = (): JSX.Element => {
   const [fetchNotes, { isLoading: isNotesLoading }] =
     notesApi.useLazyFetchNotesQuery();
   const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
+  const [fetchHabits] = habitsApi.useLazyFetchHabitsQuery();
 
   const navigation = useAppNavigation();
 
@@ -126,9 +128,12 @@ const NotesScreen = (): JSX.Element => {
     if (!isLoaded && userId) {
       await fetchNotes(userId);
       await fetchLabels(userId);
+
       setIsLoaded(true);
+
+      await fetchHabits(userId);
     }
-  }, [isLoaded, userId, fetchLabels, fetchNotes]);
+  }, [isLoaded, userId, fetchNotes, fetchLabels, fetchHabits]);
 
   useEffect(() => {
     if (notes.length === 0 && allNotes.length > 0) {

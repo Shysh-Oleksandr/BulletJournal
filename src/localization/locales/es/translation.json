@@ -27,7 +27,7 @@
     "notes": "Notas",
     "Note": "Nota",
     "deletedInfo": "La nota esta eliminada",
-    "createdInfo": "Se crea la nota",
+    "createdInfo": "La nota está creada",
     "updatedInfo": "La nota esta actualizada",
     "deleteConfirmation": "¿Está seguro que quieres eliminar esta nota?",
     "saveBeforeLeaving": "¿Quiere guardar los cambios antes de salir?",
@@ -61,7 +61,7 @@
     "editorPlaceholder": "Escribe tu nota aquí...",
     "deleteSelected": "¿Eliminar elemento seleccionado?",
     "newNote": "Una nueva nota",
-    "noNotesInfo": "Aún no tiene ninguna nota",
+    "noNotesInfo": "Aún no ha agregado ninguna nota",
     "addNote": "Agrega una nota"
   },
   "search": {
@@ -105,5 +105,37 @@
       "sat": "Sab",
       "sun": "Dom"
     }
+  },
+  "habits": {
+    "habits": "Hábitos",
+    "habit": "Hábito",
+    "noHabitsText": "Aún no ha añadido ningún hábito",
+    "addHabit": "Añadir un hábito",
+    "createHabit": "Crear un habito",
+    "editHabit": "Editar un hábito",
+    "type": "Tipo",
+    "today": "Hoy",
+    "target": "Objetivo",
+    "units": "Unidades",
+    "unitsAmountPlaceholder": "p.ej. km ",
+    "unitsTimePlaceholder": "p.ej. minutos",
+    "defaultTimeUnits": "minutos",
+    "check": "Sí/No",
+    "amount": "Cantidad",
+    "time": "Tiempo",
+    "streakTarget": "Objetivo de racha",
+    "overallTarget": "Objetivo general",
+    "days": "días",
+    "repeatEveryday": "Repetir todos los días",
+    "createdInfo": "El hábito está creado",
+    "updatedInfo": "El hábito está actualizado",
+    "deletedInfo": "El hábito está eliminado",
+    "deleteConfirmation": "¿Está seguro de que quiere eliminar este hábito?",
+    "optionalHabitsToday": "Hábitos opcionales para hoy:",
+    "optionalHabitsThatDay": "Hábitos opcionales para ese día:",
+    "targetAmount": "Objetivo:",
+    "streakDays": "Racha: {{count}}/{{target}} días",
+    "overallDays": "Total: {{value}}/{{count}} días",
+    "longestStreak": "Racha más larga: {{count}} días"
   }
 }

@@ -28,7 +28,7 @@
     "Note": "Notiz",
     "deletedInfo": "Die Notiz wird gelöscht",
     "createdInfo": "Die Notiz wird erstellt",
-    "updatedInfo": "Der Hinweis wurde aktualisiert",
+    "updatedInfo": "Die Notiz wird aktualisiert",
     "deleteConfirmation": "Möchten Sie diese Notiz wirklich löschen?",
     "saveBeforeLeaving": "Möchten Sie die Änderungen vor dem Verlassen speichern?",
     "saving": "Sparen...",
@@ -61,7 +61,7 @@
     "editorPlaceholder": "Schreiben Sie hier Ihre Notiz...",
     "deleteSelected": "Ausgewähltes Element löschen?",
     "newNote": "Eine neue Notiz",
-    "noNotesInfo": "Sie haben noch keine Notizen",
+    "noNotesInfo": "Sie haben noch keine Notizen hinzugefügt",
     "addNote": "Füg ein Notiz hinzu"
   },
   "search": {
@@ -105,5 +105,37 @@
       "sat": "Sa",
       "sun": "So"
     }
+  },
+  "habits": {
+    "habits": "Gewohnheiten",
+    "habit": "Gewohnheit",
+    "noHabitsText": "Sie haben noch keine Gewohnheiten hinzugefügt",
+    "addHabit": "Eine Gewohnheit hinzufügen",
+    "createHabit": "Eine Gewohnheit erstellen",
+    "editHabit": "Eine Gewohnheit bearbeiten",
+    "type": "Typ",
+    "today": "Heute",
+    "target": "Ziel",
+    "units": "Einheiten",
+    "unitsAmountPlaceholder": "z.B. km",
+    "unitsTimePlaceholder": "z.B. Minuten",
+    "defaultTimeUnits": "Minuten",
+    "check": "Ja/Nein",
+    "amount": "Menge",
+    "time": "Zeit",
+    "streakTarget": "Streak-Ziel",
+    "overallTarget": "Gesamtziel",
+    "days": "Tage",
+    "repeatEveryday": "Jeden Tag wiederholen",
+    "createdInfo": "Die Gewohnheit wird erstellt",
+    "updatedInfo": "Die Gewohnheit wird aktualisiert",
+    "deletedInfo": "Die Gewohnheit wird gelöscht",
+    "deleteConfirmation": "Sind Sie sicher, dass Sie diese Gewohnheit löschen möchten?",
+    "optionalHabitsToday": "Optionale Gewohnheiten für heute:",
+    "optionalHabitsThatDay": "Optionale Gewohnheiten für diesen Tag:",
+    "targetAmount": "Ziel:",
+    "streakDays": "Streak: {{count}}/{{target}} Tage",
+    "overallDays": "Gesamt: {{value}}/{{count}} Tage",
+    "longestStreak": "Längste Streak: {{count}} Tage"
   }
 }

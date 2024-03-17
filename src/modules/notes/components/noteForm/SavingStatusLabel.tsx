@@ -24,7 +24,7 @@ const NotSavedIcon = (
 type Props = {
   isSaving: boolean;
   hasChanges: boolean;
-  isLocked: boolean;
+  isLocked?: boolean;
 };
 
 const SavingStatusLabel = ({
