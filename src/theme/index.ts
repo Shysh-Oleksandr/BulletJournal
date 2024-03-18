@@ -24,6 +24,7 @@ const theme: DefaultTheme = {
     darkSkyBlue: "#89c5cc",
     bubbles: "#ebfbfc",
     crystal: "#add5d9",
+    azureishWhite: "#dae6f0",
   },
   fontSizes: {
     xxxl: 28,

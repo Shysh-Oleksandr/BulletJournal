@@ -11,7 +11,18 @@
     "areYouSure": "Are you sure?"
   },
   "auth": {
-    "logoutConfirmation": "Are you sure you want to logout?"
+    "logoutConfirmation": "Are you sure you want to logout?",
+    "email": "Email",
+    "password": "Password",
+    "welcome": "Welcome to",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "or": "or",
+    "authFailed": "Authentication failed",
+    "emailInUse": "The email is already in use",
+    "invalidEmailOrPass": "Invalid email or password. Please try again"
   },
   "note": {
     "create": "Create",
