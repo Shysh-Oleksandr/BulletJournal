@@ -145,6 +145,7 @@ const Input = ({
         <IconContainer
           disabled={!onIconPress}
           onPress={onIconPress}
+          rightOffset={paddingHorizontal}
           hitSlop={SMALL_BUTTON_HIT_SLOP}
         >
           {Icon}
@@ -195,9 +196,9 @@ const CustomInput = styled.TextInput<{
     maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
 `;
 
-const IconContainer = styled.TouchableOpacity`
+const IconContainer = styled.TouchableOpacity<{ rightOffset: number }>`
   position: absolute;
-  right: 5px;
+  right: ${({ rightOffset }) => rightOffset}px;
   z-index: 1000;
 `;
 

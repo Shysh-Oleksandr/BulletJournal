@@ -94,10 +94,12 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
     <Section>
       <Input
         value={email}
-        paddingHorizontal={10}
+        paddingHorizontal={12}
         placeholder={t("auth.email")}
         maxLength={200}
         keyboardType="email-address"
+        bgColor={theme.colors.azureishWhite}
+        borderRadius={6}
         autoCapitalize="none"
         fontSize="lg"
         fontWeight="semibold"
@@ -106,11 +108,12 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
       />
       <Input
         value={password}
-        paddingHorizontal={10}
+        paddingHorizontal={12}
         placeholder={t("auth.password")}
         autoCapitalize="none"
+        bgColor={theme.colors.azureishWhite}
+        borderRadius={6}
         maxLength={200}
-        bgColor={theme.colors.cyan300}
         fontSize="lg"
         fontWeight="semibold"
         onChange={(text) => setPassword(text.trim())}
@@ -123,8 +126,7 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
         wide
         bgColor={isValidForm ? theme.colors.cyan500 : theme.colors.darkGray}
         shouldReverseBgColor
-        marginTop={20}
-        marginBottom={20}
+        marginTop={5}
         disabled={isLoading || !isValidForm}
         isLoading={isLoading}
         onPress={onPress}

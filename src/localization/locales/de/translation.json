@@ -11,7 +11,18 @@
     "areYouSure": "Sind Sie sicher?"
   },
   "auth": {
-    "logoutConfirmation": "Sind Sie sicher, dass Sie sich abmelden möchten?"
+    "logoutConfirmation": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+    "email": "Email",
+    "password": "Passwort",
+    "welcome": "Willkommen zu",
+    "signUp": "Anmelden",
+    "signIn": "Eintragen",
+    "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+    "dontHaveAccount": "Sie haben noch kein Konto?",
+    "or": "oder",
+    "authFailed": "Authentifizierung fehlgeschlagen",
+    "emailInUse": "Die E-Mail wird bereits verwendet",
+    "invalidEmailOrPass": "Ungültige E-Mail oder Passwort"
   },
   "note": {
     "create": "Erstellen",

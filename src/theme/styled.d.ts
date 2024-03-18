@@ -25,6 +25,7 @@ declare module "styled-components/native" {
       darkSkyBlue: string;
       bubbles: string;
       crystal: string;
+      azureishWhite: string;
     };
     fontSizes: {
       xxxl: number;
