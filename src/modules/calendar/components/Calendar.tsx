@@ -55,7 +55,6 @@ const Calendar = ({ selectedDate, setSelectedDate }: Props): JSX.Element => {
         style={CALENDAR_STYLES}
         theme={CALENDAR_THEME}
         current={todayString}
-        enableSwipeMonths
         firstDay={1}
         onDayPress={(day) => {
           setSelectedDate(
