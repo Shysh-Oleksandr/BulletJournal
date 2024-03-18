@@ -50,13 +50,11 @@ const Button = ({
   shouldReverseBgColor,
 }: Props): JSX.Element => {
   const [topGradientColor, bottomGradientColor] = useMemo(() => {
-    if (disabled) {
-      return [theme.colors.gray, theme.colors.gray];
-    }
+    const relevantBgColor = disabled ? theme.colors.darkGray : bgColor;
 
     return [
-      getDifferentColor(bgColor, 10, shouldReverseBgColor),
-      getDifferentColor(bgColor, -15, shouldReverseBgColor),
+      getDifferentColor(relevantBgColor, 10, disabled || shouldReverseBgColor),
+      getDifferentColor(relevantBgColor, -15, disabled || shouldReverseBgColor),
     ];
   }, [bgColor, disabled, shouldReverseBgColor]);
 

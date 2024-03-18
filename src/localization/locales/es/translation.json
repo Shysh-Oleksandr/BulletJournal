@@ -11,7 +11,18 @@
     "areYouSure": "¿Está seguro?"
   },
   "auth": {
-    "logoutConfirmation": "¿Está seguro de que desea cerrar sesión?"
+    "logoutConfirmation": "¿Está seguro de que desea cerrar sesión?",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "welcome": "Bienvenido a",
+    "signUp": "Regístrese",
+    "signIn": "Iniciar sesión",
+    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
+    "dontHaveAccount": "¿No tiene una cuenta?",
+    "or": "o",
+    "authFailed": "Error de autenticación",
+    "emailInUse": "El correo electrónico ya está en uso.",
+    "invalidEmailOrPass": "Correo electrónico o contraseña no válidos"
   },
   "note": {
     "create": "Crear",

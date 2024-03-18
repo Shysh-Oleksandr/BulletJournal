@@ -11,7 +11,18 @@
     "areYouSure": "Êtes-vous sûr?"
   },
   "auth": {
-    "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter?"
+    "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter?",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "welcome": "Bienvenue à",
+    "signUp": "S'enregistrer",
+    "signIn": "S'inscrire",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "or": "ou",
+    "authFailed": "Authentification échouée",
+    "emailInUse": "L'e-mail est déjà utilisé",
+    "invalidEmailOrPass": "Email ou mot de passe invalide"
   },
   "note": {
     "create": "Créer",

@@ -11,7 +11,18 @@
     "areYouSure": "Ви впевнені?"
   },
   "auth": {
-    "logoutConfirmation": "Ви впевнені, що бажаєте вийти?"
+    "logoutConfirmation": "Ви впевнені, що бажаєте вийти?",
+    "email": "Електронна адреса",
+    "password": "Пароль",
+    "welcome": "Ласкаво просимо до",
+    "signUp": "Зареєструватися",
+    "signIn": "Увійти",
+    "alreadyHaveAccount": "Вже є аккаунт?",
+    "dontHaveAccount": "Немає облікового запису?",
+    "or": "або",
+    "authFailed": "Помилка автентифікації",
+    "emailInUse": "Електронна адреса вже використовується",
+    "invalidEmailOrPass": "Невірна електронна адреса або пароль"
   },
   "note": {
     "create": "Створити",

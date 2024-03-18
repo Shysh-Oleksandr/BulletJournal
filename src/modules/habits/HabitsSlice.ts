@@ -39,9 +39,7 @@ export const habitsSlice = createSlice({
     },
   },
   extraReducers: (build) => {
-    build.addMatcher(logout.match, () => ({
-      ...initialState,
-    }));
+    build.addMatcher(logout.match, () => initialState);
     build.addMatcher(
       habitsApi.endpoints.fetchHabits.matchFulfilled,
       (state, action) => {

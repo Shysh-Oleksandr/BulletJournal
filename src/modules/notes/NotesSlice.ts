@@ -25,9 +25,7 @@ export const notesSlice = createSlice({
   initialState: initialState,
   reducers: {},
   extraReducers: (build) => {
-    build.addMatcher(logout.match, () => ({
-      ...initialState,
-    }));
+    build.addMatcher(logout.match, () => initialState);
     build.addMatcher(
       notesApi.endpoints.fetchNotes.matchFulfilled,
       (state, action) => {

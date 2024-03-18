@@ -24,6 +24,7 @@ type Props = {
   keyboardType?: KeyboardType;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   selectTextOnFocus?: boolean;
+  secureTextEntry?: boolean;
   multiline?: boolean;
   withBorder?: boolean;
   withAutoFocus?: boolean;
@@ -59,6 +60,7 @@ const Input = ({
   fontWeight,
   fontSize,
   selectTextOnFocus,
+  secureTextEntry,
   labelColor = theme.colors.darkBlueText,
   withBorder = true,
   withAutoFocus,
@@ -100,8 +102,16 @@ const Input = ({
       borderRadius={borderRadius}
     >
       {!!placeholder && !value.length && (
-        <PlaceholderContainer pointerEvents="none">
-          <Typography color={theme.colors.cyan700}>{placeholder}</Typography>
+        <PlaceholderContainer
+          pointerEvents="none"
+          paddingHorizontal={paddingHorizontal}
+        >
+          <Typography
+            color={theme.colors.cyan700}
+            align={isCentered ? "center" : "left"}
+          >
+            {placeholder}
+          </Typography>
         </PlaceholderContainer>
       )}
       <CustomInput
@@ -129,11 +139,13 @@ const Input = ({
         onBlur={handleInputBlur}
         onFocus={handleInputFocus}
         autoCapitalize={autoCapitalize}
+        secureTextEntry={secureTextEntry}
       />
       {Icon && (
         <IconContainer
           disabled={!onIconPress}
           onPress={onIconPress}
+          rightOffset={paddingHorizontal}
           hitSlop={SMALL_BUTTON_HIT_SLOP}
         >
           {Icon}
@@ -184,16 +196,18 @@ const CustomInput = styled.TextInput<{
     maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
 `;
 
-const IconContainer = styled.TouchableOpacity`
+const IconContainer = styled.TouchableOpacity<{ rightOffset: number }>`
   position: absolute;
-  right: 5px;
+  right: ${({ rightOffset }) => rightOffset}px;
   z-index: 1000;
 `;
 
-const PlaceholderContainer = styled.View`
+const PlaceholderContainer = styled.View<{ paddingHorizontal: number }>`
   position: absolute;
+  width: 100%;
   opacity: 0.6;
   z-index: 10;
+  padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
 `;
 
 export default Input;

@@ -11,7 +11,18 @@
     "areYouSure": "È sicuro?"
   },
   "auth": {
-    "logoutConfirmation": "È sicuro di voler uscire?"
+    "logoutConfirmation": "È sicuro di voler uscire?",
+    "email": "E-mail",
+    "password": "Password",
+    "welcome": "Benvenuto a",
+    "signUp": "Iscriviti",
+    "signIn": "Accedi",
+    "alreadyHaveAccount": "Ha già un account?",
+    "dontHaveAccount": "Non ha un account?",
+    "or": "O",
+    "authFailed": "Autenticazione fallita",
+    "emailInUse": "L'e-mail è già in uso",
+    "invalidEmailOrPass": "E-mail o password non validi."
   },
   "note": {
     "create": "Creare",
