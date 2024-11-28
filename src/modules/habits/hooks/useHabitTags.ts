@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Habit, HabitTypes } from "../types";
-import { calculateHabitStreak } from "../utils/calculateHabitStreak";
+
+import { useHabitStreakData } from "./useHabitStreakData";
 
 type Props = {
   habit: Habit;
@@ -12,15 +13,11 @@ type Props = {
 export const useHabitTags = ({ habit, amountTarget }: Props) => {
   const { t } = useTranslation();
 
+  const { completedLogs, currentStreak, longestStreak } =
+    useHabitStreakData(habit);
+
   const tags = useMemo(() => {
     const tags: string[] = [];
-
-    const completedLogs = habit.logs.filter(
-      (log) => log.percentageCompleted >= 100,
-    );
-
-    const { currentStreak, longestStreak } =
-      calculateHabitStreak(completedLogs);
 
     if (habit.habitType !== HabitTypes.CHECK) {
       tags.push(
@@ -49,7 +46,14 @@ export const useHabitTags = ({ habit, amountTarget }: Props) => {
     );
 
     return tags;
-  }, [habit, amountTarget, t]);
+  }, [
+    habit,
+    t,
+    currentStreak,
+    longestStreak,
+    completedLogs.length,
+    amountTarget,
+  ]);
 
   return tags;
 };

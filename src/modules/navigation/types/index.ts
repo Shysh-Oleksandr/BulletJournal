@@ -10,6 +10,7 @@ export enum Routes {
   CALENDAR = "calendar",
   HABITS = "habits",
   EDIT_HABIT = "edit_habit",
+  HABIT_STATS = "habit_stats",
 }
 
 export type RootStackParamList = {
@@ -25,8 +26,11 @@ export type RootStackParamList = {
   [Routes.CALENDAR]: undefined;
   [Routes.HABITS]: undefined;
   [Routes.EDIT_HABIT]: {
-    item: Habit;
+    item: Habit; // TODO: maybe pass only an id?
     isNewHabit?: boolean;
+  };
+  [Routes.HABIT_STATS]: {
+    item: Habit;
   };
   [Routes.MAIN]: undefined;
 };
