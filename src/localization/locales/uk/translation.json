@@ -148,6 +148,14 @@
     "targetAmount": "Ціль:",
     "streakDays": "Серія: {{count}}/{{target}} днів",
     "overallDays": "Загалом: {{value}}/{{count}} днів",
-    "longestStreak": "Найдовша серія: {{count}} днів"
+    "longestStreak": "Найдовша серія: {{count}} днів",
+    "Days": "Днів",
+    "completedStat": "Виконано",
+    "currentStreakStat": "Теперішня серія",
+    "longestStreakStat": "Найдовша серія",
+    "weeklyAvg": "В середньому за тиждень",
+    "monthlyProgress": "Місячний прогрес",
+    "weeklyProgress": "Тижневий прогрес",
+    "bestStreaks": "Найкращі серії"
   }
 }

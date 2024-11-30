@@ -151,6 +151,10 @@
     "Days": "Days",
     "completedStat": "Completed",
     "currentStreakStat": "Current streak",
-    "longestStreakStat": "Longest streak"
+    "longestStreakStat": "Longest streak",
+    "weeklyAvg": "Weekly avg.",
+    "monthlyProgress": "Monthly progress",
+    "weeklyProgress": "Weekly progress",
+    "bestStreaks": "Best streaks"
   }
 }

@@ -19,7 +19,7 @@ const theme: DefaultTheme = {
     whitish: "#bdffff",
     red600: "#c31515",
     red500: "#f52a2a",
-    green600: "#16a34a",
+    green600: "#00cd99",
     policeBlue: "#1b5266",
     darkSkyBlue: "#89c5cc",
     bubbles: "#ebfbfc",

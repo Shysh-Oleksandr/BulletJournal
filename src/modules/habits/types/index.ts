@@ -29,6 +29,12 @@ export enum HabitTypes {
   TIME = "TIME",
 }
 
+export type HabitStreak = {
+  startDate: Date;
+  endDate: Date;
+  numberOfDays: number;
+};
+
 export type UpdateHabitLogPayload = {
   habitId: string;
   updatedLogs: HabitLog[];

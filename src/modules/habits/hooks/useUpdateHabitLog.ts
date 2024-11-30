@@ -29,6 +29,12 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
   const dispatch = useAppDispatch();
 
   const updateLog = useCallback(() => {
+    if (inputValue.trim().length === 0) {
+      setInputValue(initialLogValue);
+
+      return;
+    }
+
     const value = +inputValue.replace(",", ".");
 
     if (isNaN(value)) {

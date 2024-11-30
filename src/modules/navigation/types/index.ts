@@ -26,11 +26,11 @@ export type RootStackParamList = {
   [Routes.CALENDAR]: undefined;
   [Routes.HABITS]: undefined;
   [Routes.EDIT_HABIT]: {
-    item: Habit; // TODO: maybe pass only an id?
+    item: Habit;
     isNewHabit?: boolean;
   };
   [Routes.HABIT_STATS]: {
-    item: Habit;
+    id: string;
   };
   [Routes.MAIN]: undefined;
 };

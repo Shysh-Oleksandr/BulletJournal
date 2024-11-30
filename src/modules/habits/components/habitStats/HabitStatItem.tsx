@@ -6,7 +6,7 @@ import Typography from "components/Typography";
 import styled from "styled-components/native";
 
 type Props = {
-  amount: number;
+  amount: number | string;
   label: string;
 };
 
