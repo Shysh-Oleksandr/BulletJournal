@@ -10,10 +10,11 @@ import styled from "styled-components/native";
 type Props = {
   habitType: HabitTypes;
   active: boolean;
+  isDisabled?: boolean;
   onPress: (habitType: HabitTypes) => void;
 };
 
-const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
+const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
   const { t } = useTranslation();
 
   const label = useMemo(() => {
@@ -46,6 +47,7 @@ const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
     <TypeItemContainer
       activeOpacity={0.4}
       active={active}
+      disabled={isDisabled}
       onPress={() => onPress(habitType)}
     >
       <IconContainer>
@@ -67,10 +69,17 @@ const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
   );
 };
 
-const TypeItemContainer = styled.TouchableOpacity<{ active: boolean }>`
+const TypeItemContainer = styled.TouchableOpacity<{
+  active: boolean;
+  disabled?: boolean;
+}>`
   align-items: center;
-  background-color: ${({ active }) =>
-    active ? theme.colors.cyan500 : theme.colors.cyan300};
+  background-color: ${({ active, disabled }) =>
+    active
+      ? theme.colors.cyan500
+      : disabled
+      ? theme.colors.azureishWhite
+      : theme.colors.cyan300};
   border-radius: 12px;
   padding: 8px;
   flex: 1;

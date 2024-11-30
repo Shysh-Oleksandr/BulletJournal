@@ -58,6 +58,12 @@ export default HabitsReducer;
 // Selectors
 export const getHabits = (state: RootState): Habit[] => state[STATE_KEY].habits;
 
+export const getHabitById = createCachedSelector(
+  getHabits,
+  (_: RootState, habitId: string) => habitId,
+  (habits, habitId) => habits.find((habit) => habit._id === habitId) as Habit,
+)((_: RootState, habitId: string) => habitId);
+
 export const getHabitsBySelectedDate = createCachedSelector(
   getHabits,
   (_: RootState, selectedDate: number) => selectedDate,

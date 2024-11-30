@@ -62,5 +62,8 @@ export const useHabitsWeekDates = (selectedDate: number) => {
     [habits, weekDates],
   );
 
-  return { ...arrowsData, mappedWeekDates };
+  return useMemo(
+    () => ({ ...arrowsData, mappedWeekDates }),
+    [arrowsData, mappedWeekDates],
+  );
 };

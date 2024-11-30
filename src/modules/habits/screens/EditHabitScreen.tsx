@@ -208,6 +208,7 @@ const EditHabitScreen: FC<{
             selectedType={selectedType}
             currentAmount={currentAmount}
             currentUnits={currentUnits}
+            isDisabled={!isNewHabit}
             setSelectedType={setSelectedType}
             setCurrentUnits={setCurrentUnits}
             setCurrentAmount={setCurrentAmount}
