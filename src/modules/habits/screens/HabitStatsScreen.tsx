@@ -13,7 +13,7 @@ import HabitCalendar from "../components/habitStats/HabitCalendar";
 import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
 import HabitStreakCard from "../components/habitStats/HabitStreakCard";
 import HabitWeeklyLineChart from "../components/habitStats/HabitWeeklyLineChart";
-import { getHabitById } from "../HabitsSlice";
+import { getHabitById } from "../HabitsSelectors";
 import { HabitTypes } from "../types";
 
 const contentContainerStyle = {

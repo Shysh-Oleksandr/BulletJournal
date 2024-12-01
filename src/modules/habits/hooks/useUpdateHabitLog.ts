@@ -1,10 +1,7 @@
 import { isSameDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useAppDispatch } from "store/helpers/storeHooks";
-
 import { habitsApi } from "../HabitsApi";
-import { updateHabitLog } from "../HabitsSlice";
 import { Habit, HabitLog, HabitTypes } from "../types";
 
 type Props = {
@@ -25,8 +22,6 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
   const initialLogValue = currentLog?.amount?.toString() ?? "0";
 
   const [inputValue, setInputValue] = useState(initialLogValue);
-
-  const dispatch = useAppDispatch();
 
   const updateLog = useCallback(() => {
     if (inputValue.trim().length === 0) {
@@ -66,7 +61,7 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
             date: selectedDate,
             percentageCompleted,
             amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
-            amountTarget: habit.amountTarget,
+            amountTarget: habit.amountTarget ?? 1,
           } as HabitLog;
         })
       : [
@@ -77,20 +72,20 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
               ? 100
               : amountPercentageCompleted,
             amount: isCheckHabitType ? 1 : value,
-            amountTarget: habit.amountTarget ?? undefined,
+            amountTarget: habit.amountTarget ?? 1,
           },
         ];
 
-    dispatch(updateHabitLog({ habitId: habit._id, updatedLogs }));
-
-    updateHabit({ ...habit, logs: updatedLogs });
+    updateHabit({ logs: updatedLogs, _id: habit._id, author: habit.author });
   }, [
     inputValue,
     isCheckHabitType,
     currentLog,
-    habit,
+    habit.amountTarget,
+    habit.logs,
+    habit._id,
+    habit.author,
     selectedDate,
-    dispatch,
     updateHabit,
     initialLogValue,
   ]);
@@ -111,5 +106,8 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
     setInputValue(initialLogValue);
   }, [initialLogValue]);
 
-  return { inputValue, updateLog, onChange, currentLog };
+  return useMemo(
+    () => ({ inputValue, updateLog, onChange, currentLog }),
+    [currentLog, inputValue, onChange, updateLog],
+  );
 };

@@ -53,8 +53,8 @@ const HabitBody = ({
   const bgGradientColors = useMemo(
     () =>
       isCompleted
-        ? [theme.colors.cyan300, theme.colors.cyan500]
-        : [theme.colors.white, theme.colors.cyan300],
+        ? ([theme.colors.cyan300, theme.colors.cyan500] as const)
+        : ([theme.colors.white, theme.colors.cyan300] as const),
     [isCompleted],
   );
 

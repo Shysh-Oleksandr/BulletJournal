@@ -35,17 +35,12 @@ export type HabitStreak = {
   numberOfDays: number;
 };
 
-export type UpdateHabitLogPayload = {
-  habitId: string;
-  updatedLogs: HabitLog[];
-};
-
 export type FetchHabitsResponse = {
   count: number;
   habits: Habit[];
 };
 
-export type UpdateHabitRequest = Habit;
+export type UpdateHabitRequest = Partial<Habit> & Pick<Habit, "_id" | "author">;
 
 export type CreateHabitResponse = {
   habit: Habit;

@@ -14,14 +14,17 @@ import logging from "config/logging";
 import { store } from "store/store";
 import styled, { ThemeProvider } from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
+import { filterErrorLogs } from "utils/filterErrorLogs";
 
 import i18n from "./localization/i18n";
 import Nav from "./modules/navigation/components/Nav";
 import theme from "./theme";
 
+filterErrorLogs();
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-NavigationBar.setPositionAsync("absolute");
+NavigationBar.setPositionAsync("relative");
 NavigationBar.setBackgroundColorAsync("#ffffff01");
 NavigationBar.setButtonStyleAsync("dark");
 
@@ -71,7 +74,11 @@ export default function App() {
       <I18nextProvider i18n={i18n}>
         <Provider store={store}>
           <SafeAreaProvider>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" />
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor="transparent"
+              translucent
+            />
             <Container onLayout={onLayoutRootView}>
               <Nav />
             </Container>

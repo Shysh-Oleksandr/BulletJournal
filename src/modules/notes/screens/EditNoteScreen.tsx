@@ -100,7 +100,7 @@ const EditNoteScreen: FC<{
 
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentStartDate, setCurrentStartDate] = useState(
-    isNewNote ? date ?? startDate : startDate,
+    isNewNote && date ? date : startDate,
   );
   const [currentImportance, setCurrentImportance] = useState(rating);
   const [currentColor, setCurrentColor] = useState(color);

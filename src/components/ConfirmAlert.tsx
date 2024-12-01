@@ -31,7 +31,7 @@ const ConfirmAlert = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [topGradientColor, bottomGradientColor] = useMemo(() => {
+  const gradientColors = useMemo(() => {
     const relevantColor = isDeletion
       ? theme.colors.red600
       : theme.colors.cyan600;
@@ -39,13 +39,15 @@ const ConfirmAlert = ({
     return [
       getDifferentColor(relevantColor, 10),
       getDifferentColor(relevantColor, -15),
-    ];
+    ] as const;
   }, [isDeletion]);
 
   return (
     <Dialog
       visible={isDialogVisible}
       onTouchOutside={() => setIsDialogVisible(false)}
+      onRequestClose={() => setIsDialogVisible(false)}
+      contentInsetAdjustmentBehavior="automatic"
       animationType="fade"
       statusBarTranslucent
       contentStyle={{
@@ -57,7 +59,7 @@ const ConfirmAlert = ({
         elevation: 20,
       }}
     >
-      <SLinearGradient colors={[topGradientColor, bottomGradientColor]}>
+      <SLinearGradient colors={gradientColors}>
         <Typography
           align="center"
           fontSize="xxl"

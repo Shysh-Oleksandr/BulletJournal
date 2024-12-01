@@ -23,7 +23,7 @@ import HabitItem from "../components/HabitItem";
 import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
-import { getHabitsBySelectedDate } from "../HabitsSlice";
+import { getHabitsBySelectedDate } from "../HabitsSelectors";
 import { Habit } from "../types";
 
 const contentContainerStyle = {

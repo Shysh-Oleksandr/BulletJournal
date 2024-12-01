@@ -25,15 +25,13 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
 
   return (
     <Container>
-      <HeaderContainer>
-        <Typography
-          fontWeight="bold"
-          color={theme.colors.darkBlueText}
-          fontSize="xl"
-        >
-          {t("habits.bestStreaks")}
-        </Typography>
-      </HeaderContainer>
+      <Typography
+        fontWeight="bold"
+        color={theme.colors.darkBlueText}
+        fontSize="xl"
+      >
+        {t("habits.bestStreaks")}
+      </Typography>
       <StreaksContainer>
         {streaksData.map((streak, index) => (
           <StreakItemContainer key={index}>
@@ -43,7 +41,7 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
             <StreakNumberContainer numberOfDays={streak.numberOfDays}>
               <Typography
                 fontWeight="bold"
-                color={theme.colors.darkBlueText}
+                color={theme.colors.white}
                 fontSize="lg"
               >
                 {streak.numberOfDays}
@@ -63,13 +61,6 @@ const Container = styled.View`
   margin-bottom: 30px;
 `;
 
-const HeaderContainer = styled.View`
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
 const StreaksContainer = styled.View`
   margin-top: 10px;
   gap: 4px;
@@ -85,7 +76,8 @@ const StreakItemContainer = styled.View`
 
 const StreakNumberContainer = styled.View<{ numberOfDays: number }>`
   padding: 2px 16px;
-  background-color: ${theme.colors.cyan300};
+  background-color: ${({ numberOfDays }) =>
+    numberOfDays >= 10 ? theme.colors.cyan600 : theme.colors.cyan500};
   border-radius: 4px;
   align-items: center;
   min-width: ${({ numberOfDays }) =>

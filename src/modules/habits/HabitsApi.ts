@@ -28,7 +28,26 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        invalidatesTags: [TAG.HABITS],
+        async onQueryStarted(
+          { author, _id, ...patch },
+          { dispatch, queryFulfilled },
+        ) {
+          const patchResult = dispatch(
+            habitsApi.util.updateQueryData("fetchHabits", author, (draft) => {
+              const item = draft.habits.find((habit) => habit._id === _id);
+
+              if (item) {
+                Object.assign(item, patch);
+              }
+            }),
+          );
+
+          try {
+            await queryFulfilled;
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
       createHabit: build.mutation<CreateHabitResponse, CreateHabitRequest>({
         query(payload) {

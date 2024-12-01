@@ -46,9 +46,4 @@ const Typography = style(Text)<TypographyProps>`
   ${(props) => !isNil(props.uppercase) && "text-transform: uppercase;"}
 `;
 
-// this is designed to not let Typography elements grow too much in size on large font size settings
-Typography.defaultProps = {
-  maxFontSizeMultiplier: 1.2,
-};
-
 export default Typography;

@@ -32,9 +32,9 @@ export const BG_GRADIENT_COLORS = [
   theme.colors.bgColor,
   getDifferentColor(theme.colors.bgColor, -10),
   theme.colors.bgColor,
-];
+] as const;
 
-export const BG_GRADIENT_LOCATIONS = [0.2, 0.6, 0.8];
+export const BG_GRADIENT_LOCATIONS = [0.2, 0.6, 0.8] as const;
 
 export const MONTH_NAMES = [
   i18n.t("calendar.monthNames.jan"),

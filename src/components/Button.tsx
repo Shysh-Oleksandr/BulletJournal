@@ -49,13 +49,13 @@ const Button = ({
   Icon,
   shouldReverseBgColor,
 }: Props): JSX.Element => {
-  const [topGradientColor, bottomGradientColor] = useMemo(() => {
+  const gradientColors = useMemo(() => {
     const relevantBgColor = disabled ? theme.colors.darkGray : bgColor;
 
     return [
       getDifferentColor(relevantBgColor, 10, disabled || shouldReverseBgColor),
       getDifferentColor(relevantBgColor, -15, disabled || shouldReverseBgColor),
-    ];
+    ] as const;
   }, [bgColor, disabled, shouldReverseBgColor]);
 
   return (
@@ -74,7 +74,7 @@ const Button = ({
       bgColor={bgColor}
       width={width}
     >
-      <SLinearGradient colors={[topGradientColor, bottomGradientColor]}>
+      <SLinearGradient colors={gradientColors}>
         {Icon && <IconContainer>{Icon}</IconContainer>}
         {showLoadingIndicator && isLoading && (
           <LoaderWrapper>

@@ -18,7 +18,7 @@ const BG_COLOR = theme.colors.cyan600;
 const TOP_GRADIENT_COLOR = getDifferentColor(BG_COLOR, 10);
 const BOTTOM_GRADIENT_COLOR = getDifferentColor(BG_COLOR, -15);
 
-const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR];
+const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR] as const;
 
 export enum ContentItem {
   NOTE,
@@ -98,7 +98,7 @@ const SLinearGradient = styled(LinearGradient)`
 const Container = styled.View<{ withTabBarOffset: boolean }>`
   z-index: 9999;
   position: absolute;
-  bottom: ${({ withTabBarOffset }) => (withTabBarOffset ? 65 : 75)}px;
+  bottom: ${({ withTabBarOffset }) => (withTabBarOffset ? 25 : 35)}px;
   right: 20px;
 `;
 

@@ -32,7 +32,9 @@ export type RootStackParamList = {
   [Routes.HABIT_STATS]: {
     id: string;
   };
-  [Routes.MAIN]: undefined;
+  [Routes.MAIN]: {
+    screen: Routes.NOTES | Routes.CALENDAR | Routes.HABITS;
+  };
 };
 
 export enum TabBarRouteNumber {

@@ -15,7 +15,10 @@ const today = startOfToday();
 const CIRCLE_SIZE = 40;
 const CIRCLE_WIDTH = 5;
 
-const BG_GRADIENT_COLORS = [theme.colors.darkSkyBlue, theme.colors.cyan500];
+const BG_GRADIENT_COLORS = [
+  theme.colors.darkSkyBlue,
+  theme.colors.cyan500,
+] as const;
 
 type Props = {
   date: number;

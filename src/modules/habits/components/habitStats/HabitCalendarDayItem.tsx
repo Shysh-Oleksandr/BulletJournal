@@ -31,16 +31,14 @@ const HabitCalendarDayItem = ({
   const inputRef = useRef<TextInput | null>(null);
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
-  const { inputValue, currentLog, onChange, updateLog } = useUpdateHabitLog({
+  const { inputValue, onChange, updateLog } = useUpdateHabitLog({
     habit,
     selectedDate: timestamp,
   });
 
   const [shouldDisplayInput, setShouldDisplayInput] = useState(false);
 
-  const currentPercentageCompleted =
-    currentLog?.percentageCompleted ?? percentageCompleted;
-  const isCompleted = currentPercentageCompleted >= 100;
+  const isCompleted = percentageCompleted >= 100;
 
   const inputFontSize = useMemo(() => {
     if (inputValue.length < 3) return "md";
@@ -51,6 +49,13 @@ const HabitCalendarDayItem = ({
 
     return "xxs";
   }, [inputValue.length]);
+
+  const bgColor = useMemo(() => {
+    if (isCompleted) return theme.colors.cyan500;
+    if (isDisabled) return theme.colors.crystal;
+
+    return "transparent";
+  }, [isCompleted, isDisabled]);
 
   const handleItemPress = () => {
     if (isCheckHabitType) {
@@ -68,7 +73,7 @@ const HabitCalendarDayItem = ({
   return (
     <DayItemContainer onPress={handleItemPress} disabled={isDisabled}>
       <CircularProgress
-        fill={currentPercentageCompleted ?? 0}
+        fill={percentageCompleted ?? 0}
         size={CIRCLE_SIZE}
         width={CIRCLE_WIDTH}
         rotation={0}
@@ -76,7 +81,7 @@ const HabitCalendarDayItem = ({
         backgroundColor={theme.colors.crystal}
       >
         {() => (
-          <InnerContainer isCompleted={isCompleted} isDisabled={isDisabled}>
+          <InnerContainer bgColor={bgColor}>
             {!isCheckHabitType && shouldDisplayInput ? (
               <Input
                 value={inputValue}
@@ -120,20 +125,14 @@ const HabitCalendarDayItem = ({
 const DayItemContainer = styled.TouchableOpacity``;
 
 const InnerContainer = styled.View<{
-  isCompleted: boolean;
-  isDisabled: boolean;
+  bgColor: string;
 }>`
   border-radius: 999px;
   height: 100%;
   width: 100%;
   align-items: center;
   justify-content: center;
-  background-color: ${({ isCompleted, isDisabled }) =>
-    isDisabled
-      ? theme.colors.crystal
-      : isCompleted
-      ? theme.colors.cyan500
-      : "transparent"};
+  background-color: ${({ bgColor }) => bgColor};
 `;
 
-export default HabitCalendarDayItem;
+export default React.memo(HabitCalendarDayItem);

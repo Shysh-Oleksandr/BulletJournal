@@ -43,10 +43,22 @@ const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
     }
   }, [habitType]);
 
+  const bgColor = useMemo(() => {
+    if (active) {
+      return theme.colors.cyan500;
+    }
+
+    if (isDisabled) {
+      return theme.colors.azureishWhite;
+    }
+
+    return theme.colors.cyan300;
+  }, [active, isDisabled]);
+
   return (
     <TypeItemContainer
       activeOpacity={0.4}
-      active={active}
+      bgColor={bgColor}
       disabled={isDisabled}
       onPress={() => onPress(habitType)}
     >
@@ -70,16 +82,10 @@ const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
 };
 
 const TypeItemContainer = styled.TouchableOpacity<{
-  active: boolean;
-  disabled?: boolean;
+  bgColor: string;
 }>`
   align-items: center;
-  background-color: ${({ active, disabled }) =>
-    active
-      ? theme.colors.cyan500
-      : disabled
-      ? theme.colors.azureishWhite
-      : theme.colors.cyan300};
+  background-color: ${({ bgColor }) => bgColor};
   border-radius: 12px;
   padding: 8px;
   flex: 1;
