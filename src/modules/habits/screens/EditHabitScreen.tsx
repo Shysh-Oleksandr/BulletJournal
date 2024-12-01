@@ -29,7 +29,12 @@ import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
-import { Habit, HabitTypes, UpdateHabitRequest } from "../types";
+import {
+  CreateHabitRequest,
+  Habit,
+  HabitTypes,
+  UpdateHabitRequest,
+} from "../types";
 
 const contentContainerStyle = {
   paddingHorizontal: 20,
@@ -110,14 +115,18 @@ const EditHabitScreen: FC<{
 
     setSavedHabit(currentHabit);
 
-    const updateHabitData: UpdateHabitRequest = {
+    const createHabitData: CreateHabitRequest = {
       ...currentHabit,
       label: currentHabit.label || t("habits.habit"),
     };
 
+    const updateHabitData = createHabitData as UpdateHabitRequest;
+
+    delete updateHabitData.logs;
+
     try {
       if (isNewHabit) {
-        await createHabit(updateHabitData).unwrap();
+        await createHabit(createHabitData).unwrap();
       } else {
         await updateHabit(updateHabitData);
       }
@@ -152,17 +161,16 @@ const EditHabitScreen: FC<{
       logUserEvent(CustomUserEvents.DELETE_HABIT, { habitId: _id });
       addCrashlyticsLog(`User tries to delete the habit ${_id}`);
       setIsDeleting(true);
-      await deleteHabit(_id);
+
+      deleteHabit(_id);
+
+      navigation.pop(2);
 
       Toast.show({
         type: "success",
         text1: t("general.success"),
         text2: t("habits.deletedInfo"),
       });
-
-      setTimeout(() => {
-        navigation.pop();
-      }, 500);
     } catch (error) {
       logging.error(error);
       alertError();
@@ -208,6 +216,7 @@ const EditHabitScreen: FC<{
             selectedType={selectedType}
             currentAmount={currentAmount}
             currentUnits={currentUnits}
+            isDisabled={!isNewHabit}
             setSelectedType={setSelectedType}
             setCurrentUnits={setCurrentUnits}
             setCurrentAmount={setCurrentAmount}

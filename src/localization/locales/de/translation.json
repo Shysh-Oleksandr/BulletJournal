@@ -147,6 +147,14 @@
     "targetAmount": "Ziel:",
     "streakDays": "Streak: {{count}}/{{target}} Tage",
     "overallDays": "Gesamt: {{value}}/{{count}} Tage",
-    "longestStreak": "Längste Streak: {{count}} Tage"
+    "longestStreak": "Längste Streak: {{count}} Tage",
+    "Days": "Tage",
+    "completedStat": "Abgeschlossen",
+    "currentStreakStat": "Aktuelle Streak",
+    "longestStreakStat": "Längste Streak",
+    "weeklyAvg": "Wöchentlicher Durchschnittswert",
+    "monthlyProgress": "Monatlicher Fortschritt",
+    "weeklyProgress": "Wöchentliche Fortschritte",
+    "bestStreaks": "Beste Streaken"
   }
 }

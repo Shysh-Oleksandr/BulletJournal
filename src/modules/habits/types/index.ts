@@ -29,9 +29,10 @@ export enum HabitTypes {
   TIME = "TIME",
 }
 
-export type UpdateHabitLogPayload = {
-  habitId: string;
-  updatedLogs: HabitLog[];
+export type HabitStreak = {
+  startDate: Date;
+  endDate: Date;
+  numberOfDays: number;
 };
 
 export type FetchHabitsResponse = {
@@ -39,7 +40,7 @@ export type FetchHabitsResponse = {
   habits: Habit[];
 };
 
-export type UpdateHabitRequest = Habit;
+export type UpdateHabitRequest = Partial<Habit> & Pick<Habit, "_id" | "author">;
 
 export type CreateHabitResponse = {
   habit: Habit;

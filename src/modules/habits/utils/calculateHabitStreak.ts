@@ -32,7 +32,7 @@ export const calculateHabitStreak = (completedLogs: HabitLog[]) => {
 
       const diffDays = differenceInDays(currentDate, prevDate);
 
-      if (diffDays === 1) {
+      if (diffDays <= 1) {
         // If consecutive dates, increment current streak
         acc.currentStreak++;
       } else {

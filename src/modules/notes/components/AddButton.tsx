@@ -18,7 +18,7 @@ const BG_COLOR = theme.colors.cyan600;
 const TOP_GRADIENT_COLOR = getDifferentColor(BG_COLOR, 10);
 const BOTTOM_GRADIENT_COLOR = getDifferentColor(BG_COLOR, -15);
 
-const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR];
+const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR] as const;
 
 export enum ContentItem {
   NOTE,
@@ -27,12 +27,22 @@ export enum ContentItem {
 
 type Props = {
   contentItem?: ContentItem;
+  withEditIcon?: boolean;
+  withTabBarOffset?: boolean;
+  onPress?: () => void;
 };
 
-const AddButton = ({ contentItem = ContentItem.NOTE }: Props): JSX.Element => {
+const AddButton = ({
+  contentItem = ContentItem.NOTE,
+  withEditIcon,
+  withTabBarOffset = true,
+  onPress,
+}: Props): JSX.Element => {
   const navigation = useAppNavigation();
 
-  const onPress = () => {
+  const isEditIcon = withEditIcon || contentItem === ContentItem.NOTE;
+
+  const onButtonPress = () => {
     logUserEvent(CustomUserEvents.ADD_ICON_PRESS);
 
     switch (contentItem) {
@@ -56,12 +66,12 @@ const AddButton = ({ contentItem = ContentItem.NOTE }: Props): JSX.Element => {
   };
 
   return (
-    <Container>
-      <IconContainer onPress={onPress}>
+    <Container withTabBarOffset={withTabBarOffset}>
+      <IconContainer onPress={onPress ?? onButtonPress}>
         <SLinearGradient colors={COLORS}>
           <Entypo
-            name={contentItem === ContentItem.NOTE ? "edit" : "plus"}
-            size={contentItem === ContentItem.NOTE ? 34 : 42}
+            name={isEditIcon ? "edit" : "plus"}
+            size={isEditIcon ? 34 : 42}
             color={theme.colors.white}
           />
         </SLinearGradient>
@@ -85,10 +95,10 @@ const SLinearGradient = styled(LinearGradient)`
   border-radius: 999px;
 `;
 
-const Container = styled.View`
+const Container = styled.View<{ withTabBarOffset: boolean }>`
   z-index: 9999;
   position: absolute;
-  bottom: 65px;
+  bottom: ${({ withTabBarOffset }) => (withTabBarOffset ? 25 : 35)}px;
   right: 20px;
 `;
 
