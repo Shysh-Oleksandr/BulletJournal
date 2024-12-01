@@ -35,7 +35,7 @@ export const currentLocale = getLocales()[0];
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: currentLocale.languageCode,
+  lng: currentLocale.languageCode || Language.English,
   fallbackLng: Language.English,
   keySeparator: ".",
   returnNull: false,

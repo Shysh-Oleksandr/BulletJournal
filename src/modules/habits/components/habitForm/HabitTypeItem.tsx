@@ -10,10 +10,11 @@ import styled from "styled-components/native";
 type Props = {
   habitType: HabitTypes;
   active: boolean;
+  isDisabled?: boolean;
   onPress: (habitType: HabitTypes) => void;
 };
 
-const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
+const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
   const { t } = useTranslation();
 
   const label = useMemo(() => {
@@ -42,10 +43,23 @@ const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
     }
   }, [habitType]);
 
+  const bgColor = useMemo(() => {
+    if (active) {
+      return theme.colors.cyan500;
+    }
+
+    if (isDisabled) {
+      return theme.colors.azureishWhite;
+    }
+
+    return theme.colors.cyan300;
+  }, [active, isDisabled]);
+
   return (
     <TypeItemContainer
       activeOpacity={0.4}
-      active={active}
+      bgColor={bgColor}
+      disabled={isDisabled}
       onPress={() => onPress(habitType)}
     >
       <IconContainer>
@@ -67,10 +81,11 @@ const HabitTypeItem = ({ habitType, active, onPress }: Props) => {
   );
 };
 
-const TypeItemContainer = styled.TouchableOpacity<{ active: boolean }>`
+const TypeItemContainer = styled.TouchableOpacity<{
+  bgColor: string;
+}>`
   align-items: center;
-  background-color: ${({ active }) =>
-    active ? theme.colors.cyan500 : theme.colors.cyan300};
+  background-color: ${({ bgColor }) => bgColor};
   border-radius: 12px;
   padding: 8px;
   flex: 1;

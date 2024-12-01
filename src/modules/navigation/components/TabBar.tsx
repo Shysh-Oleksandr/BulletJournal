@@ -24,7 +24,7 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
   const navigateToTab = (
     route: Routes.NOTES | Routes.CALENDAR | Routes.HABITS,
   ) => {
-    navigation.navigate(route);
+    navigation.navigate(Routes.MAIN, { screen: route });
   };
 
   return (
@@ -70,7 +70,6 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
 };
 
 const STabBar = styled.View`
-  bottom: 40px;
   z-index: 1000;
   width: 100%;
   background-color: ${theme.colors.bgColor};

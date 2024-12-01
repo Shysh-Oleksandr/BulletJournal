@@ -9,7 +9,7 @@ import appListenerMiddleware from "./middlewares/listenerMiddleware";
 import loggerMiddleware from "./middlewares/loggerMiddleware";
 import rootReducer from "./rootReducer";
 
-const middlewares = [thunk, emptyAxiosApi.middleware];
+const middlewares: any = [thunk, emptyAxiosApi.middleware];
 
 if (__DEV__) {
   middlewares.push(loggerMiddleware);

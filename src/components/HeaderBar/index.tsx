@@ -111,6 +111,8 @@ const HeaderBar = ({
             color={theme.colors.white}
             fontSize="lg"
             fontWeight="bold"
+            numberOfLines={1}
+            paddingHorizontal={35}
           >
             {title}
           </Title>

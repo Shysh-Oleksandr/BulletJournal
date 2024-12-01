@@ -147,6 +147,14 @@
     "targetAmount": "Obiettivo:",
     "streakDays": "Serie: {{count}}/{{target}} giorni",
     "overallDays": "Totale: {{value}}/{{count}} giorni",
-    "longestStreak": "Serie più lunga: {{count}} giorni"
+    "longestStreak": "Serie più lunga: {{count}} giorni",
+    "Days": "Giorni",
+    "completedStat": "Completato",
+    "currentStreakStat": "Serie corrente",
+    "longestStreakStat": "La serie più lunga",
+    "weeklyAvg": "Media settimanale",
+    "monthlyProgress": "Progresso mensile",
+    "weeklyProgress": "Progresso settimanale",
+    "bestStreaks": "Serie migliori"
   }
 }

@@ -5,9 +5,6 @@ import { combineReducers } from "@reduxjs/toolkit";
 import AuthReducer, {
   STATE_KEY as AUTH_STATE_KEY,
 } from "../modules/auth/AuthSlice";
-import HabitsReducer, {
-  STATE_KEY as HABITS_STATE_KEY,
-} from "../modules/habits/HabitsSlice";
 import NotesReducer, {
   STATE_KEY as NOTES_STATE_KEY,
 } from "../modules/notes/NotesSlice";
@@ -18,7 +15,7 @@ import { authPersistConfig } from "./persistConfig";
 const rootReducer = combineReducers({
   // App Reducers
   [NOTES_STATE_KEY]: NotesReducer,
-  [HABITS_STATE_KEY]: HabitsReducer,
+  // [HABITS_STATE_KEY]: HabitsReducer,
   [AUTH_STATE_KEY]: persistReducer(authPersistConfig, AuthReducer),
   // RTK query reducers
   [emptyAxiosApi.reducerPath]: emptyAxiosApi.reducer,

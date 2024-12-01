@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { useAppSelector } from "store/helpers/storeHooks";
 
-import { getHabits } from "../HabitsSlice";
+import { getHabits } from "../HabitsSelectors";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
 const today = startOfToday();
@@ -62,5 +62,8 @@ export const useHabitsWeekDates = (selectedDate: number) => {
     [habits, weekDates],
   );
 
-  return { ...arrowsData, mappedWeekDates };
+  return useMemo(
+    () => ({ ...arrowsData, mappedWeekDates }),
+    [arrowsData, mappedWeekDates],
+  );
 };

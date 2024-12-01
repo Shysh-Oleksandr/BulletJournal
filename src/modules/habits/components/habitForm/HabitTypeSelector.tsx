@@ -16,6 +16,7 @@ type Props = {
   selectedType: HabitTypes;
   currentAmount: number | null;
   currentUnits: string;
+  isDisabled?: boolean;
   setSelectedType: (val: HabitTypes) => void;
   setCurrentAmount: (val: number) => void;
   setCurrentUnits: (val: string) => void;
@@ -25,6 +26,7 @@ const HabitTypeSelector = ({
   selectedType,
   currentAmount,
   currentUnits,
+  isDisabled,
   setSelectedType,
   setCurrentAmount,
   setCurrentUnits,
@@ -75,6 +77,7 @@ const HabitTypeSelector = ({
             key={habitType}
             habitType={habitType}
             active={selectedType === habitType}
+            isDisabled={isDisabled}
             onPress={() => {
               if (currentAmount === null && habitType !== HabitTypes.CHECK) {
                 setCurrentAmount(DEFAULT_AMOUNT_VALUE);

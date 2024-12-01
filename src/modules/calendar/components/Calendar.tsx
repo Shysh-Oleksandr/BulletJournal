@@ -56,7 +56,7 @@ const Calendar = ({ selectedDate, setSelectedDate }: Props): JSX.Element => {
         theme={CALENDAR_THEME}
         current={todayString}
         firstDay={1}
-        onDayPress={(day) => {
+        onDayPress={(day: any) => {
           setSelectedDate(
             parse(day.dateString, SIMPLE_DATE_FORMAT, new Date()),
           );
