@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
+import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { useCalculateHabitBestStreaks } from "modules/habits/hooks/useCalculateHabitBestStreaks";
 import { HabitLog } from "modules/habits/types";
 import styled from "styled-components/native";
@@ -36,7 +37,9 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
         {streaksData.map((streak, index) => (
           <StreakItemContainer key={index}>
             <Typography color={theme.colors.cyan700} fontSize="xs">
-              {format(streak.startDate, "dd MMM yyyy")}
+              {format(streak.startDate, "dd MMM yyyy", {
+                locale: getDateFnsLocale(),
+              })}
             </Typography>
             <StreakNumberContainer numberOfDays={streak.numberOfDays}>
               <Typography
@@ -48,7 +51,9 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
               </Typography>
             </StreakNumberContainer>
             <Typography color={theme.colors.cyan700} fontSize="xs">
-              {format(streak.endDate, "dd MMM yyyy")}
+              {format(streak.endDate, "dd MMM yyyy", {
+                locale: getDateFnsLocale(),
+              })}
             </Typography>
           </StreakItemContainer>
         ))}

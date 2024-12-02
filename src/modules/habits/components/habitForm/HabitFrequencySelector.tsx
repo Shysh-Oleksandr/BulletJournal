@@ -5,6 +5,7 @@ import theme from "theme";
 
 import Checkbox from "components/Checkbox";
 import Typography from "components/Typography";
+import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { WEEKDAYS_DATES } from "modules/habits/data";
 import styled from "styled-components/native";
 
@@ -64,10 +65,13 @@ const HabitFrequencySelector = ({
             >
               <Typography
                 color={isActive ? theme.colors.white : theme.colors.cyan600}
-                fontSize="sm"
+                fontSize="xs"
                 fontWeight="semibold"
+                uppercase
               >
-                {format(date, "EEEEEE")}
+                {format(date, "EEEEEE", {
+                  locale: getDateFnsLocale(),
+                })}
               </Typography>
             </WeekdayItemContainer>
           );
