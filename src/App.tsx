@@ -5,6 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { StatusBar } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
@@ -73,17 +74,19 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <I18nextProvider i18n={i18n}>
         <Provider store={store}>
-          <SafeAreaProvider>
-            <StatusBar
-              barStyle="light-content"
-              backgroundColor="transparent"
-              translucent
-            />
-            <Container onLayout={onLayoutRootView}>
-              <Nav />
-            </Container>
-            <Toast topOffset={105} visibilityTime={2000} />
-          </SafeAreaProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+              <StatusBar
+                barStyle="light-content"
+                backgroundColor="transparent"
+                translucent
+              />
+              <Container onLayout={onLayoutRootView}>
+                <Nav />
+              </Container>
+              <Toast topOffset={105} visibilityTime={2000} />
+            </SafeAreaProvider>
+          </GestureHandlerRootView>
         </Provider>
       </I18nextProvider>
     </ThemeProvider>

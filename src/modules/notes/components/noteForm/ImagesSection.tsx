@@ -1,10 +1,13 @@
-import React from "react";
-import { Dimensions } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Dimensions, StyleSheet } from "react-native";
+import DraggableFlatList, {
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
 import FastImage from "react-native-fast-image";
+import ImageViewing from "react-native-image-viewing";
 import theme from "theme";
 
 import { Ionicons } from "@expo/vector-icons";
-import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import { Image } from "modules/notes/types";
 import styled from "styled-components/native";
 
@@ -29,31 +32,41 @@ const ImagesSection = ({
   isLocked,
   setCurrentImages,
 }: Props): JSX.Element | null => {
-  if (!currentImages.length) return null;
+  const [isViewerVisible, setViewerVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  return (
-    <ImagesContainer
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      overScrollMode="never"
-    >
-      {currentImages.map(({ _id, url }, index, array) => (
-        <ImageContainer key={_id} isLast={index === array.length - 1}>
-          <FastImage
-            style={{
-              width: IMAGE_WIDTH,
-              height: IMAGE_HEIGHT,
-              borderRadius: 8,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-            source={{ uri: url }}
-          />
+  const handleDragEnd = useCallback(
+    ({ data }: { data: Image[] }) => {
+      setCurrentImages(data);
+    },
+    [setCurrentImages],
+  );
+  const openImageViewer = (index: number) => {
+    setCurrentImageIndex(index);
+    setViewerVisible(true);
+  };
+
+  const renderItem = useCallback(
+    ({ item, getIndex, drag }: RenderItemParams<Image>) => {
+      const index = getIndex() ?? 0;
+
+      return (
+        <ImageContainer isLast={index === currentImages.length - 1}>
+          <TouchableContainer
+            onLongPress={isLocked ? undefined : drag}
+            onPress={() => openImageViewer(index)}
+          >
+            <FastImage
+              style={styles.image}
+              resizeMode={FastImage.resizeMode.cover}
+              source={{ uri: item.url }}
+            />
+          </TouchableContainer>
           {!isLocked && (
             <DeleteIconContainer
-              hitSlop={BUTTON_HIT_SLOP}
               onPress={() =>
                 setCurrentImages((prev) =>
-                  prev.filter((image) => image.url !== url),
+                  prev.filter((image) => image._id !== item._id),
                 )
               }
             >
@@ -61,8 +74,31 @@ const ImagesSection = ({
             </DeleteIconContainer>
           )}
         </ImageContainer>
-      ))}
-    </ImagesContainer>
+      );
+    },
+    [currentImages.length, isLocked, setCurrentImages],
+  );
+
+  if (!currentImages.length) return null;
+
+  return (
+    <>
+      <ImageViewing
+        images={currentImages.map((image) => ({ uri: image.url }))}
+        imageIndex={currentImageIndex}
+        visible={isViewerVisible}
+        onRequestClose={() => setViewerVisible(false)}
+      />
+
+      <DraggableFlatList
+        data={currentImages}
+        keyExtractor={(item) => item._id}
+        horizontal
+        contentContainerStyle={styles.container}
+        renderItem={renderItem}
+        onDragEnd={handleDragEnd}
+      />
+    </>
   );
 };
 
@@ -76,14 +112,21 @@ const DeleteIconContainer = styled.TouchableOpacity`
   elevation: 10;
 `;
 
-const ImagesContainer = styled.ScrollView`
-  flex-direction: row;
-  align-center: center;
-  margin-top: 20px;
-`;
-
 const ImageContainer = styled.View<{ isLast: boolean }>`
   ${({ isLast }) => !isLast && `margin-right: ${IMAGE_MARGIN}px;`}
 `;
+
+const TouchableContainer = styled.TouchableOpacity``;
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 20,
+  },
+  image: {
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
+    borderRadius: 8,
+  },
+});
 
 export default React.memo(ImagesSection);

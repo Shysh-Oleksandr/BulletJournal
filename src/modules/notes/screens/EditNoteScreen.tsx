@@ -143,20 +143,36 @@ const EditNoteScreen: FC<{
     [allLabels, currentCategoriesIds],
   );
 
-  const currentNote: Note = {
-    ...initialNote,
-    author: userId,
-    title: currentTitle.trim(),
-    content: cleanedHtml.trim(),
-    color: currentColor,
-    startDate: currentStartDate,
-    rating: currentImportance,
-    type: currentType,
-    category: currentCategories,
-    images: currentImages,
-    isStarred,
-    isLocked,
-  };
+  const currentNote: Note = useMemo(
+    () => ({
+      ...initialNote,
+      author: userId,
+      title: currentTitle.trim(),
+      content: cleanedHtml.trim(),
+      color: currentColor,
+      startDate: currentStartDate,
+      rating: currentImportance,
+      type: currentType,
+      category: currentCategories,
+      images: currentImages,
+      isStarred,
+      isLocked,
+    }),
+    [
+      cleanedHtml,
+      currentCategories,
+      currentColor,
+      currentImages,
+      currentImportance,
+      currentStartDate,
+      currentTitle,
+      currentType,
+      initialNote,
+      isLocked,
+      isStarred,
+      userId,
+    ],
+  );
 
   const [savedNote, setSavedNote] = useState(currentNote);
 
@@ -167,83 +183,100 @@ const EditNoteScreen: FC<{
     { ...currentNote, isLocked: false },
   );
 
-  const handleImages = useHandleImagesOnSave(currentImages, savedNote);
+  const handleImages = useHandleImagesOnSave();
 
-  const saveNoteHandler = async (shouldLock?: boolean, withAlert = true) => {
-    if (!userId) return;
+  const saveNoteHandler = useCallback(
+    async (shouldLock?: boolean, withAlert = true) => {
+      if (!userId) return;
 
-    setIsSaving(true);
+      setIsSaving(true);
 
-    logUserEvent(
-      isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
-      currentNote._id ? { noteId: currentNote._id } : undefined,
-    );
-    addCrashlyticsLog(
-      `User tries to ${isNewNote ? "create" : "update"} a note`,
-    );
+      logUserEvent(
+        isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
+        currentNote._id ? { noteId: currentNote._id } : undefined,
+      );
+      addCrashlyticsLog(
+        `User tries to ${isNewNote ? "create" : "update"} a note`,
+      );
 
-    const newImages = await handleImages();
+      const newImages = await handleImages(currentImages, savedNote);
 
-    setCurrentImages(newImages);
+      setCurrentImages(newImages);
 
-    const newNote = {
-      ...currentNote,
-      isLocked: shouldLock ?? currentNote.isLocked,
-      images: newImages,
-    };
+      const newNote = {
+        ...currentNote,
+        isLocked: shouldLock ?? currentNote.isLocked,
+        images: newImages,
+      };
 
-    setSavedNote(newNote);
+      setSavedNote(newNote);
 
-    const updateNoteData: UpdateNoteRequest = {
-      ...currentNote,
-      title: currentNote.title || t("note.Note"),
-      type: currentTypeId,
-      category: currentCategoriesIds,
-      isLocked: shouldLock ?? currentNote.isLocked,
-      images: newImages.map((image) => image._id),
-    };
+      const updateNoteData: UpdateNoteRequest = {
+        ...currentNote,
+        title: currentNote.title || t("note.Note"),
+        type: currentTypeId,
+        category: currentCategoriesIds,
+        isLocked: shouldLock ?? currentNote.isLocked,
+        images: newImages.map((image) => image._id),
+      };
 
-    try {
-      if (isNewNote) {
-        const response = await createNote(updateNoteData).unwrap();
+      try {
+        if (isNewNote) {
+          const response = await createNote(updateNoteData).unwrap();
 
-        if (response.note) {
-          const notesResponse = await fetchNotes(userId).unwrap();
+          if (response.note) {
+            const notesResponse = await fetchNotes(userId).unwrap();
 
-          const newNoteId = response.note._id;
+            const newNoteId = response.note._id;
 
-          const newNoteIndex = notesResponse.notes.findIndex(
-            (item) => item._id === newNoteId,
-          );
+            const newNoteIndex = notesResponse.notes.findIndex(
+              (item) => item._id === newNoteId,
+            );
 
-          navigation.replace(Routes.EDIT_NOTE, {
-            item: { ...newNote, _id: newNoteId },
-            index: newNoteIndex,
+            navigation.replace(Routes.EDIT_NOTE, {
+              item: { ...newNote, _id: newNoteId },
+              index: newNoteIndex,
+            });
+          }
+        } else {
+          await updateNote(updateNoteData);
+          await fetchNotes(userId);
+        }
+
+        if (withAlert) {
+          Toast.show({
+            type: "success",
+            text1: t("general.success"),
+            text2: t(isNewNote ? "note.createdInfo" : "note.updatedInfo"),
           });
         }
-      } else {
-        await updateNote(updateNoteData);
-        await fetchNotes(userId);
+      } catch (error) {
+        logging.error(error);
+        alertError();
+        addCrashlyticsLog(error as string);
+      } finally {
+        // The save btn doesn't change its state without using timeout(for some reason)
+        setTimeout(() => {
+          setIsSaving(false);
+        }, 100);
       }
-
-      if (withAlert) {
-        Toast.show({
-          type: "success",
-          text1: t("general.success"),
-          text2: t(isNewNote ? "note.createdInfo" : "note.updatedInfo"),
-        });
-      }
-    } catch (error) {
-      logging.error(error);
-      alertError();
-      addCrashlyticsLog(error as string);
-    } finally {
-      // The save btn doesn't change its state without using timeout(for some reason)
-      setTimeout(() => {
-        setIsSaving(false);
-      }, 100);
-    }
-  };
+    },
+    [
+      createNote,
+      currentCategoriesIds,
+      currentImages,
+      currentNote,
+      currentTypeId,
+      fetchNotes,
+      handleImages,
+      isNewNote,
+      navigation,
+      savedNote,
+      t,
+      updateNote,
+      userId,
+    ],
+  );
 
   const deleteNoteHandler = useCallback(async () => {
     if (!_id) return;
