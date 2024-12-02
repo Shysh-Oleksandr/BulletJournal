@@ -59,7 +59,6 @@ const contentContainerStyle = {
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
-  const [fetchNotes] = notesApi.useLazyFetchNotesQuery();
   const [updateNote] = notesApi.useUpdateNoteMutation();
   const [createNote] = notesApi.useCreateNoteMutation();
   const [deleteNote] = notesApi.useDeleteNoteMutation();
@@ -224,8 +223,6 @@ const EditNoteScreen: FC<{
           const response = await createNote(updateNoteData).unwrap();
 
           if (response.note) {
-            await fetchNotes(userId);
-
             const newNoteId = response.note._id;
 
             navigation.replace(Routes.EDIT_NOTE, {
@@ -234,7 +231,6 @@ const EditNoteScreen: FC<{
           }
         } else {
           await updateNote(updateNoteData);
-          await fetchNotes(userId);
         }
 
         if (withAlert) {
@@ -261,7 +257,6 @@ const EditNoteScreen: FC<{
       currentImages,
       currentNote,
       currentTypeId,
-      fetchNotes,
       handleImages,
       isNewNote,
       navigation,
@@ -280,7 +275,6 @@ const EditNoteScreen: FC<{
       addCrashlyticsLog(`User tries to delete the note ${_id}`);
       setIsDeleting(true);
       await deleteNote(_id);
-      await fetchNotes(userId);
 
       const imagesUrlsToDelete = currentImages
         .map((image) => image.url)
@@ -294,16 +288,14 @@ const EditNoteScreen: FC<{
         text2: t("note.deletedInfo"),
       });
 
-      setTimeout(() => {
-        navigation.pop();
-      }, 1000);
+      navigation.pop();
     } catch (error) {
       logging.error(error);
       alertError();
     } finally {
       setIsDeleting(false);
     }
-  }, [_id, currentImages, deleteNote, fetchNotes, navigation, t, userId]);
+  }, [_id, currentImages, deleteNote, navigation, t]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
