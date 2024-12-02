@@ -1,6 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
 import isEqual from "lodash.isequal";
-import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GestureResponderEvent, ScrollView } from "react-native";
@@ -71,9 +70,7 @@ const EditNoteScreen: FC<{
   const userId = useAppSelector(getUserId) ?? "";
   const allLabels = useAppSelector(getLabels);
 
-  const { item: initialNote, index, isNewNote, date } = route.params;
-
-  const shouldDisplayNeighboringNotes = !isNil(index);
+  const { item: initialNote, isNewNote, date } = route.params;
 
   const {
     _id,
@@ -87,6 +84,8 @@ const EditNoteScreen: FC<{
     isStarred: isInitiallyStarred,
     isLocked: isInitiallyLocked,
   } = initialNote;
+
+  const shouldDisplayNeighboringNotes = !!_id;
 
   const defaultNoteType = useMemo(
     () =>
@@ -225,17 +224,12 @@ const EditNoteScreen: FC<{
           const response = await createNote(updateNoteData).unwrap();
 
           if (response.note) {
-            const notesResponse = await fetchNotes(userId).unwrap();
+            await fetchNotes(userId);
 
             const newNoteId = response.note._id;
 
-            const newNoteIndex = notesResponse.notes.findIndex(
-              (item) => item._id === newNoteId,
-            );
-
             navigation.replace(Routes.EDIT_NOTE, {
               item: { ...newNote, _id: newNoteId },
-              index: newNoteIndex,
             });
           }
         } else {
@@ -442,7 +436,7 @@ const EditNoteScreen: FC<{
               setCurrentImages={setCurrentImages}
             />
             {shouldDisplayNeighboringNotes && (
-              <NeighboringNotesLinks index={index} />
+              <NeighboringNotesLinks noteId={currentNote._id} />
             )}
           </Container>
           <Typography fontSize="lg" paddingBottom={8}>
