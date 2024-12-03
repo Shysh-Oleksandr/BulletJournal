@@ -1,10 +1,10 @@
+import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
@@ -24,7 +24,6 @@ import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
 import { getHabitsBySelectedDate } from "../HabitsSelectors";
-import { Habit } from "../types";
 
 const contentContainerStyle = {
   paddingTop: 20,
@@ -32,23 +31,22 @@ const contentContainerStyle = {
   paddingHorizontal: 20,
 };
 
-const ESTIMATED_HABIT_HEIGHT = 150;
-
-const keyExtractor = (item: Habit, i: number) => `${i}-${item._id}`;
-
 const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
   const [fetchHabits, { isLoading }] = habitsApi.useLazyFetchHabitsQuery();
 
-  const [extraData, setExtraData] = useState<any>(null);
-
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
 
   const userId = useAppSelector(getUserId);
-  const { habitsBySelectedDate, firstOptionalHabitId } = useAppSelector(
-    (state) => getHabitsBySelectedDate(state, selectedDate),
+  const { mandatoryHabits, optionalHabits } = useAppSelector((state) =>
+    getHabitsBySelectedDate(state, selectedDate),
+  );
+
+  const isTodaySelected = useMemo(
+    () => isSameDay(selectedDate, new Date()),
+    [selectedDate],
   );
 
   const navigateToCreateHabitScreen = useCallback(() => {
@@ -57,48 +55,6 @@ const HabitsScreen = (): JSX.Element => {
       isNewHabit: true,
     });
   }, [navigation]);
-
-  const ListHeaderComponent = useMemo(
-    () => (
-      <HabitsWeekCalendar
-        selectedDate={selectedDate}
-        setSelectedDate={(val: number) => {
-          setSelectedDate(val);
-          setExtraData(val);
-        }}
-      />
-    ),
-    [selectedDate],
-  );
-
-  const ListEmptyComponent = useMemo(
-    () => (
-      <EmptyContainer>
-        <Typography fontWeight="semibold" fontSize="lg">
-          {t("habits.noHabitsText")}
-        </Typography>
-        <Button
-          label={t("habits.addHabit")}
-          marginTop={10}
-          labelProps={{ fontSize: "xl", fontWeight: "bold" }}
-          onPress={navigateToCreateHabitScreen}
-          bgColor={theme.colors.cyan600}
-        />
-      </EmptyContainer>
-    ),
-    [navigateToCreateHabitScreen, t],
-  );
-
-  const renderItem: ListRenderItem<Habit> = useCallback(
-    ({ item }) => (
-      <HabitItem
-        habit={item}
-        selectedDate={selectedDate}
-        isFirstOptionalHabitId={item._id === firstOptionalHabitId}
-      />
-    ),
-    [selectedDate, firstOptionalHabitId],
-  );
 
   const fetchInitialData = useCallback(async () => {
     if (!userId) return;
@@ -123,19 +79,62 @@ const HabitsScreen = (): JSX.Element => {
             <ActivityIndicator size="large" color={theme.colors.cyan600} />
           </LoaderContainer>
         ) : (
-          <FlashList
-            data={habitsBySelectedDate}
-            renderItem={renderItem}
-            extraData={extraData}
-            keyExtractor={keyExtractor}
-            ListEmptyComponent={ListEmptyComponent}
-            ListHeaderComponent={ListHeaderComponent}
-            estimatedItemSize={ESTIMATED_HABIT_HEIGHT}
+          <Container
             contentContainerStyle={contentContainerStyle}
             showsVerticalScrollIndicator={false}
             overScrollMode="never"
             bounces={false}
-          />
+          >
+            <HabitsWeekCalendar
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+            {mandatoryHabits.length > 0 || optionalHabits.length > 0 ? (
+              <>
+                {mandatoryHabits.map((habit) => (
+                  <HabitItem
+                    key={habit._id}
+                    habit={habit}
+                    selectedDate={selectedDate}
+                  />
+                ))}
+                {optionalHabits.length > 0 && (
+                  <Typography
+                    fontWeight="semibold"
+                    fontSize="lg"
+                    paddingTop={16}
+                    paddingBottom={16}
+                  >
+                    {t(
+                      isTodaySelected
+                        ? "habits.optionalHabitsToday"
+                        : "habits.optionalHabitsThatDay",
+                    )}
+                  </Typography>
+                )}
+                {optionalHabits.map((habit) => (
+                  <HabitItem
+                    key={habit._id}
+                    habit={habit}
+                    selectedDate={selectedDate}
+                  />
+                ))}
+              </>
+            ) : (
+              <EmptyContainer>
+                <Typography fontWeight="semibold" fontSize="lg">
+                  {t("habits.noHabitsText")}
+                </Typography>
+                <Button
+                  label={t("habits.addHabit")}
+                  marginTop={10}
+                  labelProps={{ fontSize: "xl", fontWeight: "bold" }}
+                  onPress={navigateToCreateHabitScreen}
+                  bgColor={theme.colors.cyan600}
+                />
+              </EmptyContainer>
+            )}
+          </Container>
         )}
       </SLinearGradient>
     </>
@@ -145,6 +144,8 @@ const HabitsScreen = (): JSX.Element => {
 const SLinearGradient = styled(LinearGradient)`
   flex: 1;
 `;
+
+const Container = styled.ScrollView``;
 
 const EmptyContainer = styled.View`
   align-items: center;

@@ -46,12 +46,9 @@ export const getHabitsBySelectedDate = createCachedSelector(
         : optionalHabits.push(habit);
     });
 
-    const firstOptionalHabitId =
-      optionalHabits.length > 0 ? optionalHabits[0]._id : null;
-
     return {
-      habitsBySelectedDate: [...mandatoryHabits, ...optionalHabits],
-      firstOptionalHabitId,
+      mandatoryHabits,
+      optionalHabits,
     };
   },
 )((_: RootState, selectedDate: number) => selectedDate);
