@@ -4,6 +4,7 @@ import theme from "theme";
 
 import format from "date-fns/format";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
+import { capitalizeFirstLetter } from "utils/capitalizeFirstLetter";
 import { getDifferentColor } from "utils/getDifferentColor";
 
 export const IS_IOS = Platform.OS === "ios";
@@ -43,7 +44,9 @@ export const MONTH_NAMES = Array.from({ length: 12 }, (_, i) =>
 );
 
 export const WEEKDAY_NAMES = Array.from(Array(7)).map((_, i) =>
-  format(addDays(startOfWeek(new Date(2024, 0, 1)), i), "EEEEEE", {
-    locale: getDateFnsLocale(),
-  }),
+  capitalizeFirstLetter(
+    format(addDays(startOfWeek(new Date(2024, 0, 1)), i), "EEEEEE", {
+      locale: getDateFnsLocale(),
+    }),
+  ),
 );

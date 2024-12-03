@@ -36,25 +36,30 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
       <StreaksContainer>
         {streaksData.map((streak, index) => (
           <StreakItemContainer key={index}>
-            <Typography color={theme.colors.cyan700} fontSize="xs">
-              {format(streak.startDate, "dd MMM yyyy", {
-                locale: getDateFnsLocale(),
-              })}
-            </Typography>
+            <StreakDateContainer isLeft>
+              <Typography color={theme.colors.cyan700} fontSize="xs">
+                {format(streak.startDate, "dd MMM yyyy", {
+                  locale: getDateFnsLocale(),
+                })}
+              </Typography>
+            </StreakDateContainer>
             <StreakNumberContainer numberOfDays={streak.numberOfDays}>
               <Typography
                 fontWeight="bold"
                 color={theme.colors.white}
                 fontSize="lg"
+                align="center"
               >
                 {streak.numberOfDays}
               </Typography>
             </StreakNumberContainer>
-            <Typography color={theme.colors.cyan700} fontSize="xs">
-              {format(streak.endDate, "dd MMM yyyy", {
-                locale: getDateFnsLocale(),
-              })}
-            </Typography>
+            <StreakDateContainer>
+              <Typography color={theme.colors.cyan700} fontSize="xs">
+                {format(streak.endDate, "dd MMM yyyy", {
+                  locale: getDateFnsLocale(),
+                })}
+              </Typography>
+            </StreakDateContainer>
           </StreakItemContainer>
         ))}
       </StreaksContainer>
@@ -75,8 +80,16 @@ const StreakItemContainer = styled.View`
   width: 100%;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
   gap: 10px;
+  justify-content: space-between;
+`;
+
+const StreakDateContainer = styled.View<{
+  isLeft?: boolean;
+}>`
+  flex: 1;
+  align-items: ${({ isLeft }) => (isLeft ? "flex-end" : "flex-start")}
+  justify-content: ${({ isLeft }) => (isLeft ? "flex-end" : "flex-start")}
 `;
 
 const StreakNumberContainer = styled.View<{ numberOfDays: number }>`
