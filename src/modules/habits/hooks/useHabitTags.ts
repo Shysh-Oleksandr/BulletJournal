@@ -5,12 +5,7 @@ import { Habit, HabitTypes } from "../types";
 
 import { useHabitStreakData } from "./useHabitStreakData";
 
-type Props = {
-  habit: Habit;
-  amountTarget?: number;
-};
-
-export const useHabitTags = ({ habit, amountTarget }: Props) => {
+export const useHabitTags = (habit: Habit, amountTarget?: number) => {
   const { t } = useTranslation();
 
   const { completedLogs, currentStreak, longestStreak } =

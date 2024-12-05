@@ -1,8 +1,7 @@
 import { format, isAfter, startOfToday } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Easing } from "react-native";
-import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { CircularProgress } from "react-native-circular-progress";
 import theme from "theme";
 
 import Typography from "components/Typography";
@@ -52,9 +51,7 @@ const WeekCalendarItem = ({
           </Typography>
         </ActiveContainer>
       ) : (
-        <AnimatedCircularProgress
-          duration={500}
-          easing={Easing.ease}
+        <CircularProgress
           fill={isDisabled ? 0 : progress}
           size={CIRCLE_SIZE}
           width={CIRCLE_WIDTH}
@@ -71,7 +68,7 @@ const WeekCalendarItem = ({
               </Typography>
             </InnerContainer>
           )}
-        </AnimatedCircularProgress>
+        </CircularProgress>
       )}
     </Container>
   );

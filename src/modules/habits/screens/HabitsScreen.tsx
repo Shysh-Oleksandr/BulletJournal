@@ -19,7 +19,7 @@ import AddButton, { ContentItem } from "modules/notes/components/AddButton";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import HabitItem from "../components/HabitItem";
+import HabitItem from "../components/habitItem/HabitItem";
 import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";

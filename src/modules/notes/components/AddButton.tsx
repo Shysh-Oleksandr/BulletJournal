@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useMemo } from "react";
 import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
+import { useGetCustomColor } from "hooks/useGetCustomColor";
 import { CustomUserEvents } from "modules/app/types";
 import { EMPTY_HABIT } from "modules/habits/data";
 import { useAppNavigation } from "modules/navigation/NavigationService";
@@ -14,11 +15,6 @@ import { logUserEvent } from "utils/logUserEvent";
 import { getEmptyNote } from "../util/getEmptyNote";
 
 const SIZE = 70;
-const BG_COLOR = theme.colors.cyan600;
-const TOP_GRADIENT_COLOR = getDifferentColor(BG_COLOR, 10);
-const BOTTOM_GRADIENT_COLOR = getDifferentColor(BG_COLOR, -15);
-
-const COLORS = [TOP_GRADIENT_COLOR, BOTTOM_GRADIENT_COLOR] as const;
 
 export enum ContentItem {
   NOTE,
@@ -29,6 +25,7 @@ type Props = {
   contentItem?: ContentItem;
   withEditIcon?: boolean;
   withTabBarOffset?: boolean;
+  bgColor?: string;
   onPress?: () => void;
 };
 
@@ -36,11 +33,23 @@ const AddButton = ({
   contentItem = ContentItem.NOTE,
   withEditIcon,
   withTabBarOffset = true,
+  bgColor = theme.colors.cyan600,
   onPress,
 }: Props): JSX.Element => {
   const navigation = useAppNavigation();
 
   const isEditIcon = withEditIcon || contentItem === ContentItem.NOTE;
+
+  const { textColor } = useGetCustomColor(bgColor);
+
+  const gradientColors = useMemo(
+    () =>
+      [
+        getDifferentColor(bgColor, 10),
+        getDifferentColor(bgColor, -15),
+      ] as const,
+    [bgColor],
+  );
 
   const onButtonPress = () => {
     logUserEvent(CustomUserEvents.ADD_ICON_PRESS);
@@ -68,11 +77,11 @@ const AddButton = ({
   return (
     <Container withTabBarOffset={withTabBarOffset}>
       <IconContainer onPress={onPress ?? onButtonPress}>
-        <SLinearGradient colors={COLORS}>
+        <SLinearGradient colors={gradientColors}>
           <Entypo
             name={isEditIcon ? "edit" : "plus"}
             size={isEditIcon ? 34 : 42}
-            color={theme.colors.white}
+            color={textColor}
           />
         </SLinearGradient>
       </IconContainer>

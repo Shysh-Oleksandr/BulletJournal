@@ -114,7 +114,7 @@ const ContentContainer = styled.View`
 
 const ModalFooterContainer = styled.View`
   width: 100%;
-  padding: 30px;
+  padding: 25px;
 `;
 
 const CloseButton = styled.TouchableOpacity`

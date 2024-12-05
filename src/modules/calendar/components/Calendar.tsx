@@ -10,7 +10,7 @@ import { Direction } from "react-native-calendars/src/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { CALENDAR_THEME, SIMPLE_DATE_FORMAT } from "../data";
+import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "../data";
 import { configureCalendarLocale } from "../data/calendarLocaleConfig";
 import { getMarkedDates } from "../util/getMarkedDates";
 
@@ -25,6 +25,8 @@ const CALENDAR_STYLES: StyleProp<ViewStyle> = {
   borderRadius: 8,
   elevation: 12,
 };
+
+const CALENDAR_THEME = getCalendarTheme();
 
 const renderArrow = (direction: Direction) => (
   <FontAwesome5

@@ -10,13 +10,15 @@ import Checkbox from "components/Checkbox";
 import Input from "components/Input";
 import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
+import { useHabitColors } from "modules/habits/hooks/useHabitColors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 import { noop } from "utils/utilityFunctions";
 
-import { useHabitTags } from "../hooks/useHabitTags";
-import { Habit, HabitTypes } from "../types";
+import { Habit, HabitTypes } from "../../types";
+
+import HabitTags from "./HabitTags";
 
 const CIRCLE_SIZE = 42;
 const CIRCLE_WIDTH = 5;
@@ -46,19 +48,14 @@ const HabitBody = ({
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 
-  const color = isCompleted
-    ? theme.colors.policeBlue
-    : theme.colors.darkBlueText;
-
-  const bgGradientColors = useMemo(
-    () =>
-      isCompleted
-        ? ([theme.colors.cyan300, theme.colors.cyan500] as const)
-        : ([theme.colors.white, theme.colors.cyan300] as const),
-    [isCompleted],
-  );
-
-  const tags = useHabitTags({ habit, amountTarget });
+  const {
+    textColor,
+    gradientColors,
+    labelBgColor,
+    checkboxBgColor,
+    tintColor,
+    bgTintColor,
+  } = useHabitColors(isCompleted, habit.color);
 
   const inputFontSize = useMemo(() => {
     if (inputValue.length < 3) return "md";
@@ -86,18 +83,18 @@ const HabitBody = ({
 
   return (
     <Container activeOpacity={0.5} disabled={!updateLog} onPress={onCardPress}>
-      <BgContainer colors={bgGradientColors}>
+      <BgContainer colors={gradientColors}>
         <RowContainer>
           <InfoContainer>
             <AnimatedCircularProgress
               duration={600}
               easing={Easing.ease}
-              fill={percentageCompleted ?? 0}
+              fill={Math.min(percentageCompleted ?? 0, 100)}
               size={CIRCLE_SIZE}
               width={CIRCLE_WIDTH}
               rotation={0}
-              tintColor={theme.colors.cyan500}
-              backgroundColor={theme.colors.crystal}
+              tintColor={tintColor}
+              backgroundColor={bgTintColor}
             >
               {() => (
                 <InnerContainer isCompleted={isCompleted}>
@@ -107,7 +104,8 @@ const HabitBody = ({
                       borderRadius={0}
                       size={CIRCLE_SIZE}
                       iconSize={theme.fontSizes.md}
-                      bgColor="transparent"
+                      iconColor={textColor}
+                      bgColor={checkboxBgColor}
                     />
                   ) : (
                     <>
@@ -120,10 +118,9 @@ const HabitBody = ({
                         numberOfLines={1}
                         keyboardType="number-pad"
                         fontWeight="semibold"
-                        labelColor={isCompleted ? theme.colors.white : color}
-                        bgColor={
-                          isCompleted ? theme.colors.cyan500 : "transparent"
-                        }
+                        labelColor={textColor}
+                        bgColor={checkboxBgColor}
+                        withBorder={false}
                         selectTextOnFocus
                         fontSize={inputFontSize}
                         onChange={onChange ?? noop}
@@ -138,7 +135,7 @@ const HabitBody = ({
 
             <LabelContainer>
               <Typography
-                color={color}
+                color={textColor}
                 paddingLeft={14}
                 paddingRight={6}
                 numberOfLines={2}
@@ -156,26 +153,18 @@ const HabitBody = ({
             >
               <Entypo
                 name="dots-three-horizontal"
-                color={color}
+                color={textColor}
                 size={theme.fontSizes.xxl}
               />
             </MoreContainer>
           )}
         </RowContainer>
-        <TagsContainer>
-          {tags.map((tag, index) => (
-            <TagContainer key={index} isActive={isCompleted}>
-              <Typography
-                color={color}
-                fontWeight="semibold"
-                align="center"
-                fontSize="xs"
-              >
-                {tag}
-              </Typography>
-            </TagContainer>
-          ))}
-        </TagsContainer>
+        <HabitTags
+          habit={habit}
+          amountTarget={amountTarget}
+          labelBgColor={labelBgColor}
+          textColor={textColor}
+        />
       </BgContainer>
     </Container>
   );
@@ -219,29 +208,10 @@ const InnerContainer = styled.View<{ isCompleted: boolean }>`
   width: 100%;
   align-items: center;
   justify-content: center;
-  background-color: ${({ isCompleted }) =>
-    isCompleted ? theme.colors.cyan500 : "transparent"};
-  padding: 1px;
 `;
 
 const LabelContainer = styled.View`
   flex: 1;
-`;
-
-const TagsContainer = styled.View`
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-`;
-
-const TagContainer = styled.View<{ isActive: boolean }>`
-  z-index: 20;
-  padding: 3px 6px;
-  background-color: ${({ isActive }) =>
-    isActive ? `${theme.colors.cyan400}70` : `${theme.colors.cyan500}25`};
-  border-radius: 6px;
 `;
 
 export default React.memo(HabitBody);

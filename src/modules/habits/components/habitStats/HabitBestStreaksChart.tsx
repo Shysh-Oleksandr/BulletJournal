@@ -6,6 +6,7 @@ import theme from "theme";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { useCalculateHabitBestStreaks } from "modules/habits/hooks/useCalculateHabitBestStreaks";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { HabitLog } from "modules/habits/types";
 import styled from "styled-components/native";
 
@@ -15,35 +16,41 @@ const STREAK_DAY_WIDTH_MULTIPLIER = 8;
 
 type Props = {
   habitLogs: HabitLog[];
+  color?: string;
 };
 
-const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
+const HabitBestStreaksChart = ({
+  habitLogs,
+  color,
+}: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
   const streaksData = useCalculateHabitBestStreaks(habitLogs);
+
+  const { textColor, bgColor, activeBgColor } = useHabitStatColors(color);
 
   if (streaksData.length === 0) return null;
 
   return (
     <Container>
-      <Typography
-        fontWeight="bold"
-        color={theme.colors.darkBlueText}
-        fontSize="xl"
-      >
+      <Typography fontWeight="bold" color={textColor} fontSize="xl">
         {t("habits.bestStreaks")}
       </Typography>
       <StreaksContainer>
         {streaksData.map((streak, index) => (
           <StreakItemContainer key={index}>
             <StreakDateContainer isLeft>
-              <Typography color={theme.colors.cyan700} fontSize="xs">
+              <Typography color={textColor} fontSize="xs">
                 {format(streak.startDate, "dd MMM yyyy", {
                   locale: getDateFnsLocale(),
                 })}
               </Typography>
             </StreakDateContainer>
-            <StreakNumberContainer numberOfDays={streak.numberOfDays}>
+            <StreakNumberContainer
+              numberOfDays={streak.numberOfDays}
+              bgColor={bgColor}
+              activeBgColor={activeBgColor}
+            >
               <Typography
                 fontWeight="bold"
                 color={theme.colors.white}
@@ -54,7 +61,7 @@ const HabitBestStreaksChart = ({ habitLogs }: Props): JSX.Element | null => {
               </Typography>
             </StreakNumberContainer>
             <StreakDateContainer>
-              <Typography color={theme.colors.cyan700} fontSize="xs">
+              <Typography color={textColor} fontSize="xs">
                 {format(streak.endDate, "dd MMM yyyy", {
                   locale: getDateFnsLocale(),
                 })}
@@ -92,10 +99,14 @@ const StreakDateContainer = styled.View<{
   justify-content: ${({ isLeft }) => (isLeft ? "flex-end" : "flex-start")}
 `;
 
-const StreakNumberContainer = styled.View<{ numberOfDays: number }>`
+const StreakNumberContainer = styled.View<{
+  numberOfDays: number;
+  bgColor: string;
+  activeBgColor: string;
+}>`
   padding: 2px 16px;
-  background-color: ${({ numberOfDays }) =>
-    numberOfDays >= 10 ? theme.colors.cyan600 : theme.colors.cyan500};
+  background-color: ${({ numberOfDays, activeBgColor, bgColor }) =>
+    numberOfDays >= 10 ? activeBgColor : bgColor};
   border-radius: 4px;
   align-items: center;
   min-width: ${({ numberOfDays }) =>

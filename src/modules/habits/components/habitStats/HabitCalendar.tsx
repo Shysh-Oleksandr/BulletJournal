@@ -5,8 +5,9 @@ import { Calendar as RNCalendar } from "react-native-calendars";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
-import { CALENDAR_THEME, SIMPLE_DATE_FORMAT } from "modules/calendar/data";
+import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { configureCalendarLocale } from "modules/calendar/data/calendarLocaleConfig";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { Habit } from "modules/habits/types";
 import { getMarkedHabitLogsDates } from "modules/habits/utils/getMarkedHabitLogsDates";
 import { Direction } from "react-native-calendars/src/types";
@@ -26,10 +27,10 @@ const CALENDAR_STYLES: StyleProp<ViewStyle> = {
   elevation: 8,
 };
 
-const renderArrow = (direction: Direction) => (
+const renderArrow = (direction: Direction, color: string) => (
   <FontAwesome5
     name={direction === "left" ? "chevron-left" : "chevron-right"}
-    color={theme.colors.cyan600}
+    color={color ?? theme.colors.cyan600}
     size={theme.fontSizes.md}
   />
 );
@@ -39,10 +40,14 @@ type Props = {
 };
 
 const HabitCalendar = ({ habit }: Props): JSX.Element => {
+  const { textColor } = useHabitStatColors(habit.color);
+
   const markedDates = useMemo(
     () => getMarkedHabitLogsDates(habit.logs),
     [habit.logs],
   );
+
+  const customTheme = useMemo(() => getCalendarTheme(textColor), [textColor]);
 
   const dayComponent = useCallback(
     ({ date, state, marking }: any) => {
@@ -67,12 +72,14 @@ const HabitCalendar = ({ habit }: Props): JSX.Element => {
     <Container>
       <RNCalendar
         style={CALENDAR_STYLES}
-        theme={CALENDAR_THEME}
+        theme={customTheme}
         current={todayString}
         maxDate={todayString}
         firstDay={1}
         dayComponent={dayComponent}
-        renderArrow={renderArrow}
+        renderArrow={(direction: Direction) =>
+          renderArrow(direction, textColor)
+        }
         hideExtraDays
         markedDates={markedDates}
       />

@@ -1,8 +1,8 @@
 import { isSameDay } from "date-fns";
 import React, { useMemo } from "react";
 
-import { useUpdateHabitLog } from "../hooks/useUpdateHabitLog";
-import { Habit } from "../types";
+import { useUpdateHabitLog } from "../../hooks/useUpdateHabitLog";
+import { Habit } from "../../types";
 
 import HabitBody from "./HabitBody";
 

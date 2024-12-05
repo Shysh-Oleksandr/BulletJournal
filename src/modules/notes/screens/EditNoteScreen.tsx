@@ -315,12 +315,20 @@ const EditNoteScreen: FC<{
     [childrenIds],
   );
 
+  // TODO: implement full screen gradient
+  // const gradientColors = [
+  //   getDifferentColor(currentColor, -15),
+  //   getDifferentColor(currentColor, 10),
+  //   getDifferentColor(currentColor, -15),
+  // ] as const;
+
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         title={isNewNote ? t("note.createNote") : t("note.editNote")}
         withAddBtn={!isNewNote}
         withBackArrow
+        bgColor={currentColor}
       />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}

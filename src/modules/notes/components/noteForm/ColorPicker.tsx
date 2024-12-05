@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
 import WheelColorPicker from "react-native-wheel-color-picker";
+import theme from "theme";
 
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import CustomModal from "components/CustomModal";
@@ -20,6 +21,21 @@ const isBigScreen = screenHeight > 800;
 
 const regularModalHeight = isSmallScreen ? "55%" : "45%";
 const modalHeight = isBigScreen ? "40%" : regularModalHeight;
+
+const COLOR_PALETTE = [
+  theme.colors.cyan300,
+  theme.colors.gray,
+  "#f7f21e",
+  "#c11ba8",
+  "#13f7c6",
+  theme.colors.cyan600,
+  "#006d52",
+  "#914c07",
+  "#6d0c0c",
+  "#561c9e",
+  "#162493",
+  theme.colors.blackText,
+];
 
 type Props = {
   currentColor: string;
@@ -94,10 +110,10 @@ const ColorPicker = ({
         <PickerContainer>
           <WheelColorPicker
             color={currentColor}
-            discrete
-            swatches={false}
             thumbSize={35}
-            onColorChange={colorChangeDebouncer}
+            onColorChangeComplete={colorChangeDebouncer}
+            shadeSliderThumb
+            palette={COLOR_PALETTE}
           />
         </PickerContainer>
       </CustomModal>
@@ -121,6 +137,7 @@ const ButtonContainer = styled.TouchableOpacity``;
 
 const PickerContainer = styled.View`
   width: 100%;
+  background-color: ${theme.colors.red500};
 `;
 
 const EditColorContainer = styled.View`

@@ -8,13 +8,12 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
 import { MONTH_NAMES } from "modules/app/constants";
+import { useHabitChartConfig } from "modules/habits/hooks/useHabitChartConfig";
 import { useHabitsSelectedYear } from "modules/habits/hooks/useHabitsSelectedYear";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { HabitLog } from "modules/habits/types";
 import { calculateHabitMonthlyAmountsPerYear } from "modules/habits/utils/calculateHabitMonthlyAmountsPerYear";
-import {
-  ChartConfig,
-  ChartData,
-} from "react-native-chart-kit/dist/HelperTypes";
+import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import styled from "styled-components/native";
 import { hexToRGB } from "utils/hexToRGB";
 
@@ -22,23 +21,17 @@ const { width: screenWidth } = Dimensions.get("window");
 
 const CHART_HEIGHT = 230;
 
-const chartConfig: ChartConfig = {
-  backgroundGradientFrom: theme.colors.cyan500,
-  backgroundGradientFromOpacity: 0.2,
-  backgroundGradientTo: theme.colors.cyan500,
-  backgroundGradientToOpacity: 0.4,
-  color: (opacity = 1) => hexToRGB(theme.colors.darkBlueText, opacity),
-  decimalPlaces: 0,
-  fillShadowGradient: theme.colors.cyan500,
-  fillShadowGradientOpacity: 0.8,
-};
-
 type Props = {
   habitLogs: HabitLog[];
+  color?: string;
 };
 
-const HabitMonthlyBarChart = ({ habitLogs }: Props): JSX.Element => {
+const HabitMonthlyBarChart = ({ habitLogs, color }: Props): JSX.Element => {
   const { t } = useTranslation();
+
+  const chartConfig = useHabitChartConfig(color);
+
+  const { textColor } = useHabitStatColors(color);
 
   const {
     selectedYear,
@@ -63,11 +56,7 @@ const HabitMonthlyBarChart = ({ habitLogs }: Props): JSX.Element => {
   return (
     <Container>
       <HeaderContainer>
-        <Typography
-          fontWeight="bold"
-          color={theme.colors.darkBlueText}
-          fontSize="xl"
-        >
+        <Typography fontWeight="bold" color={textColor} fontSize="xl">
           {t("habits.monthlyProgress")}
         </Typography>
         <ArrowsContainer>
@@ -78,17 +67,11 @@ const HabitMonthlyBarChart = ({ habitLogs }: Props): JSX.Element => {
           >
             <FontAwesome5
               name="chevron-left"
-              color={
-                isPrevYearDisabled ? theme.colors.gray : theme.colors.cyan500
-              }
+              color={isPrevYearDisabled ? theme.colors.gray : textColor}
               size={theme.fontSizes.xxl}
             />
           </ArrowContainer>
-          <Typography
-            fontWeight="semibold"
-            color={theme.colors.darkBlueText}
-            fontSize="lg"
-          >
+          <Typography fontWeight="semibold" color={textColor} fontSize="lg">
             {selectedYear}
           </Typography>
           <ArrowContainer
@@ -98,9 +81,7 @@ const HabitMonthlyBarChart = ({ habitLogs }: Props): JSX.Element => {
           >
             <FontAwesome5
               name="chevron-right"
-              color={
-                isNextYearDisabled ? theme.colors.gray : theme.colors.cyan500
-              }
+              color={isNextYearDisabled ? theme.colors.gray : textColor}
               size={theme.fontSizes.xxl}
             />
           </ArrowContainer>
