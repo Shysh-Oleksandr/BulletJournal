@@ -1,12 +1,13 @@
 {
   "name": "bulletjournal",
   "main": "index.js",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "build": "eas build --platform android",
+    "submit": "eas build --platform android --auto-submit",
     "prepare": "husky install",
     "clean:android": "expo prebuild --clean -p android",
     "lint": "yarn lint:js && yarn lint:types-cli",
