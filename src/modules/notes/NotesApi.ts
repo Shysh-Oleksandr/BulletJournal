@@ -25,8 +25,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
             method: Method.GET,
           };
         },
-        // Notes are refetched manually after changes until we migrate to faster server hosting
-        // providesTags: [TAG.NOTES],
+        providesTags: [TAG.NOTES],
       }),
       updateNote: build.mutation<void, UpdateNoteRequest>({
         query(payload) {
@@ -36,7 +35,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        // invalidatesTags: [TAG.NOTES],
+        invalidatesTags: [TAG.NOTES],
       }),
       createNote: build.mutation<CreateNoteResponse, CreateNoteRequest>({
         query(payload) {
@@ -46,7 +45,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        // invalidatesTags: [TAG.NOTES],
+        invalidatesTags: [TAG.NOTES],
       }),
       deleteNote: build.mutation<void, string>({
         query(noteId) {
@@ -55,7 +54,7 @@ export const notesApi = emptyAxiosApi.injectEndpoints({
             method: Method.DELETE,
           };
         },
-        // invalidatesTags: [TAG.NOTES],
+        invalidatesTags: [TAG.NOTES],
       }),
 
       fetchLabels: build.query<FetchLabelsResponse, string>({

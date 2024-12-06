@@ -1,14 +1,12 @@
 import { format, isAfter, startOfToday } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Easing } from "react-native";
-import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { CircularProgress } from "react-native-circular-progress";
 import theme from "theme";
 
 import Typography from "components/Typography";
+import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import styled from "styled-components/native";
-
-import { getLocalizedWeekDay } from "../utils/getLocalizedWeekDay";
 
 const today = startOfToday();
 
@@ -35,6 +33,10 @@ const WeekCalendarItem = ({
 }: Props): JSX.Element => {
   const isDisabled = isAfter(date, today);
 
+  const day = format(date, "EEEEEE", {
+    locale: getDateFnsLocale(),
+  });
+
   return (
     <Container disabled={isDisabled} onPress={() => setSelectedDate(date)}>
       {isActive ? (
@@ -45,13 +47,11 @@ const WeekCalendarItem = ({
             color={theme.colors.white}
             uppercase
           >
-            {format(date, "EEEEEE")}
+            {day}
           </Typography>
         </ActiveContainer>
       ) : (
-        <AnimatedCircularProgress
-          duration={500}
-          easing={Easing.ease}
+        <CircularProgress
           fill={isDisabled ? 0 : progress}
           size={CIRCLE_SIZE}
           width={CIRCLE_WIDTH}
@@ -64,11 +64,11 @@ const WeekCalendarItem = ({
           {() => (
             <InnerContainer>
               <Typography fontSize="xs" fontWeight="semibold" uppercase>
-                {getLocalizedWeekDay(date).slice(0, 2)}
+                {day}
               </Typography>
             </InnerContainer>
           )}
-        </AnimatedCircularProgress>
+        </CircularProgress>
       )}
     </Container>
   );

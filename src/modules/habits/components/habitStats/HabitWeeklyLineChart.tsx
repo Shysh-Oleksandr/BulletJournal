@@ -7,11 +7,12 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
+import { useHabitChartConfig } from "modules/habits/hooks/useHabitChartConfig";
 import { useHabitsSelectedYear } from "modules/habits/hooks/useHabitsSelectedYear";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { HabitLog } from "modules/habits/types";
 import { calculateHabitAverageAmounts } from "modules/habits/utils/calculateHabitAverageAmounts";
 import { generateWeekLabels } from "modules/habits/utils/generateWeekLabels";
-import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
 import { LineChartData } from "react-native-chart-kit/dist/line-chart/LineChart";
 import styled from "styled-components/native";
 import { hexToRGB } from "utils/hexToRGB";
@@ -20,23 +21,18 @@ const { width: screenWidth } = Dimensions.get("window");
 
 const CHART_HEIGHT = 230;
 
-const chartConfig: AbstractChartConfig = {
-  backgroundGradientFrom: theme.colors.cyan500,
-  backgroundGradientFromOpacity: 0.2,
-  backgroundGradientTo: theme.colors.cyan500,
-  backgroundGradientToOpacity: 0.4,
-  color: (opacity = 1) => hexToRGB(theme.colors.darkBlueText, opacity),
-  decimalPlaces: 1,
-  fillShadowGradient: theme.colors.cyan500,
-  fillShadowGradientOpacity: 0.8,
-};
-
 type Props = {
   habitLogs: HabitLog[];
+  color?: string;
 };
 
-const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
+const HabitMonthlyLineChart = ({
+  habitLogs,
+  color = theme.colors.cyan500,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
+
+  const { textColor } = useHabitStatColors(color);
 
   const {
     selectedYear,
@@ -45,6 +41,8 @@ const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
     onPrevArrowPress,
     onNextArrowPress,
   } = useHabitsSelectedYear(habitLogs);
+
+  const chartConfig = useHabitChartConfig(color);
 
   const data: LineChartData = useMemo(() => {
     return {
@@ -95,11 +93,7 @@ const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
   return (
     <Container>
       <HeaderContainer>
-        <Typography
-          fontWeight="bold"
-          color={theme.colors.darkBlueText}
-          fontSize="xl"
-        >
+        <Typography fontWeight="bold" color={textColor} fontSize="xl">
           {t("habits.weeklyProgress")}
         </Typography>
         <ArrowsContainer>
@@ -110,17 +104,11 @@ const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
           >
             <FontAwesome5
               name="chevron-left"
-              color={
-                isPrevYearDisabled ? theme.colors.gray : theme.colors.cyan500
-              }
+              color={isPrevYearDisabled ? theme.colors.gray : textColor}
               size={theme.fontSizes.xxl}
             />
           </ArrowContainer>
-          <Typography
-            fontWeight="semibold"
-            color={theme.colors.darkBlueText}
-            fontSize="lg"
-          >
+          <Typography fontWeight="semibold" color={textColor} fontSize="lg">
             {selectedYear}
           </Typography>
           <ArrowContainer
@@ -130,9 +118,7 @@ const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
           >
             <FontAwesome5
               name="chevron-right"
-              color={
-                isNextYearDisabled ? theme.colors.gray : theme.colors.cyan500
-              }
+              color={isNextYearDisabled ? theme.colors.gray : textColor}
               size={theme.fontSizes.xxl}
             />
           </ArrowContainer>
@@ -148,6 +134,7 @@ const HabitMonthlyLineChart = ({ habitLogs }: Props): JSX.Element => {
           width={screenWidth * 3.4}
           height={CHART_HEIGHT}
           chartConfig={chartConfig}
+          getDotColor={() => color}
           style={{
             borderRadius: 8,
           }}

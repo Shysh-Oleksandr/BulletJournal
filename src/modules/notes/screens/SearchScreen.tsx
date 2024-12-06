@@ -132,9 +132,7 @@ const SearchScreen = (): JSX.Element => {
       >
         <FlashList
           data={searchedNotes}
-          renderItem={({ item, index }) => (
-            <NotePreview item={item} index={index} />
-          )} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
+          renderItem={({ item }) => <NotePreview item={item} />} // Shouldn't be memoized in order to avoid the missed separator on loadMore issue
           onEndReached={loadMoreData}
           keyExtractor={keyExtractor}
           ListEmptyComponent={ListEmptyComponent}

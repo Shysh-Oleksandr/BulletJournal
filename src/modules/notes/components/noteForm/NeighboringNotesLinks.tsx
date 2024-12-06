@@ -29,10 +29,10 @@ const RIGHT_ICON = (
 );
 
 type Props = {
-  index: number;
+  noteId: string;
 };
 
-const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
+const NeighboringNotesLinks = ({ noteId }: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
   const navigation = useAppNavigation();
@@ -40,14 +40,16 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
   const allNotes = useAppSelector(getNotes);
 
   const { prevNote, nextNote } = useMemo(() => {
+    const index = allNotes.findIndex((note) => note._id === noteId);
+
     const prevNote = index === 0 ? null : allNotes[index - 1];
     const nextNote = index === allNotes.length - 1 ? null : allNotes[index + 1];
 
     return { prevNote, nextNote };
-  }, [allNotes, index]);
+  }, [allNotes, noteId]);
 
   const navigateToNote = useCallback(
-    (item: Note | null, index: number) => {
+    (item: Note | null) => {
       if (!item) {
         navigation.replace(Routes.EDIT_NOTE, {
           item: getEmptyNote(),
@@ -57,7 +59,7 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
         return;
       }
 
-      navigation.replace(Routes.EDIT_NOTE, { item, index });
+      navigation.replace(Routes.EDIT_NOTE, { item });
     },
     [navigation],
   );
@@ -67,7 +69,7 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
   return (
     <Container>
       <PrevNoteContainer
-        onPress={() => navigateToNote(prevNote, index - 1)}
+        onPress={() => navigateToNote(prevNote)}
         hitSlop={BUTTON_HIT_SLOP}
       >
         <LabelContainer>
@@ -82,7 +84,7 @@ const NeighboringNotesLinks = ({ index }: Props): JSX.Element | null => {
       </PrevNoteContainer>
       <VerticalDivider />
       <NextNoteContainer
-        onPress={() => navigateToNote(nextNote, index + 1)}
+        onPress={() => navigateToNote(nextNote)}
         disabled={!nextNote}
         hitSlop={BUTTON_HIT_SLOP}
       >

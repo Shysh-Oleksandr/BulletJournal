@@ -14,6 +14,7 @@ import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
+import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
 import FormActionButtons from "modules/notes/components/noteForm/FormActionButtons";
 import SavingStatusLabel from "modules/notes/components/noteForm/SavingStatusLabel";
 import TitleInput from "modules/notes/components/noteForm/TitleInput";
@@ -23,10 +24,10 @@ import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
-import HabitBody from "../components/HabitBody";
 import HabitFrequencySelector from "../components/habitForm/HabitFrequencySelector";
 import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
+import HabitBody from "../components/habitItem/HabitBody";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
 import {
@@ -72,6 +73,9 @@ const EditHabitScreen: FC<{
   const [currentFrequency, setCurrentFrequency] = useState<number[]>(
     initialHabit.frequency.weekdays,
   );
+  const [currentColor, setCurrentColor] = useState(
+    initialHabit.color ?? theme.colors.cyan600,
+  );
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -86,6 +90,7 @@ const EditHabitScreen: FC<{
     ...initialHabit,
     author: userId,
     label: currentLabel.trim(),
+    color: currentColor,
     habitType: selectedType,
     streakTarget: currentStreakTarget,
     overallTarget: currentOverallTarget,
@@ -186,6 +191,7 @@ const EditHabitScreen: FC<{
       <HeaderBar
         title={isNewHabit ? t("habits.createHabit") : t("habits.editHabit")}
         withAddBtn={!isNewHabit}
+        bgColor={currentColor}
         onAddBtnPress={() => {
           navigation.replace(Routes.EDIT_HABIT, {
             item: EMPTY_HABIT,
@@ -235,6 +241,16 @@ const EditHabitScreen: FC<{
             currentFrequency={currentFrequency}
             setCurrentFrequency={setCurrentFrequency}
           />
+          <ColorPickerContainer>
+            <Typography fontWeight="semibold" fontSize="lg" paddingRight={8}>
+              Color
+            </Typography>
+            <ColorPicker
+              currentColor={currentColor}
+              setCurrentColor={setCurrentColor}
+              isFormItem={false}
+            />
+          </ColorPickerContainer>
           <FormActionButtons
             isSaving={false}
             disabled={!isValidForm || !hasChanges}
@@ -290,6 +306,13 @@ const HeaderSection = styled.View`
   align-items: flex-end;
   justify-content: flex-end;
   width: 100%;
+`;
+
+const ColorPickerContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
 `;
 
 export default EditHabitScreen;

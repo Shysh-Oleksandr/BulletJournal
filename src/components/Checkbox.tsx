@@ -8,6 +8,7 @@ type Props = {
   isActive: boolean;
   size?: number;
   bgColor?: string;
+  iconColor?: string;
   borderRadius?: number;
   iconSize?: number;
 };
@@ -16,8 +17,9 @@ const Checkbox = ({
   isActive,
   size = 24,
   borderRadius = 6,
+  iconColor = theme.colors.white,
+  iconSize = theme.fontSizes.sm,
   bgColor,
-  iconSize,
 }: Props): JSX.Element => (
   <CheckboxContainer
     isActive={isActive}
@@ -25,13 +27,7 @@ const Checkbox = ({
     bgColor={bgColor}
     borderRadius={borderRadius}
   >
-    {isActive && (
-      <FontAwesome
-        name="check"
-        color={theme.colors.white}
-        size={iconSize ?? theme.fontSizes.sm}
-      />
-    )}
+    {isActive && <FontAwesome name="check" color={iconColor} size={iconSize} />}
   </CheckboxContainer>
 );
 const CheckboxContainer = styled.View<{

@@ -1,7 +1,12 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { FC } from "react";
 
 import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
+import {
+  BG_GRADIENT_COLORS,
+  BG_GRADIENT_LOCATIONS,
+} from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
@@ -35,29 +40,41 @@ const HabitStatsScreen: FC<{
 
   return (
     <>
-      <HeaderBar title={item.label} withBackArrow />
-      <SScrollView
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-        contentContainerStyle={contentContainerStyle}
-      >
-        <HabitCalendar habit={item} />
-        <HabitStreakCard habit={item} />
-        <HabitBestStreaksChart habitLogs={item.logs} />
-        <HabitMonthlyBarChart habitLogs={item.logs} />
-        {!isCheckHabitType && <HabitWeeklyLineChart habitLogs={item.logs} />}
-      </SScrollView>
+      <HeaderBar title={item.label} withBackArrow bgColor={item.color} />
       <AddButton
         contentItem={ContentItem.HABIT}
         withEditIcon
         withTabBarOffset={false}
+        bgColor={item.color}
         onPress={() => navigation.navigate(Routes.EDIT_HABIT, { item })}
       />
+      <SLinearGradient
+        locations={BG_GRADIENT_LOCATIONS}
+        colors={BG_GRADIENT_COLORS}
+      >
+        <SScrollView
+          bounces={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+          contentContainerStyle={contentContainerStyle}
+        >
+          <HabitCalendar habit={item} />
+          <HabitStreakCard habit={item} />
+          <HabitBestStreaksChart habitLogs={item.logs} color={item.color} />
+          <HabitMonthlyBarChart habitLogs={item.logs} color={item.color} />
+          {!isCheckHabitType && (
+            <HabitWeeklyLineChart habitLogs={item.logs} color={item.color} />
+          )}
+        </SScrollView>
+      </SLinearGradient>
     </>
   );
 };
+
+const SLinearGradient = styled(LinearGradient)`
+  flex: 1;
+`;
 
 const SScrollView = styled.ScrollView``;
 

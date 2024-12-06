@@ -1,11 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
+import { StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "theme";
 
 import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import Typography from "components/Typography";
+import { useGetCustomColor } from "hooks/useGetCustomColor";
 import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
@@ -60,6 +62,8 @@ const HeaderBar = ({
 
   const route = useRoute();
 
+  const { textColor, isColorLight } = useGetCustomColor(bgColor);
+
   const distanceFromTheTop = IS_ANDROID
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
     : insets.top;
@@ -71,6 +75,11 @@ const HeaderBar = ({
 
   return (
     <Container>
+      <StatusBar
+        barStyle={isColorLight ? "dark-content" : "light-content"}
+        backgroundColor="transparent"
+        translucent
+      />
       <LinearGradient
         start={{ x: 0.5, y: 0.1 }}
         colors={[topGradientColor, bottomGradientColor]}
@@ -88,11 +97,7 @@ const HeaderBar = ({
                 hitSlop={BUTTON_HIT_SLOP}
                 paddingHorizontal={5}
               >
-                <AntDesign
-                  name="arrowleft"
-                  size={26}
-                  color={theme.colors.white}
-                />
+                <AntDesign name="arrowleft" size={26} color={textColor} />
               </IconWrapper>
             )}
             {withLogo && (
@@ -108,7 +113,7 @@ const HeaderBar = ({
           </LeftActionsContainer>
           <Title
             align="center"
-            color={theme.colors.white}
+            color={textColor}
             fontSize="lg"
             fontWeight="bold"
             numberOfLines={1}
@@ -122,7 +127,7 @@ const HeaderBar = ({
                 onPress={() => navigation.navigate(Routes.SEARCH)}
                 hitSlop={SMALL_BUTTON_HIT_SLOP}
               >
-                <Ionicons name="search" size={26} color={theme.colors.white} />
+                <Ionicons name="search" size={26} color={textColor} />
               </SearchButtonContainer>
             )}
             {withLogoutBtn && <LogoutBtn />}
@@ -147,7 +152,7 @@ const HeaderBar = ({
                 }}
                 hitSlop={SMALL_BUTTON_HIT_SLOP}
               >
-                <Entypo name="plus" size={30} color={theme.colors.white} />
+                <Entypo name="plus" size={30} color={textColor} />
               </AddNoteButtonContainer>
             )}
           </RightActionsContainer>

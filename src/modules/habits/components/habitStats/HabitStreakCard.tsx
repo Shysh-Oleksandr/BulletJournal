@@ -1,9 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { useCalculateHabitWeeklyAverage } from "modules/habits/hooks/useCalculateHabitWeeklyAverage";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { useHabitStreakData } from "modules/habits/hooks/useHabitStreakData";
 import { Habit } from "modules/habits/types";
 import styled from "styled-components/native";
@@ -20,26 +21,56 @@ const HabitStreakCard = ({ habit }: Props): JSX.Element => {
   const { completedLogs, currentStreak, longestStreak } =
     useHabitStreakData(habit);
 
+  const { textColor, bgColor, secondaryTextColor } = useHabitStatColors(
+    habit.color,
+  );
+
   const weeklyAverage = useCalculateHabitWeeklyAverage(
     habit.logs,
     completedLogs.length,
   );
 
+  const habitStatItems = useMemo(
+    () => [
+      {
+        amount: `${completedLogs.length}/${habit.overallTarget}`,
+        label: t("habits.completedStat"),
+      },
+      {
+        amount: weeklyAverage,
+        label: t("habits.weeklyAvg"),
+      },
+      {
+        amount: `${currentStreak}/${habit.streakTarget}`,
+        label: t("habits.currentStreakStat"),
+      },
+      {
+        amount: longestStreak,
+        label: t("habits.longestStreakStat"),
+      },
+    ],
+    [
+      completedLogs.length,
+      currentStreak,
+      habit.overallTarget,
+      habit.streakTarget,
+      longestStreak,
+      t,
+      weeklyAverage,
+    ],
+  );
+
   return (
-    <Container colors={[theme.colors.cyan300, theme.colors.cyan400]}>
-      <HabitStatItem
-        amount={`${completedLogs.length}/${habit.overallTarget}`}
-        label={t("habits.completedStat")}
-      />
-      <HabitStatItem amount={weeklyAverage} label={t("habits.weeklyAvg")} />
-      <HabitStatItem
-        amount={`${currentStreak}/${habit.streakTarget}`}
-        label={t("habits.currentStreakStat")}
-      />
-      <HabitStatItem
-        amount={longestStreak}
-        label={t("habits.longestStreakStat")}
-      />
+    <Container colors={[theme.colors.cyan300, bgColor]}>
+      {habitStatItems.map((item, index) => (
+        <HabitStatItem
+          key={index}
+          amount={item.amount}
+          label={item.label}
+          textColor={textColor}
+          secondaryTextColor={secondaryTextColor}
+        />
+      ))}
     </Container>
   );
 };
@@ -49,7 +80,7 @@ const Container = styled(LinearGradient)`
   border-radius: 8px;
   padding: 20px 16px;
   margin-bottom: 30px;
-  elevation: 10;
+  elevation: 6;
   border-radius: 10px;
   flex-direction: row;
   flex-wrap: wrap;
