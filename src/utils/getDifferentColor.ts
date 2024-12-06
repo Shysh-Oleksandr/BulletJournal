@@ -14,6 +14,12 @@ function shadeColor(color: string, amount: number) {
   );
 }
 
+export const isLightColor = (color: string) => {
+  const tinyColor = tinycolor(color);
+
+  return tinyColor.isLight();
+};
+
 export const getShadedColor = (color: string, amount: number = 20) => {
   const tinyColor = tinycolor(color);
 

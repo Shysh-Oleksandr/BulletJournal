@@ -3,6 +3,8 @@ import React from "react";
 import theme from "theme";
 
 import Typography from "components/Typography";
+import isSameDay from "date-fns/isSameDay";
+import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { NOTE_DATE_FORMAT } from "modules/notes/data";
 import styled from "styled-components/native";
 
@@ -21,10 +23,14 @@ const NoteSeparator = ({
 }: Props): JSX.Element | null => {
   if (!leadingItem || !trailingItem) return null;
 
-  const date = format(new Date(trailingItem.startDate), NOTE_DATE_FORMAT);
+  const date = format(new Date(trailingItem.startDate), NOTE_DATE_FORMAT, {
+    locale: getDateFnsLocale(),
+  });
 
-  const isTheSameDate =
-    format(new Date(leadingItem.startDate), NOTE_DATE_FORMAT) === date;
+  const isTheSameDate = isSameDay(
+    leadingItem.startDate,
+    trailingItem.startDate,
+  );
 
   if (isTheSameDate && !isFirstItem) return <VerticalLine />;
 

@@ -5,6 +5,7 @@ import theme from "theme";
 
 import Input from "components/Input";
 import Typography from "components/Typography";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { useUpdateHabitLog } from "modules/habits/hooks/useUpdateHabitLog";
 import { Habit, HabitTypes } from "modules/habits/types";
 import styled from "styled-components/native";
@@ -36,6 +37,14 @@ const HabitCalendarDayItem = ({
     selectedDate: timestamp,
   });
 
+  const {
+    isColorLight,
+    textColor: labelTextColor,
+    bgColor: completedBgColor,
+  } = useHabitStatColors(habit.color);
+
+  const textColor = isColorLight ? labelTextColor : theme.colors.white;
+
   const [shouldDisplayInput, setShouldDisplayInput] = useState(false);
 
   const isCompleted = percentageCompleted >= 100;
@@ -51,11 +60,11 @@ const HabitCalendarDayItem = ({
   }, [inputValue.length]);
 
   const bgColor = useMemo(() => {
-    if (isCompleted) return theme.colors.cyan500;
-    if (isDisabled) return theme.colors.crystal;
+    if (isCompleted) return completedBgColor;
+    if (isDisabled) return theme.colors.cyan400;
 
     return "transparent";
-  }, [isCompleted, isDisabled]);
+  }, [completedBgColor, isCompleted, isDisabled]);
 
   const handleItemPress = () => {
     if (isCheckHabitType) {
@@ -72,13 +81,14 @@ const HabitCalendarDayItem = ({
 
   return (
     <DayItemContainer onPress={handleItemPress} disabled={isDisabled}>
+      {/* <HorizontalLine bgColor={bgColor} /> */}
       <CircularProgress
-        fill={percentageCompleted ?? 0}
+        fill={isDisabled ? 0 : (percentageCompleted ?? 0)}
         size={CIRCLE_SIZE}
         width={CIRCLE_WIDTH}
         rotation={0}
-        tintColor={theme.colors.cyan500}
-        backgroundColor={theme.colors.crystal}
+        tintColor={isCompleted ? bgColor : theme.colors.cyan500}
+        backgroundColor={theme.colors.cyan400}
       >
         {() => (
           <InnerContainer bgColor={bgColor}>
@@ -95,7 +105,7 @@ const HabitCalendarDayItem = ({
                 labelColor={
                   isCompleted ? theme.colors.white : theme.colors.darkBlueText
                 }
-                bgColor={isCompleted ? theme.colors.cyan500 : "transparent"}
+                bgColor={bgColor}
                 selectTextOnFocus
                 fontSize={inputFontSize}
                 onChange={onChange ?? noop}
@@ -110,7 +120,7 @@ const HabitCalendarDayItem = ({
                 align="center"
                 fontSize="sm"
                 fontWeight="semibold"
-                color={isCompleted ? theme.colors.white : theme.colors.cyan600}
+                color={isCompleted ? textColor : theme.colors.cyan600}
               >
                 {day}
               </Typography>
@@ -134,5 +144,16 @@ const InnerContainer = styled.View<{
   justify-content: center;
   background-color: ${({ bgColor }) => bgColor};
 `;
+
+// const HorizontalLine = styled.View<{
+//   bgColor: string;
+// }>`
+//   position: absolute;
+//   width: 28px;
+//   height: 3px;
+//   top: 50%;
+//   left: 33px;
+//   background-color: ${({ bgColor }) => bgColor};
+// `;
 
 export default React.memo(HabitCalendarDayItem);

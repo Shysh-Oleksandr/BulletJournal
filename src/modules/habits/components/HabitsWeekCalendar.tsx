@@ -6,6 +6,7 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
+import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import styled from "styled-components/native";
 
 import { useHabitsWeekDates } from "../hooks/useHabitsWeekDates";
@@ -66,7 +67,9 @@ const HabitsWeekCalendar = ({
             paddingTop={2}
             color={theme.colors.cyan600}
           >
-            {format(selectedDate, "dd MMM yyyy")}
+            {format(selectedDate, "dd MMM yyyy", {
+              locale: getDateFnsLocale(),
+            })}
           </Typography>
         </DateInfoContainer>
         <ArrowsContainer>

@@ -19,7 +19,7 @@ export type Habit = {
     weekdays: number[];
   };
   habitType: HabitTypes;
-  color?: string;
+  color: string;
   logs: HabitLog[];
 };
 

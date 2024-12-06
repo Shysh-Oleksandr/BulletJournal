@@ -4,22 +4,22 @@ import { Theme } from "react-native-calendars/src/types";
 
 export const SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
 
-export const CALENDAR_THEME: Theme = {
-  arrowColor: theme.colors.cyan600,
-  monthTextColor: theme.colors.darkBlueText,
+export const getCalendarTheme = (color?: string): Theme => ({
+  arrowColor: color ?? theme.colors.cyan600,
+  monthTextColor: color ?? theme.colors.darkBlueText,
   textMonthFontWeight: "bold",
-  todayTextColor: theme.colors.darkBlueText,
-  dayTextColor: theme.colors.darkBlueText,
+  todayTextColor: color ?? theme.colors.darkBlueText,
+  dayTextColor: color ?? theme.colors.darkBlueText,
   weekVerticalMargin: 4,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   "stylesheet.calendar.header": {
-    dayTextAtIndex0: { color: theme.colors.cyan500 },
-    dayTextAtIndex1: { color: theme.colors.cyan500 },
-    dayTextAtIndex2: { color: theme.colors.cyan500 },
-    dayTextAtIndex3: { color: theme.colors.cyan500 },
-    dayTextAtIndex4: { color: theme.colors.cyan500 },
-    dayTextAtIndex5: { color: theme.colors.cyan500 },
-    dayTextAtIndex6: { color: theme.colors.cyan500 },
+    dayTextAtIndex0: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex1: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex2: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex3: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex4: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex5: { color: color ?? theme.colors.cyan500 },
+    dayTextAtIndex6: { color: color ?? theme.colors.cyan500 },
   },
-};
+});

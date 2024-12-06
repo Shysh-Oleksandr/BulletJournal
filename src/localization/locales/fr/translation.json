@@ -92,30 +92,7 @@
     "resetFilters": "Réinitialiser les filtres"
   },
   "calendar": {
-    "calendar": "Calendrier",
-    "monthNames": {
-      "jan": "Janvier",
-      "feb": "Février",
-      "mar": "Mars",
-      "apr": "Avril",
-      "may": "Mai",
-      "june": "Juin",
-      "july": "Juillet",
-      "aug": "Août",
-      "sept": "Septembre",
-      "oct": "Octobre",
-      "nov": "Novembre",
-      "dec": "Décembre"
-    },
-    "dayNames": {
-      "mon": "Lun",
-      "tue": "Mar",
-      "wed": "Mer",
-      "thu": "Jeu",
-      "fri": "Ven",
-      "sat": "Sam",
-      "sun": "Dim"
-    }
+    "calendar": "Calendrier"
   },
   "habits": {
     "habits": "Habitudes",

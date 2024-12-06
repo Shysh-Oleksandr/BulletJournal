@@ -1,6 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
 import isEqual from "lodash.isequal";
-import { isNil } from "ramda";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GestureResponderEvent, ScrollView } from "react-native";
@@ -60,7 +59,6 @@ const contentContainerStyle = {
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
-  const [fetchNotes] = notesApi.useLazyFetchNotesQuery();
   const [updateNote] = notesApi.useUpdateNoteMutation();
   const [createNote] = notesApi.useCreateNoteMutation();
   const [deleteNote] = notesApi.useDeleteNoteMutation();
@@ -71,9 +69,7 @@ const EditNoteScreen: FC<{
   const userId = useAppSelector(getUserId) ?? "";
   const allLabels = useAppSelector(getLabels);
 
-  const { item: initialNote, index, isNewNote, date } = route.params;
-
-  const shouldDisplayNeighboringNotes = !isNil(index);
+  const { item: initialNote, isNewNote, date } = route.params;
 
   const {
     _id,
@@ -87,6 +83,8 @@ const EditNoteScreen: FC<{
     isStarred: isInitiallyStarred,
     isLocked: isInitiallyLocked,
   } = initialNote;
+
+  const shouldDisplayNeighboringNotes = !!_id;
 
   const defaultNoteType = useMemo(
     () =>
@@ -143,20 +141,36 @@ const EditNoteScreen: FC<{
     [allLabels, currentCategoriesIds],
   );
 
-  const currentNote: Note = {
-    ...initialNote,
-    author: userId,
-    title: currentTitle.trim(),
-    content: cleanedHtml.trim(),
-    color: currentColor,
-    startDate: currentStartDate,
-    rating: currentImportance,
-    type: currentType,
-    category: currentCategories,
-    images: currentImages,
-    isStarred,
-    isLocked,
-  };
+  const currentNote: Note = useMemo(
+    () => ({
+      ...initialNote,
+      author: userId,
+      title: currentTitle.trim(),
+      content: cleanedHtml.trim(),
+      color: currentColor,
+      startDate: currentStartDate,
+      rating: currentImportance,
+      type: currentType,
+      category: currentCategories,
+      images: currentImages,
+      isStarred,
+      isLocked,
+    }),
+    [
+      cleanedHtml,
+      currentCategories,
+      currentColor,
+      currentImages,
+      currentImportance,
+      currentStartDate,
+      currentTitle,
+      currentType,
+      initialNote,
+      isLocked,
+      isStarred,
+      userId,
+    ],
+  );
 
   const [savedNote, setSavedNote] = useState(currentNote);
 
@@ -167,83 +181,91 @@ const EditNoteScreen: FC<{
     { ...currentNote, isLocked: false },
   );
 
-  const handleImages = useHandleImagesOnSave(currentImages, savedNote);
+  const handleImages = useHandleImagesOnSave();
 
-  const saveNoteHandler = async (shouldLock?: boolean, withAlert = true) => {
-    if (!userId) return;
+  const saveNoteHandler = useCallback(
+    async (shouldLock?: boolean, withAlert = true) => {
+      if (!userId) return;
 
-    setIsSaving(true);
+      setIsSaving(true);
 
-    logUserEvent(
-      isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
-      currentNote._id ? { noteId: currentNote._id } : undefined,
-    );
-    addCrashlyticsLog(
-      `User tries to ${isNewNote ? "create" : "update"} a note`,
-    );
+      logUserEvent(
+        isNewNote ? CustomUserEvents.CREATE_NOTE : CustomUserEvents.SAVE_NOTE,
+        currentNote._id ? { noteId: currentNote._id } : undefined,
+      );
+      addCrashlyticsLog(
+        `User tries to ${isNewNote ? "create" : "update"} a note`,
+      );
 
-    const newImages = await handleImages();
+      const newImages = await handleImages(currentImages, savedNote);
 
-    setCurrentImages(newImages);
+      setCurrentImages(newImages);
 
-    const newNote = {
-      ...currentNote,
-      isLocked: shouldLock ?? currentNote.isLocked,
-      images: newImages,
-    };
+      const newNote = {
+        ...currentNote,
+        isLocked: shouldLock ?? currentNote.isLocked,
+        images: newImages,
+      };
 
-    setSavedNote(newNote);
+      setSavedNote(newNote);
 
-    const updateNoteData: UpdateNoteRequest = {
-      ...currentNote,
-      title: currentNote.title || t("note.Note"),
-      type: currentTypeId,
-      category: currentCategoriesIds,
-      isLocked: shouldLock ?? currentNote.isLocked,
-      images: newImages.map((image) => image._id),
-    };
+      const updateNoteData: UpdateNoteRequest = {
+        ...currentNote,
+        title: currentNote.title || t("note.Note"),
+        type: currentTypeId,
+        category: currentCategoriesIds,
+        isLocked: shouldLock ?? currentNote.isLocked,
+        images: newImages.map((image) => image._id),
+      };
 
-    try {
-      if (isNewNote) {
-        const response = await createNote(updateNoteData).unwrap();
+      try {
+        if (isNewNote) {
+          const response = await createNote(updateNoteData).unwrap();
 
-        if (response.note) {
-          const notesResponse = await fetchNotes(userId).unwrap();
+          if (response.note) {
+            const newNoteId = response.note._id;
 
-          const newNoteId = response.note._id;
+            navigation.replace(Routes.EDIT_NOTE, {
+              item: { ...newNote, _id: newNoteId },
+            });
+          }
+        } else {
+          await updateNote(updateNoteData);
+        }
 
-          const newNoteIndex = notesResponse.notes.findIndex(
-            (item) => item._id === newNoteId,
-          );
-
-          navigation.replace(Routes.EDIT_NOTE, {
-            item: { ...newNote, _id: newNoteId },
-            index: newNoteIndex,
+        if (withAlert) {
+          Toast.show({
+            type: "success",
+            text1: t("general.success"),
+            text2: t(isNewNote ? "note.createdInfo" : "note.updatedInfo"),
           });
         }
-      } else {
-        await updateNote(updateNoteData);
-        await fetchNotes(userId);
+      } catch (error) {
+        logging.error(error);
+        alertError();
+        addCrashlyticsLog(error as string);
+      } finally {
+        // The save btn doesn't change its state without using timeout(for some reason)
+        setTimeout(() => {
+          setIsSaving(false);
+        }, 100);
       }
-
-      if (withAlert) {
-        Toast.show({
-          type: "success",
-          text1: t("general.success"),
-          text2: t(isNewNote ? "note.createdInfo" : "note.updatedInfo"),
-        });
-      }
-    } catch (error) {
-      logging.error(error);
-      alertError();
-      addCrashlyticsLog(error as string);
-    } finally {
-      // The save btn doesn't change its state without using timeout(for some reason)
-      setTimeout(() => {
-        setIsSaving(false);
-      }, 100);
-    }
-  };
+    },
+    [
+      createNote,
+      currentCategoriesIds,
+      currentImages,
+      currentNote,
+      currentTypeId,
+      handleImages,
+      isNewNote,
+      navigation,
+      savedNote,
+      t,
+      updateNote,
+      userId,
+    ],
+  );
 
   const deleteNoteHandler = useCallback(async () => {
     if (!_id) return;
@@ -253,7 +275,6 @@ const EditNoteScreen: FC<{
       addCrashlyticsLog(`User tries to delete the note ${_id}`);
       setIsDeleting(true);
       await deleteNote(_id);
-      await fetchNotes(userId);
 
       const imagesUrlsToDelete = currentImages
         .map((image) => image.url)
@@ -267,16 +288,14 @@ const EditNoteScreen: FC<{
         text2: t("note.deletedInfo"),
       });
 
-      setTimeout(() => {
-        navigation.pop();
-      }, 1000);
+      navigation.pop();
     } catch (error) {
       logging.error(error);
       alertError();
     } finally {
       setIsDeleting(false);
     }
-  }, [_id, currentImages, deleteNote, fetchNotes, navigation, t, userId]);
+  }, [_id, currentImages, deleteNote, navigation, t]);
 
   const onStartShouldSetResponder = useCallback(
     (evt: GestureResponderEvent) => {
@@ -296,12 +315,20 @@ const EditNoteScreen: FC<{
     [childrenIds],
   );
 
+  // TODO: implement full screen gradient
+  // const gradientColors = [
+  //   getDifferentColor(currentColor, -15),
+  //   getDifferentColor(currentColor, 10),
+  //   getDifferentColor(currentColor, -15),
+  // ] as const;
+
   return (
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         title={isNewNote ? t("note.createNote") : t("note.editNote")}
         withAddBtn={!isNewNote}
         withBackArrow
+        bgColor={currentColor}
       />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
@@ -409,7 +436,7 @@ const EditNoteScreen: FC<{
               setCurrentImages={setCurrentImages}
             />
             {shouldDisplayNeighboringNotes && (
-              <NeighboringNotesLinks index={index} />
+              <NeighboringNotesLinks noteId={currentNote._id} />
             )}
           </Container>
           <Typography fontSize="lg" paddingBottom={8}>
