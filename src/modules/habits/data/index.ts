@@ -1,6 +1,6 @@
 import theme from "theme";
 
-import { Habit, HabitTypes } from "../types";
+import { Habit, HabitPeriods, HabitTypes } from "../types";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
 const FIXED_DATE = new Date("2024-01-01").getTime();
@@ -16,8 +16,8 @@ export const EMPTY_HABIT: Habit = {
   streakTarget: 30,
   overallTarget: 100,
   frequency: {
-    weekdays: WEEKDAYS_DATES,
+    days: 7,
+    period: HabitPeriods.WEEK,
   },
   logs: [],
-  startDate: new Date().getTime(),
 };

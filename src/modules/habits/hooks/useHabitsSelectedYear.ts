@@ -6,7 +6,9 @@ const currentYear = new Date().getUTCFullYear();
 
 export const useHabitsSelectedYear = (habitLogs: HabitLog[]) => {
   const oldestHabitLogYear = useMemo(() => {
-    const logs = habitLogs.filter((log) => log.amount && log.amount > 0);
+    const logs = habitLogs.filter(
+      (log) => log.amount && log.amount > 0 && !log.isArtificial,
+    );
 
     if (logs.length === 0) return currentYear;
 

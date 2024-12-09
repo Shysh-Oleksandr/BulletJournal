@@ -8,7 +8,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { configureCalendarLocale } from "modules/calendar/data/calendarLocaleConfig";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
-import { Habit } from "modules/habits/types";
+import { Habit, HabitStreak } from "modules/habits/types";
 import { getMarkedHabitLogsDates } from "modules/habits/utils/getMarkedHabitLogsDates";
 import { Direction } from "react-native-calendars/src/types";
 import styled from "styled-components/native";
@@ -21,7 +21,7 @@ const todayString = format(today, SIMPLE_DATE_FORMAT);
 configureCalendarLocale();
 
 const CALENDAR_STYLES: StyleProp<ViewStyle> = {
-  height: 335,
+  height: 345,
   overflow: "hidden",
   borderRadius: 8,
   elevation: 8,
@@ -37,14 +37,15 @@ const renderArrow = (direction: Direction, color: string) => (
 
 type Props = {
   habit: Habit;
+  bestStreaksData: HabitStreak[];
 };
 
-const HabitCalendar = ({ habit }: Props): JSX.Element => {
+const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
   const { textColor } = useHabitStatColors(habit.color);
 
   const markedDates = useMemo(
-    () => getMarkedHabitLogsDates(habit.logs),
-    [habit.logs],
+    () => getMarkedHabitLogsDates(habit.logs, bestStreaksData),
+    [bestStreaksData, habit.logs],
   );
 
   const customTheme = useMemo(() => getCalendarTheme(textColor), [textColor]);
@@ -61,7 +62,9 @@ const HabitCalendar = ({ habit }: Props): JSX.Element => {
           percentageCompleted={percentageCompleted}
           day={date.day}
           timestamp={date.timestamp}
+          isOptional={marking?.isOptional}
           isDisabled={isDisabled}
+          streakState={marking?.streakState}
         />
       );
     },

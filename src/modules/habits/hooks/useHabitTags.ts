@@ -2,14 +2,19 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Habit, HabitTypes } from "../types";
-
-import { useHabitStreakData } from "./useHabitStreakData";
+import {
+  calculateHabitBestStreaks,
+  getHabitStreakInfo,
+} from "../utils/calculateHabitBestStreaks";
+import { getDaysByHabitPeriod } from "../utils/getDaysByHabitPeriod";
 
 export const useHabitTags = (habit: Habit, amountTarget?: number) => {
   const { t } = useTranslation();
 
-  const { completedLogs, currentStreak, longestStreak } =
-    useHabitStreakData(habit);
+  const { currentStreak, longestStreak, overallCompleted } = useMemo(
+    () => getHabitStreakInfo(habit.logs, calculateHabitBestStreaks(habit.logs)),
+    [habit.logs],
+  );
 
   const tags = useMemo(() => {
     const tags: string[] = [];
@@ -23,32 +28,30 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
     }
 
     tags.push(
-      t("habits.streakDays", {
-        count: currentStreak,
-        target: habit.streakTarget,
-      }),
+      `${t("habits.streak")}: ${currentStreak}/${habit.streakTarget} ${t(
+        "habits.times",
+      )}`,
     );
     tags.push(
-      t("habits.longestStreak", {
-        count: longestStreak,
-      }),
+      `${t("habits.longestStreak")}: ${longestStreak}/${habit.streakTarget} ${t(
+        "habits.times",
+      )}`,
     );
     tags.push(
-      t("habits.overallDays", {
-        count: habit.overallTarget,
-        value: completedLogs.length,
-      }),
+      `${t("habits.overall")}: ${overallCompleted}/${habit.overallTarget} ${t(
+        "habits.times",
+      )}`,
+    );
+
+    const isDaily =
+      habit.frequency.days === getDaysByHabitPeriod(habit.frequency.period);
+
+    tags.push(
+      `${t("habits.frequency")}: ${isDaily ? t("habits.daily") : `${habit.frequency.days} ${t("habits.times")}/${t(`habits.${habit.frequency.period}`).toLowerCase()}`}`,
     );
 
     return tags;
-  }, [
-    habit,
-    t,
-    currentStreak,
-    longestStreak,
-    completedLogs.length,
-    amountTarget,
-  ]);
+  }, [habit, t, currentStreak, longestStreak, overallCompleted, amountTarget]);
 
   return tags;
 };

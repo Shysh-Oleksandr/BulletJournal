@@ -1,13 +1,13 @@
 import { format } from "date-fns";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
-import { useCalculateHabitBestStreaks } from "modules/habits/hooks/useCalculateHabitBestStreaks";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
-import { HabitLog } from "modules/habits/types";
+import { HabitStreak } from "modules/habits/types";
+import { getTopStreaks } from "modules/habits/utils/calculateHabitBestStreaks";
 import styled from "styled-components/native";
 
 const MIN_ITEM_WIDTH = 30;
@@ -15,21 +15,24 @@ const MAX_ITEM_WIDTH = 200;
 const STREAK_DAY_WIDTH_MULTIPLIER = 8;
 
 type Props = {
-  habitLogs: HabitLog[];
+  bestStreaksData: HabitStreak[];
   color?: string;
 };
 
 const HabitBestStreaksChart = ({
-  habitLogs,
+  bestStreaksData,
   color,
 }: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
-  const streaksData = useCalculateHabitBestStreaks(habitLogs);
-
   const { textColor, bgColor, activeBgColor } = useHabitStatColors(color);
 
-  if (streaksData.length === 0) return null;
+  const topStreaks = useMemo(
+    () => getTopStreaks(bestStreaksData),
+    [bestStreaksData],
+  );
+
+  if (topStreaks.length === 0) return null;
 
   return (
     <Container>
@@ -37,7 +40,7 @@ const HabitBestStreaksChart = ({
         {t("habits.bestStreaks")}
       </Typography>
       <StreaksContainer>
-        {streaksData.map((streak, index) => (
+        {topStreaks.map((streak, index) => (
           <StreakItemContainer key={index}>
             <StreakDateContainer isLeft>
               <Typography color={textColor} fontSize="xs">

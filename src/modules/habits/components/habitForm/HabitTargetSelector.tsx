@@ -61,7 +61,7 @@ const HabitTargetSelector = ({
           onChange={onChange}
         />
         <Typography fontSize="lg" paddingLeft={8} numberOfLines={1}>
-          {t("habits.days")}
+          {t("habits.times")}
         </Typography>
       </AmountContainer>
     </Container>

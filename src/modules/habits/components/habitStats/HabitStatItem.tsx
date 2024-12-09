@@ -24,7 +24,7 @@ const HabitStatItem = ({
       <Typography fontWeight="bold" fontSize="xxl" color={textColor}>
         {amount}{" "}
         <Typography fontWeight="bold" fontSize="md" color={secondaryTextColor}>
-          {t("habits.Days")}
+          {t("habits.times")}
         </Typography>
       </Typography>
       <Typography fontWeight="bold" paddingTop={4} color={textColor}>
@@ -35,7 +35,7 @@ const HabitStatItem = ({
 };
 
 const Container = styled.View`
-  width: 46%;
+  width: 47%;
 `;
 
 export default React.memo(HabitStatItem);

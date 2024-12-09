@@ -1,17 +1,20 @@
-import { format } from "date-fns";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import theme from "theme";
 
-import Checkbox from "components/Checkbox";
+import Input from "components/Input";
+import Switcher from "components/Switcher";
 import Typography from "components/Typography";
-import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
-import { WEEKDAYS_DATES } from "modules/habits/data";
+import { HabitFrequency, HabitPeriods } from "modules/habits/types";
+import { getDaysByHabitPeriod } from "modules/habits/utils/getDaysByHabitPeriod";
 import styled from "styled-components/native";
 
+const DEFAULT_DAYS = "7";
+
+const HabitPeriodsOptions = Object.values(HabitPeriods);
+
 type Props = {
-  currentFrequency: number[];
-  setCurrentFrequency: (val: number[]) => void;
+  currentFrequency: HabitFrequency;
+  setCurrentFrequency: React.Dispatch<React.SetStateAction<HabitFrequency>>;
 };
 
 const HabitFrequencySelector = ({
@@ -20,62 +23,75 @@ const HabitFrequencySelector = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const isDailyFrequency = currentFrequency.length === 7;
+  const [inputValue, setInputValue] = useState(
+    currentFrequency.days?.toString() ?? DEFAULT_DAYS,
+  );
 
-  const onDailyRepeatButtonPress = () => {
-    if (isDailyFrequency) {
-      setCurrentFrequency([WEEKDAYS_DATES[0]]);
-    } else {
-      setCurrentFrequency(WEEKDAYS_DATES);
+  const onChange = (text: string) => {
+    if (text === "") {
+      setInputValue("");
+
+      return;
     }
+
+    const newValue = Number(text);
+
+    if (isNaN(newValue)) {
+      return;
+    }
+
+    const maxDays = getDaysByHabitPeriod(currentFrequency.period);
+
+    const clampedValue = Math.min(Math.max(newValue, 1), maxDays);
+
+    setInputValue(clampedValue.toString());
+    setCurrentFrequency((prev) => ({ ...prev, days: clampedValue }));
   };
 
-  const onDayPress = (date: number, isActive: boolean) => {
-    const updatedFrequency = isActive
-      ? currentFrequency.filter((item) => item !== date)
-      : [...currentFrequency, date];
+  const setSelectedOption = (option: string) => {
+    const maxDays = getDaysByHabitPeriod(currentFrequency.period);
 
-    if (updatedFrequency.length === 0) return;
+    setCurrentFrequency({
+      ...currentFrequency,
+      period: option as HabitPeriods,
+      days: Math.min(currentFrequency.days ?? 7, maxDays),
+    });
 
-    setCurrentFrequency(updatedFrequency);
+    setInputValue(Math.min(currentFrequency.days ?? 7, maxDays).toString());
   };
+
+  const getLocalizedOption = (option: string) => t(`habits.${option}`);
 
   return (
     <Container>
-      <DailyRepeatButton onPress={onDailyRepeatButtonPress}>
-        <Typography
-          fontWeight="semibold"
-          fontSize="lg"
-          paddingRight={8}
-          align="center"
-        >
-          {t("habits.repeatEveryday")}
-        </Typography>
-        <Checkbox isActive={isDailyFrequency} />
-      </DailyRepeatButton>
+      <Typography fontWeight="semibold" fontSize="lg" paddingRight={8}>
+        {t("habits.frequency")}
+      </Typography>
       <WeekdaysContainer>
-        {WEEKDAYS_DATES.map((date) => {
-          const isActive = currentFrequency.includes(date);
+        <AmountContainer>
+          <Input
+            value={inputValue}
+            isCentered
+            paddingHorizontal={1}
+            paddingVertical={4}
+            keyboardType="number-pad"
+            placeholder={DEFAULT_DAYS}
+            maxWidth={50}
+            selectTextOnFocus
+            fontSize="lg"
+            onChange={onChange}
+          />
+          <Typography fontSize="lg" paddingLeft={8} numberOfLines={1}>
+            {t("habits.times")} {t("habits.per")}
+          </Typography>
+        </AmountContainer>
 
-          return (
-            <WeekdayItemContainer
-              key={date}
-              active={isActive}
-              onPress={() => onDayPress(date, isActive)}
-            >
-              <Typography
-                color={isActive ? theme.colors.white : theme.colors.cyan600}
-                fontSize="xs"
-                fontWeight="semibold"
-                uppercase
-              >
-                {format(date, "EEEEEE", {
-                  locale: getDateFnsLocale(),
-                })}
-              </Typography>
-            </WeekdayItemContainer>
-          );
-        })}
+        <Switcher
+          options={HabitPeriodsOptions}
+          selectedOption={currentFrequency.period}
+          setSelectedOption={setSelectedOption}
+          getLocalizedOption={getLocalizedOption}
+        />
       </WeekdaysContainer>
     </Container>
   );
@@ -86,11 +102,10 @@ const Container = styled.View`
   margin: 20px 8px 10px;
 `;
 
-const DailyRepeatButton = styled.TouchableOpacity`
+const AmountContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  overflow: hidden;
 `;
 
 const WeekdaysContainer = styled.View`
@@ -98,17 +113,9 @@ const WeekdaysContainer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
   width: 100%;
-`;
-
-const WeekdayItemContainer = styled.TouchableOpacity<{ active: boolean }>`
-  background-color: ${({ active }) =>
-    active ? theme.colors.cyan500 : theme.colors.cyan300};
-  border-radius: 999px;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
 `;
 
 export default HabitFrequencySelector;

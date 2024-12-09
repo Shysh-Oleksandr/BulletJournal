@@ -3,42 +3,50 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { useCalculateHabitWeeklyAverage } from "modules/habits/hooks/useCalculateHabitWeeklyAverage";
+import { useCalculateHabitAverageByPeriod } from "modules/habits/hooks/useCalculateHabitAverageByPeriod";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
-import { useHabitStreakData } from "modules/habits/hooks/useHabitStreakData";
-import { Habit } from "modules/habits/types";
+import { Habit, HabitPeriods, HabitStreak } from "modules/habits/types";
+import { getHabitStreakInfo } from "modules/habits/utils/calculateHabitBestStreaks";
 import styled from "styled-components/native";
 
 import HabitStatItem from "./HabitStatItem";
 
 type Props = {
   habit: Habit;
+  bestStreaksData: HabitStreak[];
 };
 
-const HabitStreakCard = ({ habit }: Props): JSX.Element => {
+const HabitInfoCard = ({ habit, bestStreaksData }: Props): JSX.Element => {
   const { t } = useTranslation();
-
-  const { completedLogs, currentStreak, longestStreak } =
-    useHabitStreakData(habit);
 
   const { textColor, bgColor, secondaryTextColor } = useHabitStatColors(
     habit.color,
   );
 
-  const weeklyAverage = useCalculateHabitWeeklyAverage(
+  const { currentStreak, longestStreak, overallCompleted } = useMemo(
+    () => getHabitStreakInfo(habit.logs, bestStreaksData),
+    [bestStreaksData, habit.logs],
+  );
+
+  const weeklyAverage = useCalculateHabitAverageByPeriod(
     habit.logs,
-    completedLogs.length,
+    overallCompleted,
+    habit.frequency.period,
   );
 
   const habitStatItems = useMemo(
     () => [
       {
-        amount: `${completedLogs.length}/${habit.overallTarget}`,
+        amount: `${overallCompleted}/${habit.overallTarget}`,
         label: t("habits.completedStat"),
       },
       {
-        amount: weeklyAverage,
-        label: t("habits.weeklyAvg"),
+        amount: `${weeklyAverage}/${habit.frequency.days}`,
+        label: t(
+          habit.frequency.period === HabitPeriods.WEEK
+            ? "habits.weeklyAvg"
+            : "habits.monthlyAvg",
+        ),
       },
       {
         amount: `${currentStreak}/${habit.streakTarget}`,
@@ -50,8 +58,10 @@ const HabitStreakCard = ({ habit }: Props): JSX.Element => {
       },
     ],
     [
-      completedLogs.length,
+      overallCompleted,
       currentStreak,
+      habit.frequency.days,
+      habit.frequency.period,
       habit.overallTarget,
       habit.streakTarget,
       longestStreak,
@@ -87,4 +97,4 @@ const Container = styled(LinearGradient)`
   gap: 10px;
 `;
 
-export default React.memo(HabitStreakCard);
+export default React.memo(HabitInfoCard);
