@@ -123,16 +123,23 @@
     "optionalHabitsToday": "Необов'язкові звички на сьогодні:",
     "optionalHabitsThatDay": "Необов'язкові звички на цей день:",
     "targetAmount": "Ціль:",
-    "streakDays": "Серія: {{count}}/{{target}} днів",
-    "overallDays": "Загалом: {{value}}/{{count}} днів",
-    "longestStreak": "Найдовша серія: {{count}} днів",
+    "streak": "Серія",
+    "overall": "Загалом",
+    "longestStreak": "Найдовша серія",
     "Days": "Днів",
     "completedStat": "Виконано",
     "currentStreakStat": "Теперішня серія",
     "longestStreakStat": "Найдовша серія",
     "weeklyAvg": "В середньому за тиждень",
+    "monthlyAvg": "В середньому за місяць",
     "monthlyProgress": "Місячний прогрес",
     "weeklyProgress": "Тижневий прогрес",
-    "bestStreaks": "Найкращі серії"
+    "bestStreaks": "Найкращі серії",
+    "frequency": "Частота",
+    "times": "разів",
+    "per": "на",
+    "week": "Тиждень",
+    "month": "Місяць",
+    "daily": "щодня"
   }
 }

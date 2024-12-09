@@ -56,6 +56,7 @@ const contentContainerStyle = {
   paddingBottom: 70,
 };
 
+// TODO: refactor
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {

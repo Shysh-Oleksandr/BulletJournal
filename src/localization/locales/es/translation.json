@@ -122,9 +122,9 @@
     "optionalHabitsToday": "Hábitos opcionales para hoy:",
     "optionalHabitsThatDay": "Hábitos opcionales para ese día:",
     "targetAmount": "Objetivo:",
-    "streakDays": "Racha: {{count}}/{{target}} días",
-    "overallDays": "Total: {{value}}/{{count}} días",
-    "longestStreak": "Racha más larga: {{count}} días",
+    "streak": "Racha",
+    "overall": "Total",
+    "longestStreak": "Racha más larga",
     "Days": "Días",
     "completedStat": "Completados",
     "currentStreakStat": "Racha actual",
@@ -132,6 +132,12 @@
     "weeklyAvg": "Promedio semanal",
     "monthlyProgress": "Progresso mensual",
     "weeklyProgress": "Progresso settimanale",
-    "bestStreaks": "Las mejores rachas"
+    "bestStreaks": "Las mejores rachas",
+    "frequency": "Frecuencia",
+    "times": "veces",
+    "per": "por",
+    "week": "Semana",
+    "month": "Mes",
+    "daily": "Diario"
   }
 }

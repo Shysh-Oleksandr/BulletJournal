@@ -12,8 +12,11 @@ export const useHabitStatColors = (color = theme.colors.cyan600) =>
         ? getDifferentColor(color, 30)
         : getDifferentColor(color, -15),
       bgColor: isColorLight
-        ? getDifferentColor(color, 8)
+        ? getDifferentColor(color, 4)
         : getDifferentColor(color, 20),
+      optionalBgColor: isColorLight
+        ? getDifferentColor(color, -5)
+        : getDifferentColor(color, 35),
       activeBgColor: isColorLight
         ? getDifferentColor(color, 15)
         : getDifferentColor(color, 0),

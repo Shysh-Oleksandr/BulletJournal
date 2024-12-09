@@ -19,8 +19,8 @@ const screenHeight = Dimensions.get("window").height;
 const isSmallScreen = screenHeight < 700;
 const isBigScreen = screenHeight > 800;
 
-const regularModalHeight = isSmallScreen ? "55%" : "45%";
-const modalHeight = isBigScreen ? "40%" : regularModalHeight;
+const regularModalHeight = isSmallScreen ? "57%" : "47%";
+const modalHeight = isBigScreen ? "42%" : regularModalHeight;
 
 const COLOR_PALETTE = [
   theme.colors.cyan300,

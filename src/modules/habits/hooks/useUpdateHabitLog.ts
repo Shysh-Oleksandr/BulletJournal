@@ -76,7 +76,13 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
           },
         ];
 
-    updateHabit({ logs: updatedLogs, _id: habit._id, author: habit.author });
+    const filteredUpdatedLogs = updatedLogs.filter((log) => !log.isArtificial);
+
+    updateHabit({
+      logs: filteredUpdatedLogs,
+      _id: habit._id,
+      author: habit.author,
+    });
   }, [
     inputValue,
     isCheckHabitType,
