@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 
 import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
@@ -15,11 +15,12 @@ import styled from "styled-components/native";
 
 import HabitBestStreaksChart from "../components/habitStats/HabitBestStreaksChart";
 import HabitCalendar from "../components/habitStats/HabitCalendar";
+import HabitInfoCard from "../components/habitStats/HabitInfoCard";
 import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
-import HabitStreakCard from "../components/habitStats/HabitStreakCard";
 import HabitWeeklyLineChart from "../components/habitStats/HabitWeeklyLineChart";
 import { getHabitById } from "../HabitsSelectors";
 import { HabitTypes } from "../types";
+import { calculateHabitBestStreaks } from "../utils/calculateHabitBestStreaks";
 
 const contentContainerStyle = {
   paddingTop: 30,
@@ -35,6 +36,11 @@ const HabitStatsScreen: FC<{
   const { id } = route.params;
 
   const item = useAppSelector((state) => getHabitById(state, id));
+
+  const bestStreaksData = useMemo(
+    () => calculateHabitBestStreaks(item.logs),
+    [item.logs],
+  );
 
   const isCheckHabitType = item.habitType === HabitTypes.CHECK;
 
@@ -59,9 +65,12 @@ const HabitStatsScreen: FC<{
           nestedScrollEnabled
           contentContainerStyle={contentContainerStyle}
         >
-          <HabitCalendar habit={item} />
-          <HabitStreakCard habit={item} />
-          <HabitBestStreaksChart habitLogs={item.logs} color={item.color} />
+          <HabitCalendar bestStreaksData={bestStreaksData} habit={item} />
+          <HabitInfoCard bestStreaksData={bestStreaksData} habit={item} />
+          <HabitBestStreaksChart
+            bestStreaksData={bestStreaksData}
+            color={item.color}
+          />
           <HabitMonthlyBarChart habitLogs={item.logs} color={item.color} />
           {!isCheckHabitType && (
             <HabitWeeklyLineChart habitLogs={item.logs} color={item.color} />

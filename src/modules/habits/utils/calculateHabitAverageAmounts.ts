@@ -8,22 +8,25 @@ export function calculateHabitAverageAmounts(
   logs: HabitLog[],
   year: number,
 ): number[] {
-  return Array.from({ length: WEEKS_IN_YEAR }, (_, index) => {
-    const weekLogs = logs.filter(
-      (log) =>
-        new Date(log.date).getUTCFullYear() === year &&
-        getWeek(new Date(log.date), { weekStartsOn: 1 }) === index + 1 &&
-        log.amount &&
-        log.amount > 0,
-    );
-    const totalAmount = weekLogs.reduce(
-      (acc, log) => acc + (log?.amount ?? 0),
-      0,
-    );
+  const totals = Array(WEEKS_IN_YEAR).fill(0);
+  const counts = Array(WEEKS_IN_YEAR).fill(0);
 
-    const averageAmount =
-      weekLogs.length > 0 ? totalAmount / weekLogs.length : 0;
+  logs.forEach((log) => {
+    const logDate = new Date(log.date);
 
-    return averageAmount;
+    if (logDate.getUTCFullYear() !== year || !log.amount || log.amount <= 0) {
+      return;
+    }
+
+    const week = getWeek(logDate, { weekStartsOn: 1 });
+
+    if (week >= 1 && week <= WEEKS_IN_YEAR) {
+      totals[week - 1] += log.amount;
+      counts[week - 1] += 1;
+    }
   });
+
+  return totals.map((total, index) =>
+    counts[index] > 0 ? total / counts[index] : 0,
+  );
 }

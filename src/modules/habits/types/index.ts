@@ -3,6 +3,8 @@ export type HabitLog = {
   percentageCompleted: number;
   amount?: number;
   amountTarget?: number;
+  isOptional?: boolean;
+  isArtificial?: boolean;
 };
 
 export type Habit = {
@@ -14,14 +16,21 @@ export type Habit = {
   units?: string;
   streakTarget: number;
   overallTarget: number;
-  startDate: number; // ?
-  frequency: {
-    weekdays: number[];
-  };
+  frequency: HabitFrequency;
   habitType: HabitTypes;
   color: string;
   logs: HabitLog[];
 };
+
+export type HabitFrequency = {
+  days: number;
+  period: HabitPeriods;
+};
+
+export enum HabitPeriods {
+  WEEK = "week",
+  MONTH = "month",
+}
 
 export enum HabitTypes {
   CHECK = "CHECK",
@@ -32,6 +41,7 @@ export enum HabitTypes {
 export type HabitStreak = {
   startDate: Date;
   endDate: Date;
+  lastOptionalLogDate: Date;
   numberOfDays: number;
 };
 

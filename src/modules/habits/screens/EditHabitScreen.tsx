@@ -70,8 +70,8 @@ const EditHabitScreen: FC<{
   const [currentOverallTarget, setCurrentOverallTarget] = useState(
     initialHabit.overallTarget,
   );
-  const [currentFrequency, setCurrentFrequency] = useState<number[]>(
-    initialHabit.frequency.weekdays,
+  const [currentFrequency, setCurrentFrequency] = useState(
+    initialHabit.frequency,
   );
   const [currentColor, setCurrentColor] = useState(
     initialHabit.color ?? theme.colors.cyan600,
@@ -96,9 +96,7 @@ const EditHabitScreen: FC<{
     overallTarget: currentOverallTarget,
     amountTarget: isCheckHabitType ? initialHabit.amountTarget : currentAmount,
     units: isCheckHabitType ? initialHabit.units : currentUnits,
-    frequency: {
-      weekdays: currentFrequency,
-    },
+    frequency: currentFrequency,
   };
 
   const [savedHabit, setSavedHabit] = useState(currentHabit);
@@ -243,7 +241,7 @@ const EditHabitScreen: FC<{
           />
           <ColorPickerContainer>
             <Typography fontWeight="semibold" fontSize="lg" paddingRight={8}>
-              Color
+              {t("note.color")}
             </Typography>
             <ColorPicker
               currentColor={currentColor}

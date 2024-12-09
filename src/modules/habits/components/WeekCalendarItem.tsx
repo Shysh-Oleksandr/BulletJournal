@@ -32,6 +32,7 @@ const WeekCalendarItem = ({
   setSelectedDate,
 }: Props): JSX.Element => {
   const isDisabled = isAfter(date, today);
+  const isCompleted = progress >= 100;
 
   const day = format(date, "EEEEEE", {
     locale: getDateFnsLocale(),
@@ -62,8 +63,16 @@ const WeekCalendarItem = ({
           }
         >
           {() => (
-            <InnerContainer>
-              <Typography fontSize="xs" fontWeight="semibold" uppercase>
+            <InnerContainer isCompleted={isCompleted}>
+              <Typography
+                fontSize="xs"
+                fontWeight="semibold"
+                uppercase
+                adjustsFontSizeToFit
+                color={
+                  isCompleted ? theme.colors.white : theme.colors.darkBlueText
+                }
+              >
                 {day}
               </Typography>
             </InnerContainer>
@@ -84,8 +93,9 @@ const ActiveContainer = styled(LinearGradient)`
   justify-content: center;
 `;
 
-const InnerContainer = styled.View`
-  background-color: ${theme.colors.bubbles};
+const InnerContainer = styled.View<{ isCompleted: boolean }>`
+  background-color: ${({ isCompleted }) =>
+    isCompleted ? theme.colors.cyan500 : theme.colors.bubbles};
   border-radius: 999px;
   height: 100%;
   width: 100%;

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useAppSelector } from "store/helpers/storeHooks";
 
 import { getHabits } from "../HabitsSelectors";
+import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
 const today = startOfToday();
@@ -33,16 +34,13 @@ export const useHabitsWeekDates = (selectedDate: number) => {
   const mappedWeekDates = useMemo(
     () =>
       weekDates.map((date) => {
-        const mandatoryHabits = habits.filter((habit) =>
-          habit.frequency.weekdays.some(
-            (weekday) => new Date(weekday).getDay() === new Date(date).getDay(),
-          ),
+        const { mandatoryHabits } = calculateMandatoryHabitsByDate(
+          habits,
+          date,
         );
 
         const completedHabitsCount = mandatoryHabits.filter((habit) => {
-          const isMandatoryForSelectedDate = habit.frequency.weekdays.some(
-            (weekday) => new Date(weekday).getDay() === new Date(date).getDay(),
-          );
+          const isMandatoryForSelectedDate = true;
 
           const isCompleted = habit.logs.some(
             (log) =>
