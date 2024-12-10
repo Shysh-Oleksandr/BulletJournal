@@ -198,7 +198,10 @@ const EditNoteScreen: FC<{
         `User tries to ${isNewNote ? "create" : "update"} a note`,
       );
 
-      const newImages = await handleImages(currentImages, savedNote);
+      const { newImages, uploadedNewImages } = await handleImages(
+        currentImages,
+        savedNote,
+      );
 
       setCurrentImages(newImages);
 
@@ -232,6 +235,12 @@ const EditNoteScreen: FC<{
           }
         } else {
           await updateNote(updateNoteData);
+
+          if (uploadedNewImages) {
+            navigation.replace(Routes.EDIT_NOTE, {
+              item: newNote,
+            });
+          }
         }
 
         if (withAlert) {

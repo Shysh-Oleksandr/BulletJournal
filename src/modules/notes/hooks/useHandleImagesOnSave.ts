@@ -31,8 +31,12 @@ export const useHandleImagesOnSave = () => {
         });
       }
 
+      const localImages = currentImages.filter((image) =>
+        image.url.startsWith("file"),
+      );
+
       const imageUrlsToUploadToServer = await uploadLocalImagesToS3(
-        currentImages.map((image) => image.url), // It will skip already-uploaded images
+        localImages.map((image) => image.url),
         userId,
       );
 
@@ -47,21 +51,25 @@ export const useHandleImagesOnSave = () => {
         : [];
 
       // Map currentImages to preserve order
-      const newImages = currentImages.map((image) => {
-        // Use existing image if it hasn't changed
-        const unchangedImage = notChangedImages.find(
-          (notChanged) => notChanged.url === image.url,
-        );
+      const newImages = currentImages
+        .map((image) => {
+          // If unchanged, use the existing image
+          const unchangedImage = notChangedImages.find(
+            (notChanged) => notChanged.url === image.url,
+          );
 
-        // Otherwise, use the newly uploaded image
-        const uploadedImage = uploadedImagesData.find(
-          (uploaded) => uploaded.url === image.url,
-        );
+          if (unchangedImage) return unchangedImage;
 
-        return unchangedImage || uploadedImage!;
-      });
+          // If newly uploaded, match by the initial file path
+          const uploadedImage = uploadedImagesData.find(
+            (_, index) => localImages[index]?.url === image.url, // Match by local file path order
+          );
 
-      return newImages;
+          return uploadedImage;
+        })
+        .filter(Boolean) as Image[];
+
+      return { newImages, uploadedNewImages: uploadedImagesData.length > 0 };
     },
     [createImagesEntries, deleteImagesEntriesFromServer, userId],
   );
