@@ -1,7 +1,7 @@
 {
   "name": "bulletjournal",
   "main": "index.js",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -29,7 +29,7 @@
     "node": ">=16"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.454.0",
+    "@aws-sdk/client-s3": "^3.705.0",
     "@expo/config-plugins": "~9.0.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
