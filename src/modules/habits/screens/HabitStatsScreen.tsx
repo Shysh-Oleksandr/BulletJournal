@@ -17,9 +17,7 @@ import HabitBestStreaksChart from "../components/habitStats/HabitBestStreaksChar
 import HabitCalendar from "../components/habitStats/HabitCalendar";
 import HabitInfoCard from "../components/habitStats/HabitInfoCard";
 import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
-import HabitWeeklyLineChart from "../components/habitStats/HabitWeeklyLineChart";
 import { getHabitById } from "../HabitsSelectors";
-import { HabitTypes } from "../types";
 import { calculateHabitBestStreaks } from "../utils/calculateHabitBestStreaks";
 
 const contentContainerStyle = {
@@ -42,7 +40,7 @@ const HabitStatsScreen: FC<{
     [item.logs],
   );
 
-  const isCheckHabitType = item.habitType === HabitTypes.CHECK;
+  // const isCheckHabitType = item.habitType === HabitTypes.CHECK;
 
   return (
     <>
@@ -72,9 +70,10 @@ const HabitStatsScreen: FC<{
             color={item.color}
           />
           <HabitMonthlyBarChart habitLogs={item.logs} color={item.color} />
-          {!isCheckHabitType && (
+          {/* Deprecated until we improve performance */}
+          {/* {!isCheckHabitType && (
             <HabitWeeklyLineChart habitLogs={item.logs} color={item.color} />
-          )}
+          )} */}
         </SScrollView>
       </SLinearGradient>
     </>

@@ -8,6 +8,8 @@ import {
   getWeek,
   getYear,
   isSameDay,
+  startOfDay,
+  startOfToday,
 } from "date-fns";
 
 import { Habit, HabitLog, HabitPeriods } from "../types";
@@ -26,7 +28,7 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
 
   const periodLength = getDaysByHabitPeriod(period);
 
-  const today = new Date().setHours(0, 0, 0, 0);
+  const today = startOfToday().getTime();
 
   // Fill missing days
   const habitLogsDates = filteredHabitLogs.map((log) => log.date);
@@ -70,14 +72,14 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
     }
 
     const shouldAdjustDays = relevantLogsInPeriod[0].date === startDate;
-    const adjustedDays = shouldAdjustDays
+    const adjustedDaysToComplete = shouldAdjustDays
       ? getAdjustedDays(relevantLogsInPeriod[0].date, days, period)
       : days;
 
     const periodLength = relevantLogsInPeriod.length;
-    const spacing = Math.round(periodLength / adjustedDays);
+    const spacing = Math.round(periodLength / adjustedDaysToComplete);
 
-    if (completedCount >= adjustedDays) {
+    if (completedCount >= adjustedDaysToComplete) {
       processedLogs.push(
         ...relevantLogsInPeriod.map((l) => ({
           ...l,
@@ -88,7 +90,7 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
       return;
     }
 
-    let remainingLogs = adjustedDays - completedCount;
+    let remainingLogs = adjustedDaysToComplete - completedCount;
     let lastCompletedLogIndex = 0;
 
     relevantLogsInPeriod.forEach((log, index) => {
@@ -113,6 +115,31 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
 
       processedLogs.push({ ...log, isOptional: !isNecessaryDay });
     });
+
+    // Ensure today's log is marked as necessary
+    const todayLog = processedLogs.find((log) => log.date === today);
+
+    if (isCurrentPeriod && todayLog && todayLog.isOptional) {
+      todayLog.isOptional = false; // Override to make it necessary
+
+      // Adjust to keep the number of necessary days equal to `adjustedDaysToComplete`
+      const necessaryLogs = processedLogs.filter(
+        (log) =>
+          relevantLogsInPeriod.some((r) => r.date === log.date) &&
+          !log.isOptional,
+      );
+
+      if (necessaryLogs.length > adjustedDaysToComplete) {
+        // Find the first necessary incompleted log and make it optional
+        const logToMakeOptional = necessaryLogs.find(
+          (log) => log.date !== today && log.percentageCompleted < 100,
+        );
+
+        if (logToMakeOptional) {
+          logToMakeOptional.isOptional = true;
+        }
+      }
+    }
   });
 
   return processedLogs;
@@ -153,7 +180,7 @@ function fillMissingDays(
   endDate: number,
 ): HabitLog[] {
   const days = eachDayOfInterval({
-    start: new Date(startDate),
+    start: startOfDay(startDate),
     end: new Date(endDate),
   });
 
