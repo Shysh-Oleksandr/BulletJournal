@@ -50,6 +50,11 @@ export type FetchHabitsResponse = {
   habits: Habit[];
 };
 
+export type HabitsState = {
+  byId: Record<string, Habit>;
+  allIds: string[];
+};
+
 export type UpdateHabitRequest = Partial<Habit> & Pick<Habit, "_id" | "author">;
 
 export type CreateHabitResponse = {

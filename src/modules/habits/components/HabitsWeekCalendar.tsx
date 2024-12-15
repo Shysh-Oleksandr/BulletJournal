@@ -10,17 +10,20 @@ import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import styled from "styled-components/native";
 
 import { useHabitsWeekDates } from "../hooks/useHabitsWeekDates";
+import { Habit } from "../types";
 
 import WeekCalendarItem from "./WeekCalendarItem";
 
 const today = startOfToday().getTime();
 
 type Props = {
+  mandatoryHabits: Habit[];
   selectedDate: number;
   setSelectedDate: (val: number) => void;
 };
 
 const HabitsWeekCalendar = ({
+  mandatoryHabits,
   selectedDate,
   setSelectedDate,
 }: Props): JSX.Element => {
@@ -33,7 +36,7 @@ const HabitsWeekCalendar = ({
     prevWeekLastDay,
     nextWeekFirstDay,
     isNextWeekDisabled,
-  } = useHabitsWeekDates(selectedDate);
+  } = useHabitsWeekDates(selectedDate, mandatoryHabits);
 
   return (
     <Container>

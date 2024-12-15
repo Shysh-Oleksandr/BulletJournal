@@ -5,13 +5,16 @@ import {
   CreateHabitRequest,
   CreateHabitResponse,
   FetchHabitsResponse,
+  Habit,
+  HabitsState,
   UpdateHabitRequest,
 } from "./types";
+import { calculateHabitLogsStatus } from "./utils/calculateHabitLogsStatus";
 
 export const habitsApi = emptyAxiosApi.injectEndpoints({
   endpoints(build) {
     return {
-      fetchHabits: build.query<FetchHabitsResponse, string>({
+      fetchHabits: build.query<HabitsState, string>({
         query(userId) {
           return {
             url: `/habits/${userId}`,
@@ -19,6 +22,20 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
           };
         },
         providesTags: [TAG.HABITS],
+        transformResponse: (res: FetchHabitsResponse) => {
+          const byId: Record<string, Habit> = {};
+          const allIds: string[] = [];
+
+          res.habits.forEach((habit) => {
+            byId[habit._id] = {
+              ...habit,
+              logs: calculateHabitLogsStatus(habit),
+            };
+            allIds.push(habit._id);
+          });
+
+          return { byId, allIds };
+        },
       }),
       updateHabit: build.mutation<void, UpdateHabitRequest>({
         query(payload) {
@@ -34,10 +51,11 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
         ) {
           const patchResult = dispatch(
             habitsApi.util.updateQueryData("fetchHabits", author, (draft) => {
-              const item = draft.habits.find((habit) => habit._id === _id);
+              const habit = draft.byId[_id];
 
-              if (item) {
-                Object.assign(item, patch);
+              if (habit) {
+                Object.assign(habit, patch);
+                habit.logs = calculateHabitLogsStatus(habit);
               }
             }),
           );

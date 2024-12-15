@@ -3,35 +3,30 @@ import createCachedSelector from "re-reselect";
 import { RootState } from "../../store/store";
 
 import { habitsApi } from "./HabitsApi";
-import { Habit } from "./types";
-import { calculateHabitLogsStatus } from "./utils/calculateHabitLogsStatus";
 import { calculateMandatoryHabitsByDate } from "./utils/calculateMandatoryHabitsByDate";
 
 export const getHabits = createCachedSelector(
-  (state: RootState) => state.auth.user?._id,
-  (state: RootState) => state,
-  (userId, state) => {
-    if (!userId) return [];
+  (state: RootState) =>
+    habitsApi.endpoints.fetchHabits.select(state.auth.user!._id)(state),
+  (result) => {
+    if (!result?.data) return [];
 
-    const selectHabits = habitsApi.endpoints.fetchHabits.select(userId);
-    const result = selectHabits(state);
+    const { allIds, byId } = result.data;
 
-    const habits = result?.data?.habits ?? [];
-
-    return habits.map((habit) => ({
-      ...habit,
-      logs: calculateHabitLogsStatus(habit),
-    }));
+    return allIds.map((id) => byId[id]);
   },
-)(
-  // Cache key resolver
-  (state: RootState) => state.auth.user?._id ?? "no_user",
-);
+)((state: RootState) => state.auth.user?._id ?? "no_user");
 
 export const getHabitById = createCachedSelector(
-  getHabits,
+  (state: RootState) => {
+    if (!state.auth.user) return { data: null };
+
+    return habitsApi.endpoints.fetchHabits.select(state.auth.user._id)(state);
+  },
   (_: RootState, habitId: string) => habitId,
-  (habits, habitId) => habits.find((habit) => habit._id === habitId) as Habit,
+  (result, habitId) => {
+    return result.data!.byId[habitId];
+  },
 )((_: RootState, habitId: string) => habitId);
 
 export const getHabitsBySelectedDate = createCachedSelector(

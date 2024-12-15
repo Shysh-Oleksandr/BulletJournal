@@ -89,6 +89,7 @@ const HabitsScreen = (): JSX.Element => {
             <HabitsWeekCalendar
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
+              mandatoryHabits={mandatoryHabits}
             />
             {mandatoryHabits.length > 0 || optionalHabits.length > 0 ? (
               <>
