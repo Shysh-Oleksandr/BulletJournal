@@ -35,7 +35,8 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const [fetchHabits, { isLoading }] = habitsApi.useLazyFetchHabitsQuery();
+  const [fetchHabits, { isLoading, isUninitialized }] =
+    habitsApi.useLazyFetchHabitsQuery();
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
 
@@ -74,7 +75,7 @@ const HabitsScreen = (): JSX.Element => {
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}
       >
-        {isLoading ? (
+        {isLoading || isUninitialized ? (
           <LoaderContainer>
             <ActivityIndicator size="large" color={theme.colors.cyan600} />
           </LoaderContainer>
