@@ -26,10 +26,6 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
 
   const periodLength = getDaysByHabitPeriod(period);
 
-  if (days === periodLength) {
-    return filteredHabitLogs;
-  }
-
   const today = new Date().setHours(0, 0, 0, 0);
 
   // Fill missing days
@@ -38,6 +34,10 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
   const endDate = today;
 
   const logs = fillMissingDays(filteredHabitLogs, startDate, endDate);
+
+  if (days === periodLength) {
+    return logs;
+  }
 
   // Group logs by the desired period (week or month)
   const periodLogs = groupLogsByPeriod(logs, period);

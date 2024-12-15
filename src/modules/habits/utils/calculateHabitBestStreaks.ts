@@ -52,6 +52,7 @@ export function getTopStreaks(
 export const calculateHabitBestStreaks = (
   habitLogs: HabitLog[],
 ): HabitStreak[] => {
+  // Sort logs by date in ascending order(oldest to newest)
   const sortedHabitLogs = [...habitLogs].sort((a, b) => a.date - b.date);
 
   const streaks: HabitStreak[] = [];
