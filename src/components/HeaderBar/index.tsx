@@ -68,8 +68,12 @@ const HeaderBar = ({
     ? insets.top + DISTANCE_FROM_THE_STATUS_BAR_ANDROID
     : insets.top;
 
-  const [topGradientColor, bottomGradientColor] = useMemo(
-    () => [getDifferentColor(bgColor, 10), getDifferentColor(bgColor, -15)],
+  const gradientColors = useMemo(
+    () =>
+      [
+        getDifferentColor(bgColor, 10),
+        getDifferentColor(bgColor, -15),
+      ] as const,
     [bgColor],
   );
 
@@ -80,10 +84,7 @@ const HeaderBar = ({
         backgroundColor="transparent"
         translucent
       />
-      <LinearGradient
-        start={{ x: 0.5, y: 0.1 }}
-        colors={[topGradientColor, bottomGradientColor]}
-      >
+      <LinearGradient start={{ x: 0.5, y: 0.1 }} colors={gradientColors}>
         <CoverView height={distanceFromTheTop} />
         <HeaderWrapper
           marginBottom={marginBottom}

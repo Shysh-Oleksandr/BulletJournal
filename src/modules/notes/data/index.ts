@@ -2,8 +2,8 @@ import theme from "theme";
 
 import { Note } from "../types";
 
-export const NOTE_DATE_FORMAT = "EEEE, MMM dd yyyy";
-export const NOTE_DATE_TIME_FORMAT = "EEEE, MMM dd yyyy HH:mm";
+export const NOTE_DATE_FORMAT = "EEEE, dd MMMM yyyy";
+export const NOTE_DATE_TIME_FORMAT = "EEEE, dd MMM yyyy HH:mm";
 export const NOTE_TIME_FORMAT = "HH:mm";
 
 export const EMPTY_NOTE: Note = {

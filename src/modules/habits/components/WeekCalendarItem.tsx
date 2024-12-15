@@ -96,7 +96,6 @@ const ActiveContainer = styled(LinearGradient)`
 const InnerContainer = styled.View<{ isCompleted: boolean }>`
   background-color: ${({ isCompleted }) =>
     isCompleted ? theme.colors.cyan500 : theme.colors.bubbles};
-  border-radius: 999px;
   height: 100%;
   width: 100%;
   align-items: center;

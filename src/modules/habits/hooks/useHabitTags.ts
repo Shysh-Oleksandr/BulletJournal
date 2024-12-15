@@ -6,7 +6,8 @@ import {
   calculateHabitBestStreaks,
   getHabitStreakInfo,
 } from "../utils/calculateHabitBestStreaks";
-import { getDaysByHabitPeriod } from "../utils/getDaysByHabitPeriod";
+
+import { useHabitFrequencyLabel } from "./useHabitFrequencyLabel";
 
 export const useHabitTags = (habit: Habit, amountTarget?: number) => {
   const { t } = useTranslation();
@@ -15,6 +16,8 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
     () => getHabitStreakInfo(habit.logs, calculateHabitBestStreaks(habit.logs)),
     [habit.logs],
   );
+
+  const frequencyLabel = useHabitFrequencyLabel(habit.frequency);
 
   const tags = useMemo(() => {
     const tags: string[] = [];
@@ -43,15 +46,18 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
       )}`,
     );
 
-    const isDaily =
-      habit.frequency.days === getDaysByHabitPeriod(habit.frequency.period);
-
-    tags.push(
-      `${t("habits.frequency")}: ${isDaily ? t("habits.daily") : `${habit.frequency.days} ${t("habits.times")}/${t(`habits.${habit.frequency.period}`).toLowerCase()}`}`,
-    );
+    tags.push(`${t("habits.frequency")}: ${frequencyLabel}`);
 
     return tags;
-  }, [habit, t, currentStreak, longestStreak, overallCompleted, amountTarget]);
+  }, [
+    habit,
+    t,
+    currentStreak,
+    longestStreak,
+    overallCompleted,
+    frequencyLabel,
+    amountTarget,
+  ]);
 
   return tags;
 };
