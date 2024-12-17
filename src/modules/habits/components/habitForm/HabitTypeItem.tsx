@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { HabitTypes } from "modules/habits/types";
 import styled from "styled-components/native";
@@ -36,10 +36,10 @@ const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
         return "check";
 
       case HabitTypes.AMOUNT:
-        return "sort-amount-asc";
+        return "sort-amount-up";
 
       default:
-        return "clock-o";
+        return "clock";
     }
   }, [habitType]);
 
@@ -63,7 +63,7 @@ const HabitTypeItem = ({ habitType, isDisabled, active, onPress }: Props) => {
       onPress={() => onPress(habitType)}
     >
       <IconContainer>
-        <FontAwesome
+        <FontAwesome5
           name={iconName}
           color={active ? theme.colors.white : theme.colors.cyan600}
           size={theme.fontSizes.lg}

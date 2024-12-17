@@ -8,13 +8,17 @@ import {
   getWeek,
   getYear,
   isSameDay,
+  startOfDay,
+  startOfToday,
 } from "date-fns";
 
 import { Habit, HabitLog, HabitPeriods } from "../types";
 
 import { getDaysByHabitPeriod } from "./getDaysByHabitPeriod";
 
-export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
+export const calculateHabitLogsStatus = (
+  habit: Habit,
+): { oldestLogDate: number; processedLogs: HabitLog[] } => {
   const { logs: habitLogs, frequency } = habit;
   const { days, period } = frequency;
 
@@ -22,22 +26,33 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
     (log) => log.amount && log.amount > 0,
   );
 
-  if (!filteredHabitLogs.length) return [];
+  if (!filteredHabitLogs.length) {
+    const today = startOfToday().getTime();
+
+    return {
+      oldestLogDate: today,
+      processedLogs: [],
+    };
+  }
 
   const periodLength = getDaysByHabitPeriod(period);
 
-  if (days === periodLength) {
-    return filteredHabitLogs;
-  }
+  const today = startOfToday().getTime();
 
-  const today = new Date().setHours(0, 0, 0, 0);
+  // Determine the start date based on the oldest log
+  const habitLogsDates = filteredHabitLogs.map((log) => log.date);
+  const oldestLogDate = Math.min(...habitLogsDates);
 
   // Fill missing days
-  const habitLogsDates = filteredHabitLogs.map((log) => log.date);
-  const startDate = habitLogsDates ? Math.min(...habitLogsDates) : today;
   const endDate = today;
+  const logs = fillMissingDays(filteredHabitLogs, oldestLogDate, endDate);
 
-  const logs = fillMissingDays(filteredHabitLogs, startDate, endDate);
+  if (days === periodLength) {
+    return {
+      oldestLogDate,
+      processedLogs: logs,
+    };
+  }
 
   // Group logs by the desired period (week or month)
   const periodLogs = groupLogsByPeriod(logs, period);
@@ -69,15 +84,15 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
       return;
     }
 
-    const shouldAdjustDays = relevantLogsInPeriod[0].date === startDate;
-    const adjustedDays = shouldAdjustDays
+    const shouldAdjustDays = relevantLogsInPeriod[0].date === oldestLogDate;
+    const adjustedDaysToComplete = shouldAdjustDays
       ? getAdjustedDays(relevantLogsInPeriod[0].date, days, period)
       : days;
 
     const periodLength = relevantLogsInPeriod.length;
-    const spacing = Math.round(periodLength / adjustedDays);
+    const spacing = Math.round(periodLength / adjustedDaysToComplete);
 
-    if (completedCount >= adjustedDays) {
+    if (completedCount >= adjustedDaysToComplete) {
       processedLogs.push(
         ...relevantLogsInPeriod.map((l) => ({
           ...l,
@@ -88,7 +103,7 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
       return;
     }
 
-    let remainingLogs = adjustedDays - completedCount;
+    let remainingLogs = adjustedDaysToComplete - completedCount;
     let lastCompletedLogIndex = 0;
 
     relevantLogsInPeriod.forEach((log, index) => {
@@ -113,9 +128,37 @@ export const calculateHabitLogsStatus = (habit: Habit): HabitLog[] => {
 
       processedLogs.push({ ...log, isOptional: !isNecessaryDay });
     });
+
+    // Ensure today's log is marked as necessary
+    const todayLog = processedLogs.find((log) => log.date === today);
+
+    if (isCurrentPeriod && todayLog && todayLog.isOptional) {
+      todayLog.isOptional = false; // Override to make it necessary
+
+      // Adjust to keep the number of necessary days equal to `adjustedDaysToComplete`
+      const necessaryLogs = processedLogs.filter(
+        (log) =>
+          relevantLogsInPeriod.some((r) => r.date === log.date) &&
+          !log.isOptional,
+      );
+
+      if (necessaryLogs.length > adjustedDaysToComplete) {
+        // Find the first necessary incomplete log and make it optional
+        const logToMakeOptional = necessaryLogs.find(
+          (log) => log.date !== today && log.percentageCompleted < 100,
+        );
+
+        if (logToMakeOptional) {
+          logToMakeOptional.isOptional = true;
+        }
+      }
+    }
   });
 
-  return processedLogs;
+  return {
+    oldestLogDate,
+    processedLogs,
+  };
 };
 
 // Helper to get the key for grouping by period (week or month)
@@ -149,12 +192,12 @@ function groupLogsByPeriod(
 // Helper to fill in missing days between the start and end dates
 function fillMissingDays(
   habitLogs: HabitLog[],
-  startDate: number,
+  oldestLogDate: number,
   endDate: number,
 ): HabitLog[] {
   const days = eachDayOfInterval({
-    start: new Date(startDate),
-    end: new Date(endDate),
+    start: startOfDay(oldestLogDate),
+    end: startOfDay(endDate),
   });
 
   return days.map((day) => {

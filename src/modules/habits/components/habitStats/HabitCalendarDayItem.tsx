@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { TextInput } from "react-native";
+import { TextInput, useWindowDimensions } from "react-native";
 import { CircularProgress } from "react-native-circular-progress";
 import theme from "theme";
 
@@ -38,6 +38,10 @@ const HabitCalendarDayItem = ({
   isDisabled,
   streakState,
 }: Props): JSX.Element => {
+  const { width: screenWidth } = useWindowDimensions();
+
+  const isWideScreen = screenWidth > 400;
+
   const inputRef = useRef<TextInput | null>(null);
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
@@ -119,78 +123,88 @@ const HabitCalendarDayItem = ({
   };
 
   return (
-    <DayItemContainer
-      onPress={handleItemPress}
-      disabled={isDisabled}
-      isDayOptional={isDayOptional}
-      hitSlop={SMALL_BUTTON_HIT_SLOP}
-    >
+    <DayItemContainer isDayOptional={isDayOptional}>
       {streakState?.displayLeftLine && (
         <HorizontalLine itemSize={itemSize} bgColor={bgColor} isLeft />
       )}
       {streakState?.displayRightLine && (
-        <HorizontalLine itemSize={itemSize} bgColor={bgColor} />
+        <HorizontalLine
+          itemSize={itemSize}
+          bgColor={bgColor}
+          isWideScreen={isWideScreen}
+        />
       )}
-      <CircularProgress
-        fill={isDisabled ? 0 : percentageCompleted}
-        size={itemSize}
-        width={CIRCLE_WIDTH}
-        rotation={0}
-        tintColor={tintColor}
-        backgroundColor={tintBgColor}
-      >
-        {() => (
-          <>
-            <BgContainer bgColor={bgColor} />
+      <BgContainer itemSize={itemSize} bgColor={bgColor} />
 
-            <InnerContainer bgColor={bgColor}>
-              {!isCheckHabitType && shouldDisplayInput ? (
-                <Input
-                  value={inputValue}
-                  inputRef={inputRef}
-                  isCentered
-                  paddingHorizontal={0}
-                  maxLength={7}
-                  numberOfLines={1}
-                  keyboardType="number-pad"
-                  fontWeight="semibold"
-                  labelColor={
-                    isCompleted || isOptional
-                      ? theme.colors.white
-                      : theme.colors.darkBlueText
-                  }
-                  bgColor={bgColor}
-                  selectTextOnFocus
-                  fontSize={inputFontSize}
-                  onChange={onChange ?? noop}
-                  onBlur={() => {
-                    setShouldDisplayInput(false);
-                    updateLog();
-                  }}
-                  editable={!!onChange}
-                />
-              ) : (
-                <Typography
-                  align="center"
-                  fontSize="sm"
-                  fontWeight="semibold"
-                  color={textColor}
-                >
-                  {day}
-                </Typography>
-              )}
-            </InnerContainer>
-          </>
-        )}
-      </CircularProgress>
+      <TouchableContainer
+        onPress={handleItemPress}
+        disabled={isDisabled}
+        hitSlop={SMALL_BUTTON_HIT_SLOP}
+        activeOpacity={0.35}
+      >
+        <CircularProgress
+          fill={isDisabled ? 0 : percentageCompleted}
+          size={itemSize}
+          width={CIRCLE_WIDTH}
+          rotation={0}
+          tintColor={tintColor}
+          backgroundColor={tintBgColor}
+        >
+          {() => (
+            <>
+              <InnerContainer bgColor={bgColor}>
+                {!isCheckHabitType && shouldDisplayInput ? (
+                  <Input
+                    value={inputValue}
+                    inputRef={inputRef}
+                    isCentered
+                    paddingHorizontal={0}
+                    maxLength={7}
+                    numberOfLines={1}
+                    keyboardType="number-pad"
+                    fontWeight="semibold"
+                    labelColor={
+                      isCompleted || isOptional
+                        ? theme.colors.white
+                        : theme.colors.darkBlueText
+                    }
+                    bgColor={bgColor}
+                    selectTextOnFocus
+                    fontSize={inputFontSize}
+                    onChange={onChange ?? noop}
+                    onBlur={() => {
+                      setShouldDisplayInput(false);
+                      updateLog();
+                    }}
+                    editable={!!onChange}
+                  />
+                ) : (
+                  <Typography
+                    align="center"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    color={textColor}
+                  >
+                    {day}
+                  </Typography>
+                )}
+              </InnerContainer>
+            </>
+          )}
+        </CircularProgress>
+      </TouchableContainer>
     </DayItemContainer>
   );
 };
 
-const DayItemContainer = styled.TouchableOpacity<{
+const DayItemContainer = styled.View<{
   isDayOptional: boolean;
 }>`
   ${({ isDayOptional }) => isDayOptional && `margin-top: 2.5px;`}
+`;
+
+const TouchableContainer = styled.TouchableOpacity`
+  z-index: 4;
 `;
 
 const InnerContainer = styled.View<{
@@ -206,12 +220,14 @@ const InnerContainer = styled.View<{
 `;
 
 const BgContainer = styled.View<{
+  itemSize: number;
   bgColor: string;
 }>`
   background-color: ${({ bgColor }) => bgColor};
   position: absolute;
-  width: 100%;
-  height: 100%;
+  border-radius: 999px;
+  width: ${({ itemSize }) => itemSize}px;
+  height: ${({ itemSize }) => itemSize}px;
   z-index: 2;
 `;
 
@@ -219,9 +235,10 @@ const HorizontalLine = styled.View<{
   bgColor: string;
   itemSize: number;
   isLeft?: boolean;
+  isWideScreen?: boolean;
 }>`
   position: absolute;
-  width: 28px;
+  width: ${({ isWideScreen }) => (isWideScreen ? 27 : 24)}px;
   height: 4px;
   top: 50%;
   ${({ isLeft, itemSize }) =>
