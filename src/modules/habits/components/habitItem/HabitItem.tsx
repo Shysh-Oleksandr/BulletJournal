@@ -1,4 +1,4 @@
-import { isSameDay } from "date-fns";
+import { isBefore, isSameDay } from "date-fns";
 import React, { useMemo } from "react";
 
 import { useUpdateHabitLog } from "../../hooks/useUpdateHabitLog";
@@ -17,6 +17,14 @@ const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
     selectedDate,
   });
 
+  const isActiveOnSelectedDate = useMemo(
+    () =>
+      Boolean(
+        habit.oldestLogDate && !isBefore(selectedDate, habit.oldestLogDate),
+      ),
+    [habit.oldestLogDate, selectedDate],
+  );
+
   const isCompleted = useMemo(
     () =>
       habit.logs.some(
@@ -33,6 +41,7 @@ const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
       isCompleted={isCompleted}
       amountTarget={currentLog?.amountTarget}
       percentageCompleted={currentLog?.percentageCompleted}
+      isActiveOnSelectedDate={isActiveOnSelectedDate}
       onChange={onChange}
       updateLog={updateLog}
     />

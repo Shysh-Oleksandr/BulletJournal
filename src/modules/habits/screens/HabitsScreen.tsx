@@ -20,7 +20,7 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import HabitItem from "../components/habitItem/HabitItem";
-import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
+import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
 import { getHabitsBySelectedDate } from "../HabitsSelectors";
@@ -35,7 +35,8 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const [fetchHabits, { isLoading }] = habitsApi.useLazyFetchHabitsQuery();
+  const [fetchHabits, { isLoading, isUninitialized }] =
+    habitsApi.useLazyFetchHabitsQuery();
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
 
@@ -74,7 +75,7 @@ const HabitsScreen = (): JSX.Element => {
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}
       >
-        {isLoading ? (
+        {isLoading || isUninitialized ? (
           <LoaderContainer>
             <ActivityIndicator size="large" color={theme.colors.cyan600} />
           </LoaderContainer>
@@ -102,7 +103,7 @@ const HabitsScreen = (): JSX.Element => {
                   <Typography
                     fontWeight="semibold"
                     fontSize="lg"
-                    paddingTop={16}
+                    paddingTop={mandatoryHabits.length > 0 ? 16 : 0}
                     paddingBottom={16}
                   >
                     {t(

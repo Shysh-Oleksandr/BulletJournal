@@ -20,6 +20,8 @@ export type Habit = {
   habitType: HabitTypes;
   color: string;
   logs: HabitLog[];
+  // Custom FE fields
+  oldestLogDate?: number;
 };
 
 export type HabitFrequency = {
@@ -48,6 +50,11 @@ export type HabitStreak = {
 export type FetchHabitsResponse = {
   count: number;
   habits: Habit[];
+};
+
+export type HabitsState = {
+  byId: Record<string, Habit>;
+  allIds: string[];
 };
 
 export type UpdateHabitRequest = Partial<Habit> & Pick<Habit, "_id" | "author">;

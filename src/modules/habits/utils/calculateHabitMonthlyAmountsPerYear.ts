@@ -16,9 +16,6 @@ export function calculateHabitMonthlyAmountsPerYear(
       (acc, log) => acc + (log?.percentageCompleted >= 100 ? 1 : 0),
       0,
     );
-    // TODO: use it for percentage calculation in future
-    // const averageAmount =
-    //   monthLogs.length > 0 ? totalAmount / monthLogs.length : 0;
 
     return Math.round(totalAmount);
   });

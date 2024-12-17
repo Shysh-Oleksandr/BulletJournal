@@ -82,7 +82,8 @@ const AnimatedModalContainer = ({
 
   const onRequestClose = useCallback(() => {
     setIsVisible(false);
-  }, [setIsVisible]);
+    onClose?.();
+  }, [onClose, setIsVisible]);
 
   // Modal background Animation
   useEffect(() => {

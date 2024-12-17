@@ -1,67 +1,70 @@
-import { addDays, isAfter, isSameDay, startOfToday } from "date-fns";
+import { isSameDay } from "date-fns";
 import { useMemo } from "react";
 
-import { useAppSelector } from "store/helpers/storeHooks";
-
-import { getHabits } from "../HabitsSelectors";
-import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
+import { Habit } from "../types";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
-const today = startOfToday();
-
-export const useHabitsWeekDates = (selectedDate: number) => {
-  const habits = useAppSelector(getHabits);
-
-  const { weekDates, ...arrowsData } = useMemo(() => {
+export const useHabitsWeekDates = (selectedDate: number, allHabits: Habit[]) =>
+  useMemo(() => {
     const weekDates = getWeekDatesByDate(selectedDate);
 
-    const nextWeekFirstDay = addDays(
-      weekDates[weekDates.length - 1],
-      1,
-    ).getTime();
-    const prevWeekLastDay = addDays(weekDates[0], -1).getTime();
+    return getWeeklyCompletionRates(allHabits, weekDates);
+  }, [allHabits, selectedDate]);
 
-    const isNextWeekDisabled = isAfter(nextWeekFirstDay, today);
+const getWeeklyCompletionRates = (
+  allHabits: Habit[],
+  weekDates: number[],
+): { date: number; percentageCompleted: number }[] => {
+  if (allHabits.length === 0)
+    return weekDates.map((date) => ({ date, percentageCompleted: 0 }));
 
-    return {
-      weekDates,
-      nextWeekFirstDay,
-      prevWeekLastDay,
-      isNextWeekDisabled,
-    };
-  }, [selectedDate]);
+  const habitsByStartDate: Record<string, number> = {};
+  const completionRates: { date: number; percentageCompleted: number }[] = [];
 
-  const mappedWeekDates = useMemo(
-    () =>
-      weekDates.map((date) => {
-        const { mandatoryHabits } = calculateMandatoryHabitsByDate(
-          habits,
-          date,
-        );
+  // Calculate the start date for each habit
+  allHabits.forEach((habit) => {
+    const habitStartDate = habit.logs.reduce(
+      (earliestDate, log) =>
+        earliestDate ? Math.min(earliestDate, log.date) : log.date,
+      null as number | null,
+    );
 
-        const completedHabitsCount = mandatoryHabits.filter((habit) => {
-          const isMandatoryForSelectedDate = true;
+    if (habitStartDate) {
+      habitsByStartDate[habit._id] = habitStartDate;
+    }
+  });
 
-          const isCompleted = habit.logs.some(
-            (log) =>
-              log.percentageCompleted >= 100 && isSameDay(log.date, date),
-          );
+  // Calculate completion rates for each date in the week
+  weekDates.forEach((date) => {
+    let completedLogs = 0;
+    let mandatoryHabitsCount = 0;
 
-          return isMandatoryForSelectedDate && isCompleted;
-        }).length;
+    allHabits.forEach((habit) => {
+      const habitStartDate = habitsByStartDate[habit._id];
 
-        return {
-          date,
-          progress: Math.round(
-            (completedHabitsCount / mandatoryHabits.length) * 100,
-          ),
-        };
-      }),
-    [habits, weekDates],
-  );
+      // Skip habits that haven't started yet
+      if (habitStartDate && date < habitStartDate) return;
 
-  return useMemo(
-    () => ({ ...arrowsData, mappedWeekDates }),
-    [arrowsData, mappedWeekDates],
-  );
+      const log = habit.logs.find((log) => isSameDay(log.date, date));
+
+      if (log) {
+        // Count mandatory habits and completed logs
+        if (!log.isOptional) {
+          mandatoryHabitsCount++;
+        }
+
+        if (log.percentageCompleted >= 100) {
+          completedLogs++;
+        }
+      }
+    });
+
+    const percentageCompleted = mandatoryHabitsCount
+      ? Math.round((completedLogs / mandatoryHabitsCount) * 100)
+      : 0;
+
+    completionRates.push({ date, percentageCompleted });
+  });
+
+  return completionRates;
 };
