@@ -5,6 +5,7 @@ import theme from "theme";
 
 import Divider from "components/Divider";
 import Typography from "components/Typography";
+import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
 
 import AnimatedModalContainer from "./AnimatedModalContainer";
@@ -15,48 +16,35 @@ type Props = {
   isVisible: boolean;
   modalAnimationTime?: number;
   closeTriggered?: boolean;
-  paddingVertical?: number;
   paddingHorizontal?: number;
   maxHeight?: string | number;
   height?: string | number;
   bgOpacity?: number;
   borderRadius?: number;
-  statusBarTranslucent?: boolean;
-  withCloseButton?: boolean;
-  withCloseButtonDivider?: boolean;
-  closeButtonDividerColor?: string;
-  closeButtonContainerHeight?: number;
   withHeader?: boolean;
   title?: string;
-  subtitle?: string;
   setIsVisible: (arg: boolean) => void;
   onClose?: () => void;
   setCloseTriggered?: (value: boolean) => void;
   withDividerBelowHeader?: boolean;
-  shouldCenterContent?: boolean;
-  inHeaderComponent?: JSX.Element | null;
 };
 
 const BottomModal = ({
   modalAnimationTime = 300,
   closeTriggered,
-  paddingVertical = 0,
   paddingHorizontal = 20,
   maxHeight,
   isVisible,
   children,
   height,
+  title,
   bgOpacity = 0.75,
   borderRadius = BOX_BORDER_RADIUS,
-  withCloseButton = true,
-  closeButtonContainerHeight = 90,
   withHeader = true,
-  title,
-  subtitle,
+  withDividerBelowHeader = true,
   onClose,
   setCloseTriggered,
   setIsVisible,
-  withDividerBelowHeader = true,
 }: PropsWithChildren<Props>): JSX.Element => {
   const { t } = useTranslation();
 
@@ -94,7 +82,6 @@ const BottomModal = ({
       onClose={onClose}
     >
       <SContentContainer
-        paddingVertical={paddingVertical}
         paddingHorizontal={paddingHorizontal}
         maxHeight={modalMaxHeight}
         height={modalHeight}
@@ -102,12 +89,7 @@ const BottomModal = ({
       >
         {withHeader && (
           <>
-            <SModalHeader>
-              {Boolean(subtitle) && (
-                <Typography fontSize="xs" paddingBottom={6} uppercase>
-                  {subtitle}
-                </Typography>
-              )}
+            <SModalHeader withPadding={paddingHorizontal === 0}>
               <Typography
                 fontSize="xl"
                 align="center"
@@ -116,6 +98,19 @@ const BottomModal = ({
               >
                 {title}
               </Typography>
+
+              <CloseButtonContainer
+                onPress={closeModal}
+                hitSlop={BIG_BUTTON_HIT_SLOP}
+              >
+                <Typography
+                  fontWeight="semibold"
+                  fontSize="md"
+                  color={theme.colors.darkGray}
+                >
+                  {t("general.close")}
+                </Typography>
+              </CloseButtonContainer>
             </SModalHeader>
 
             {withDividerBelowHeader && (
@@ -128,21 +123,6 @@ const BottomModal = ({
         )}
 
         {children}
-
-        {withCloseButton && (
-          <>
-            <Divider />
-            <CloseButtonContainer
-              closeButtonContainerHeight={closeButtonContainerHeight}
-              withPadding={!paddingHorizontal}
-              onPress={closeModal}
-            >
-              <Typography fontWeight="semibold" uppercase>
-                {t("general.close")}
-              </Typography>
-            </CloseButtonContainer>
-          </>
-        )}
       </SContentContainer>
       <Toast topOffset={60} visibilityTime={2000} />
     </AnimatedModalContainer>
@@ -150,7 +130,6 @@ const BottomModal = ({
 };
 
 const SContentContainer = styled.View<{
-  paddingVertical: number;
   paddingHorizontal: number;
   maxHeight: string;
   height: string;
@@ -159,29 +138,21 @@ const SContentContainer = styled.View<{
   width: 100%;
   height: ${(props) => props.height};
   max-height: ${(props) => props.maxHeight};
-  padding-vertical: ${({ paddingVertical }) => paddingVertical}px;
   padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
   border-top-right-radius: ${({ topBorderRadius }) => topBorderRadius}px;
   border-top-left-radius: ${({ topBorderRadius }) => topBorderRadius}px;
   background-color: ${({ theme }) => theme.colors.white};
 `;
 
-const SModalHeader = styled.View`
+const SModalHeader = styled.View<{ withPadding: boolean }>`
   width: 100%;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   margin-vertical: 24px;
+  ${({ withPadding }) => withPadding && "padding-horizontal: 16px;"}
 `;
 
-const CloseButtonContainer = styled.TouchableOpacity<{
-  closeButtonContainerHeight: number;
-  withPadding: boolean;
-}>`
-  height: ${({ closeButtonContainerHeight }) => closeButtonContainerHeight}px;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  ${({ withPadding }) => withPadding && "padding-horizontal: 20px;"}
-`;
+const CloseButtonContainer = styled.TouchableOpacity``;
 
 export default React.memo(BottomModal);

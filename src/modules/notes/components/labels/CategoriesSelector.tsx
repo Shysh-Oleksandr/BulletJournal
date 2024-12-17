@@ -176,7 +176,6 @@ const CategoriesSelector = ({
         onClose={onClose}
         closeTriggered={closeTriggered}
         setCloseTriggered={setCloseTriggered}
-        withCloseButtonDivider={false}
       >
         <AddLabelInput
           allLabels={categories}
@@ -196,6 +195,7 @@ const CategoriesSelector = ({
           enableOnAndroid
           extraScrollHeight={20}
           extraHeight={150}
+          contentContainerStyle={{ paddingBottom: 10 }}
         />
       </BottomModal>
       <FormLabel label={t("note.categories")} bottomOffset={-13} />

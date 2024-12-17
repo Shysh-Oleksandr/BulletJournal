@@ -1,6 +1,6 @@
 import { format, isAfter, startOfToday } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useMemo } from "react";
 import { CircularProgress } from "react-native-circular-progress";
 import theme from "theme";
 
@@ -20,23 +20,30 @@ const BG_GRADIENT_COLORS = [
 
 type Props = {
   date: number;
-  progress: number;
+  percentageCompleted: number;
   isActive: boolean;
   setSelectedDate: (val: number) => void;
 };
 
 const WeekCalendarItem = ({
   date,
-  progress,
+  percentageCompleted,
   isActive,
   setSelectedDate,
 }: Props): JSX.Element => {
   const isDisabled = isAfter(date, today);
-  const isCompleted = progress >= 100;
+  const isCompleted = percentageCompleted >= 100;
 
   const day = format(date, "EEEEEE", {
     locale: getDateFnsLocale(),
   });
+
+  const bgColor = useMemo(() => {
+    if (isDisabled) return theme.colors.crystal;
+    if (isCompleted) return theme.colors.cyan500;
+
+    return theme.colors.bubbles;
+  }, [isCompleted, isDisabled]);
 
   return (
     <Container disabled={isDisabled} onPress={() => setSelectedDate(date)}>
@@ -53,17 +60,15 @@ const WeekCalendarItem = ({
         </ActiveContainer>
       ) : (
         <CircularProgress
-          fill={isDisabled ? 0 : progress}
+          fill={isDisabled ? 0 : percentageCompleted}
           size={CIRCLE_SIZE}
           width={CIRCLE_WIDTH}
           rotation={0}
           tintColor={theme.colors.cyan500}
-          backgroundColor={
-            isDisabled ? theme.colors.gray : theme.colors.crystal
-          }
+          backgroundColor={theme.colors.crystal}
         >
           {() => (
-            <InnerContainer isCompleted={isCompleted}>
+            <InnerContainer bgColor={bgColor}>
               <Typography
                 fontSize="xs"
                 fontWeight="semibold"
@@ -93,9 +98,8 @@ const ActiveContainer = styled(LinearGradient)`
   justify-content: center;
 `;
 
-const InnerContainer = styled.View<{ isCompleted: boolean }>`
-  background-color: ${({ isCompleted }) =>
-    isCompleted ? theme.colors.cyan500 : theme.colors.bubbles};
+const InnerContainer = styled.View<{ bgColor: string }>`
+  background-color: ${({ bgColor }) => bgColor};
   height: 100%;
   width: 100%;
   align-items: center;

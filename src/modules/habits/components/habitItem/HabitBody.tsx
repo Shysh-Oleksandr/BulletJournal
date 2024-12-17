@@ -29,6 +29,7 @@ type Props = {
   isCompleted: boolean;
   amountTarget?: number;
   percentageCompleted?: number;
+  isActiveOnSelectedDate?: boolean;
   updateLog?: () => void;
   onChange?: (text: string) => void;
 };
@@ -39,6 +40,7 @@ const HabitBody = ({
   isCompleted,
   amountTarget,
   percentageCompleted,
+  isActiveOnSelectedDate = true,
   updateLog,
   onChange,
 }: Props): JSX.Element => {
@@ -84,6 +86,13 @@ const HabitBody = ({
   return (
     <Container activeOpacity={0.5} disabled={!updateLog} onPress={onCardPress}>
       <BgContainer colors={gradientColors}>
+        {!isActiveOnSelectedDate && (
+          <HabitTopTagContainer bgColor={labelBgColor}>
+            <Typography fontSize="sm" fontWeight="semibold">
+              Not started yet
+            </Typography>
+          </HabitTopTagContainer>
+        )}
         <RowContainer>
           <InfoContainer>
             <AnimatedCircularProgress
@@ -212,6 +221,16 @@ const InnerContainer = styled.View<{ isCompleted: boolean }>`
 
 const LabelContainer = styled.View`
   flex: 1;
+`;
+
+const HabitTopTagContainer = styled.View<{ bgColor: string }>`
+  position: absolute;
+  top: -12px;
+  left: 8px;
+  background-color: ${theme.colors.cyan400};
+  padding: 3px 8px;
+  border-radius: 5px;
+  z-index: 10;
 `;
 
 export default React.memo(HabitBody);

@@ -4,39 +4,35 @@ import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
-import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
+import { getHabits } from "modules/habits/HabitsSelectors";
+import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { useHabitsWeekDates } from "../hooks/useHabitsWeekDates";
-import { Habit } from "../types";
+import { useHabitsWeekDates } from "../../hooks/useHabitsWeekDates";
 
+import HabitsCalendarSelector from "./HabitsCalendarSelector";
 import WeekCalendarItem from "./WeekCalendarItem";
 
 const today = startOfToday().getTime();
 
 type Props = {
-  mandatoryHabits: Habit[];
   selectedDate: number;
   setSelectedDate: (val: number) => void;
 };
 
 const HabitsWeekCalendar = ({
-  mandatoryHabits,
   selectedDate,
   setSelectedDate,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
+  const allHabits = useAppSelector(getHabits);
+
   const isTodaySelected = isToday(selectedDate);
 
-  const {
-    mappedWeekDates,
-    prevWeekLastDay,
-    nextWeekFirstDay,
-    isNextWeekDisabled,
-  } = useHabitsWeekDates(selectedDate, mandatoryHabits);
+  const mappedWeekDates = useHabitsWeekDates(selectedDate, allHabits);
 
   return (
     <Container>
@@ -75,38 +71,17 @@ const HabitsWeekCalendar = ({
             })}
           </Typography>
         </DateInfoContainer>
-        <ArrowsContainer>
-          <ArrowContainer
-            onPress={() => setSelectedDate(prevWeekLastDay)}
-            hitSlop={BUTTON_HIT_SLOP}
-          >
-            <FontAwesome5
-              name="chevron-left"
-              color={theme.colors.cyan500}
-              size={theme.fontSizes.xxl}
-            />
-          </ArrowContainer>
-          <ArrowContainer
-            onPress={() => setSelectedDate(nextWeekFirstDay)}
-            hitSlop={BUTTON_HIT_SLOP}
-            disabled={isNextWeekDisabled}
-          >
-            <FontAwesome5
-              name="chevron-right"
-              color={
-                isNextWeekDisabled ? theme.colors.gray : theme.colors.cyan500
-              }
-              size={theme.fontSizes.xxl}
-            />
-          </ArrowContainer>
-        </ArrowsContainer>
+        <HabitsCalendarSelector
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
       </HeaderContainer>
       <CalendarContainer>
-        {mappedWeekDates.map(({ date, progress }) => (
+        {mappedWeekDates.map(({ date, percentageCompleted }) => (
           <WeekCalendarItem
             key={date}
             date={date}
-            progress={progress}
+            percentageCompleted={percentageCompleted}
             isActive={isSameDay(date, selectedDate)}
             setSelectedDate={setSelectedDate}
           />
@@ -131,23 +106,14 @@ const CalendarContainer = styled.View`
 
 const HeaderContainer = styled.View`
   flex-direction: row;
-  align-items: center;
   justify-content: space-between;
 `;
 
 const DateInfoContainer = styled.View``;
 
-const ArrowsContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 30px;
-`;
-
 const TodayContainer = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
 `;
-
-const ArrowContainer = styled.TouchableOpacity``;
 
 export default HabitsWeekCalendar;

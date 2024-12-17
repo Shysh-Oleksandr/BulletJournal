@@ -20,7 +20,7 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import HabitItem from "../components/habitItem/HabitItem";
-import HabitsWeekCalendar from "../components/HabitsWeekCalendar";
+import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
 import { getHabitsBySelectedDate } from "../HabitsSelectors";
@@ -89,7 +89,6 @@ const HabitsScreen = (): JSX.Element => {
             <HabitsWeekCalendar
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
-              mandatoryHabits={mandatoryHabits}
             />
             {mandatoryHabits.length > 0 || optionalHabits.length > 0 ? (
               <>
@@ -104,7 +103,7 @@ const HabitsScreen = (): JSX.Element => {
                   <Typography
                     fontWeight="semibold"
                     fontSize="lg"
-                    paddingTop={16}
+                    paddingTop={mandatoryHabits.length > 0 ? 16 : 0}
                     paddingBottom={16}
                   >
                     {t(

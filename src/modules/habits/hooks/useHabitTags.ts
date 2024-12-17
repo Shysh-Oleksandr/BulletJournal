@@ -36,9 +36,7 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
       )}`,
     );
     tags.push(
-      `${t("habits.longestStreak")}: ${longestStreak}/${habit.streakTarget} ${t(
-        "habits.times",
-      )}`,
+      `${t("habits.longestStreak")}: ${longestStreak} ${t("habits.times")}`,
     );
     tags.push(
       `${t("habits.overall")}: ${overallCompleted}/${habit.overallTarget} ${t(

@@ -20,6 +20,8 @@ export type Habit = {
   habitType: HabitTypes;
   color: string;
   logs: HabitLog[];
+  // Custom FE fields
+  oldestLogDate?: number;
 };
 
 export type HabitFrequency = {

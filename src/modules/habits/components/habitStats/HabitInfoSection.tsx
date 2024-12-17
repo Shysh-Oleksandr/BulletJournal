@@ -33,9 +33,10 @@ const HabitInfoSection = ({ habit }: Props): JSX.Element => {
   const frequencyLabel = useHabitFrequencyLabel(habit.frequency);
 
   const firstCompletedLogDate = useMemo(() => {
-    const firstCompletedLogDate = Math.min(
-      ...habit.logs.map((log) => log.date),
-    );
+    const firstCompletedLogDate =
+      habit.logs.length > 0
+        ? Math.min(...habit.logs.map((log) => log.date))
+        : new Date();
 
     return format(firstCompletedLogDate, "dd.MM.yyyy");
   }, [habit.logs]);

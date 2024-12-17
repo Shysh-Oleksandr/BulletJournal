@@ -8,7 +8,6 @@ import { Habit } from "../../types";
 
 type Props = {
   habit: Habit;
-
   amountTarget?: number;
   labelBgColor: string;
   textColor: string;

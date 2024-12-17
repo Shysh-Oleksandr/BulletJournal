@@ -21,3 +21,5 @@ export const EMPTY_HABIT: Habit = {
   },
   logs: [],
 };
+
+export const EXTREME_PAST_DATE = new Date("2024-01-01");

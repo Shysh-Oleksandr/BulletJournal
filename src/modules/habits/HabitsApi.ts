@@ -27,9 +27,13 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
           const allIds: string[] = [];
 
           res.habits.forEach((habit) => {
+            const { processedLogs, oldestLogDate } =
+              calculateHabitLogsStatus(habit);
+
             byId[habit._id] = {
               ...habit,
-              logs: calculateHabitLogsStatus(habit),
+              logs: processedLogs,
+              oldestLogDate,
             };
             allIds.push(habit._id);
           });
@@ -55,7 +59,12 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
 
               if (habit) {
                 Object.assign(habit, patch);
-                habit.logs = calculateHabitLogsStatus(habit);
+
+                const { processedLogs, oldestLogDate } =
+                  calculateHabitLogsStatus(habit);
+
+                habit.logs = processedLogs;
+                habit.oldestLogDate = oldestLogDate;
               }
             }),
           );
