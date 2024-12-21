@@ -10,13 +10,16 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
+import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
+import LogoutBtn from "components/HeaderBar/components/LogoutBtn";
 import Typography from "components/Typography";
 import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
+  SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { getUserId } from "modules/auth/AuthSlice";
@@ -147,7 +150,21 @@ const NotesScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withLogo withSearch withLogoutBtn onLogoPress={scrollToTop} />
+      <HeaderBar
+        withLogo
+        trailingContent={(textColor) => (
+          <>
+            <SearchButtonContainer
+              onPress={() => navigation.navigate(Routes.SEARCH)}
+              hitSlop={SMALL_BUTTON_HIT_SLOP}
+            >
+              <Ionicons name="search" size={26} color={textColor} />
+            </SearchButtonContainer>
+            <LogoutBtn />
+          </>
+        )}
+        onLogoPress={scrollToTop}
+      />
       <AddButton />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
@@ -187,6 +204,11 @@ const LoaderContainer = styled.View`
 
 const SLinearGradient = styled(LinearGradient)`
   flex: 1;
+`;
+
+const SearchButtonContainer = styled.TouchableOpacity`
+  align-items: center;
+  justify-content: center;
 `;
 
 export default NotesScreen;

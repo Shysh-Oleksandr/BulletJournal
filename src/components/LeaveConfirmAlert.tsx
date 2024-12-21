@@ -16,10 +16,15 @@ type BeforeRemoveEvent = EventArg<
 
 type Props = {
   hasChanges: boolean;
+  enabled?: boolean;
   onConfirm: (() => Promise<void>) | (() => void);
 };
 
-const LeaveConfirmAlert = ({ hasChanges, onConfirm }: Props): JSX.Element => {
+const LeaveConfirmAlert = ({
+  hasChanges,
+  enabled = true,
+  onConfirm,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
@@ -29,7 +34,7 @@ const LeaveConfirmAlert = ({ hasChanges, onConfirm }: Props): JSX.Element => {
 
   useEffect(() => {
     const callback = (e: BeforeRemoveEvent) => {
-      if (!hasChanges || isLeaveDialogVisible) {
+      if (!hasChanges || isLeaveDialogVisible || !enabled) {
         return;
       }
 
@@ -44,7 +49,7 @@ const LeaveConfirmAlert = ({ hasChanges, onConfirm }: Props): JSX.Element => {
     return () => {
       navigation.removeListener("beforeRemove", callback);
     };
-  }, [navigation, hasChanges, isLeaveDialogVisible]);
+  }, [navigation, hasChanges, isLeaveDialogVisible, enabled]);
 
   return (
     <ConfirmAlert

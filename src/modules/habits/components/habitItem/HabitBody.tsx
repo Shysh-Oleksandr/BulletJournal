@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Easing } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { TextInput } from "react-native-gesture-handler";
@@ -44,6 +45,8 @@ const HabitBody = ({
   updateLog,
   onChange,
 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const navigation = useAppNavigation();
 
   const inputRef = useRef<TextInput | null>(null);
@@ -89,7 +92,7 @@ const HabitBody = ({
         {!isActiveOnSelectedDate && (
           <HabitTopTagContainer bgColor={labelBgColor}>
             <Typography fontSize="sm" fontWeight="semibold">
-              Not started yet
+              {t("habits.notStartedYet")}
             </Typography>
           </HabitTopTagContainer>
         )}

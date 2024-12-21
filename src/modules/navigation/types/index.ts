@@ -9,6 +9,8 @@ export enum Routes {
   MAIN = "main",
   CALENDAR = "calendar",
   HABITS = "habits",
+  HABITS_BULK_EDIT = "habits_bulk_edit",
+  ARCHIVED_HABITS = "archived_habits",
   EDIT_HABIT = "edit_habit",
   HABIT_STATS = "habit_stats",
 }
@@ -24,6 +26,8 @@ export type RootStackParamList = {
   [Routes.SEARCH]: undefined;
   [Routes.CALENDAR]: undefined;
   [Routes.HABITS]: undefined;
+  [Routes.HABITS_BULK_EDIT]: undefined;
+  [Routes.ARCHIVED_HABITS]: undefined;
   [Routes.EDIT_HABIT]: {
     item: Habit;
     isNewHabit?: boolean;

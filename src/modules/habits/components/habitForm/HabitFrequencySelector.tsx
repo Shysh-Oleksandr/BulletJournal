@@ -114,7 +114,7 @@ const WeekdaysContainer = styled.View`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
 `;
 

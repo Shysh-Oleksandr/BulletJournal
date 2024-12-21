@@ -7,6 +7,7 @@ import theme from "theme";
 import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
+import AddItemButton from "components/HeaderBar/components/AddItemButton";
 import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
@@ -83,8 +84,9 @@ const CalendarScreen = (): JSX.Element => {
     <>
       <HeaderBar
         title={t("calendar.calendar")}
-        withAddBtn
-        onAddBtnPress={navigateToNewNote}
+        trailingContent={(textColor) => (
+          <AddItemButton textColor={textColor} onPress={navigateToNewNote} />
+        )}
       />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}

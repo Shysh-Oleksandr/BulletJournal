@@ -7,6 +7,7 @@ import theme from "theme";
 import { RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
+import AddItemButton from "components/HeaderBar/components/AddItemButton";
 import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
@@ -103,7 +104,10 @@ const EditHabitScreen: FC<{
 
   const hasChanges = !isEqual(savedHabit, currentHabit);
 
-  const saveHabitHandler = async (withAlert = true) => {
+  const saveHabitHandler = async (
+    withAlert = true,
+    shouldUpdateArchive = false,
+  ) => {
     if (!userId) return;
 
     setIsSaving(true);
@@ -120,7 +124,10 @@ const EditHabitScreen: FC<{
 
     const createHabitData: CreateHabitRequest = {
       ...currentHabit,
-      label: currentHabit.label || t("habits.habit"),
+      label: currentHabit.label,
+      isArchived: shouldUpdateArchive
+        ? !currentHabit.isArchived
+        : currentHabit.isArchived,
     };
 
     const updateHabitData = createHabitData as UpdateHabitRequest;
@@ -188,14 +195,22 @@ const EditHabitScreen: FC<{
     <>
       <HeaderBar
         title={isNewHabit ? t("habits.createHabit") : t("habits.editHabit")}
-        withAddBtn={!isNewHabit}
+        trailingContent={
+          isNewHabit
+            ? undefined
+            : (textColor) => (
+                <AddItemButton
+                  textColor={textColor}
+                  onPress={() => {
+                    navigation.replace(Routes.EDIT_HABIT, {
+                      item: EMPTY_HABIT,
+                      isNewHabit: true,
+                    });
+                  }}
+                />
+              )
+        }
         bgColor={currentColor}
-        onAddBtnPress={() => {
-          navigation.replace(Routes.EDIT_HABIT, {
-            item: EMPTY_HABIT,
-            isNewHabit: true,
-          });
-        }}
         withBackArrow
       />
       <SScrollView
@@ -254,8 +269,10 @@ const EditHabitScreen: FC<{
             disabled={!isValidForm || !hasChanges}
             isDeleting={isDeleting}
             isNewItem={!!isNewHabit}
+            isArchived={currentHabit.isArchived}
             saveItem={saveHabitHandler}
             deleteItem={() => setIsDeleteDialogVisible(true)}
+            archiveItem={() => saveHabitHandler(true, true)}
           />
         </ContentContainer>
         <Typography fontSize="lg" paddingBottom={8}>

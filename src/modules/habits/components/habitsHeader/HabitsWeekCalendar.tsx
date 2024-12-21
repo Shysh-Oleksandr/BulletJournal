@@ -6,7 +6,7 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
-import { getHabits } from "modules/habits/HabitsSelectors";
+import { getActiveHabits } from "modules/habits/HabitsSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
@@ -28,11 +28,11 @@ const HabitsWeekCalendar = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const allHabits = useAppSelector(getHabits);
+  const activeHabits = useAppSelector(getActiveHabits);
 
   const isTodaySelected = isToday(selectedDate);
 
-  const mappedWeekDates = useHabitsWeekDates(selectedDate, allHabits);
+  const mappedWeekDates = useHabitsWeekDates(selectedDate, activeHabits);
 
   return (
     <Container>

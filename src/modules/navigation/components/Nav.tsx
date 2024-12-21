@@ -11,7 +11,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { IS_ANDROID } from "modules/app/constants";
 import { getIsAuthenticated, getUserData } from "modules/auth/AuthSlice";
 import SignIn from "modules/auth/screens/SignIn";
+import ArchivedHabitsScreen from "modules/habits/screens/ArchivedHabitsScreen";
 import EditHabitScreen from "modules/habits/screens/EditHabitScreen";
+import HabitsBulkEditScreen from "modules/habits/screens/HabitsBulkEditScreen";
 import HabitStatsScreen from "modules/habits/screens/HabitStatsScreen";
 import EditNoteScreen from "modules/notes/screens/EditNoteScreen";
 import SearchScreen from "modules/notes/screens/SearchScreen";
@@ -82,6 +84,14 @@ const Nav = (): JSX.Element => {
           <>
             <Stack.Screen name={Routes.MAIN} component={TabNavigator} />
             <Stack.Screen name={Routes.EDIT_NOTE} component={EditNoteScreen} />
+            <Stack.Screen
+              name={Routes.HABITS_BULK_EDIT}
+              component={HabitsBulkEditScreen}
+            />
+            <Stack.Screen
+              name={Routes.ARCHIVED_HABITS}
+              component={ArchivedHabitsScreen}
+            />
             <Stack.Screen
               name={Routes.EDIT_HABIT}
               component={EditHabitScreen}

@@ -5,12 +5,14 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import theme from "theme";
 
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
 import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
+  SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppNavigation } from "modules/navigation/NavigationService";
@@ -69,7 +71,25 @@ const HabitsScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar title={t("habits.habits")} />
+      <HeaderBar
+        title={t("habits.habits")}
+        trailingContent={(textColor) => (
+          <>
+            <ButtonContainer
+              onPress={() => navigation.navigate(Routes.ARCHIVED_HABITS)}
+              hitSlop={SMALL_BUTTON_HIT_SLOP}
+            >
+              <Entypo name="archive" size={26} color={textColor} />
+            </ButtonContainer>
+            <ButtonContainer
+              onPress={() => navigation.navigate(Routes.HABITS_BULK_EDIT)}
+              hitSlop={SMALL_BUTTON_HIT_SLOP}
+            >
+              <Ionicons name="filter" size={30} color={textColor} />
+            </ButtonContainer>
+          </>
+        )}
+      />
       <AddButton contentItem={ContentItem.HABIT} />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
@@ -154,6 +174,11 @@ const EmptyContainer = styled.View`
 
 const LoaderContainer = styled.View`
   padding-top: 40px;
+  justify-content: center;
+`;
+
+const ButtonContainer = styled.TouchableOpacity`
+  align-items: center;
   justify-content: center;
 `;
 

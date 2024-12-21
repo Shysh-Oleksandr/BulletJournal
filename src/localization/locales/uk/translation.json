@@ -8,7 +8,8 @@
     "failure": "Помилка",
     "somethingWrong": "Щось пішло не так",
     "tryAgain": "Будь ласка, спробуйте ще раз",
-    "areYouSure": "Ви впевнені?"
+    "areYouSure": "Ви впевнені?",
+    "confirmation": "Ви впевнені, що хочете внести ці зміни?"
   },
   "auth": {
     "logoutConfirmation": "Ви впевнені, що бажаєте вийти?",
@@ -140,6 +141,12 @@
     "per": "на",
     "week": "Тиждень",
     "month": "Місяць",
-    "daily": "щодня"
+    "daily": "щодня",
+    "notStartedYet": "Ще не розпочато",
+    "archive": "Архівувати",
+    "unarchive": "Розархівувати",
+    "restore": "Відновити",
+    "theArchive": "Архів",
+    "noArchivedHabitsText": "Ви ще не архівували жодної звички"
   }
 }

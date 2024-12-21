@@ -12,13 +12,13 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://bullet-journal-3q4s.onrender.com",
-        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyCN0HVzj1sjMzfFMG1DyYobvv5yjz7XsyM",
-        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "1000487121408-02g289hkmvf089bs0gfeel9nvluaovmr.apps.googleusercontent.com",
-        "EXPO_PUBLIC_BUCKET": "bullet-journal",
-        "EXPO_PUBLIC_AWS_ACCESS_KEY_ID": "AKIARKXI5PJQ5UOTVNOA",
-        "EXPO_PUBLIC_AWS_SECRET_ACCESS_KEY": "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",
-        "EXPO_PUBLIC_AWS_IMAGE_URL": "https://bullet-journal.s3.eu-north-1.amazonaws.com/"
+        "EXPO_PUBLIC_API_URL": "EXPO_PUBLIC_API_URL",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "EXPO_PUBLIC_FIREBASE_API_KEY",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "EXPO_PUBLIC_ANDROID_CLIENT_ID",
+        "EXPO_PUBLIC_BUCKET": "EXPO_PUBLIC_BUCKET",
+        "EXPO_PUBLIC_AWS_ACCESS_KEY_ID": "EXPO_PUBLIC_AWS_ACCESS_KEY_ID",
+        "EXPO_PUBLIC_AWS_SECRET_ACCESS_KEY": "EXPO_PUBLIC_AWS_SECRET_ACCESS_KEY",
+        "EXPO_PUBLIC_AWS_IMAGE_URL": "EXPO_PUBLIC_AWS_IMAGE_URL"
       }
     }
   },

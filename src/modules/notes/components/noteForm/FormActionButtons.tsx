@@ -4,11 +4,21 @@ import theme from "theme";
 
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import Button from "components/Button";
+import { TypographyProps } from "components/Typography";
 
 const SaveIcon = <Entypo name="save" size={20} color={theme.colors.white} />;
 const DeleteIcon = (
   <MaterialIcons name="delete" size={22} color={theme.colors.white} />
 );
+const ArchiveIcon = (
+  <Entypo name="archive" size={20} color={theme.colors.white} />
+);
+
+const labelProps: TypographyProps = {
+  fontWeight: "bold",
+  fontSize: "xl",
+  paddingHorizontal: 8,
+};
 
 type Props = {
   isSaving: boolean;
@@ -16,8 +26,10 @@ type Props = {
   isNewItem: boolean;
   disabled?: boolean;
   isLocked?: boolean;
+  isArchived?: boolean;
   saveItem: () => Promise<void>;
   deleteItem: () => void;
+  archiveItem?: () => void;
 };
 
 const FormActionButtons = ({
@@ -26,8 +38,10 @@ const FormActionButtons = ({
   isNewItem,
   disabled,
   isLocked,
+  isArchived,
   saveItem,
   deleteItem,
+  archiveItem,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
@@ -40,13 +54,21 @@ const FormActionButtons = ({
         marginTop={20}
         disabled={isLocked || disabled || isSaving || isDeleting}
         isLoading={isSaving}
-        labelProps={{
-          fontWeight: "bold",
-          fontSize: "xl",
-          paddingHorizontal: 8,
-        }}
+        labelProps={labelProps}
         Icon={SaveIcon}
       />
+      {!isNewItem && archiveItem && (
+        <Button
+          label={t(isArchived ? "habits.unarchive" : "habits.archive")}
+          onPress={archiveItem}
+          bgColor={isArchived ? theme.colors.cyan500 : theme.colors.cyan700}
+          shouldReverseBgColor={isArchived}
+          marginTop={8}
+          disabled={isSaving || isDeleting}
+          labelProps={labelProps}
+          Icon={ArchiveIcon}
+        />
+      )}
       {!isNewItem && (
         <Button
           label={t("note.delete")}
@@ -55,11 +77,7 @@ const FormActionButtons = ({
           marginTop={8}
           disabled={isLocked || isSaving || isDeleting}
           isLoading={isDeleting}
-          labelProps={{
-            fontWeight: "bold",
-            fontSize: "xl",
-            paddingHorizontal: 8,
-          }}
+          labelProps={labelProps}
           Icon={DeleteIcon}
         />
       )}
