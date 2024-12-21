@@ -20,6 +20,8 @@ export type Habit = {
   habitType: HabitTypes;
   color: string;
   logs: HabitLog[];
+  isArchived?: boolean;
+  order?: number;
   // Custom FE fields
   oldestLogDate?: number;
 };
@@ -64,3 +66,19 @@ export type CreateHabitResponse = {
 };
 
 export type CreateHabitRequest = Omit<Habit, "_id">;
+
+export type ReorderHabitsRequest = string[];
+
+export enum HabitActions {
+  ARCHIVE = "archive",
+  UNARCHIVE = "unarchive",
+  DELETE = "delete",
+  RESTORE = "restore",
+}
+
+export type BulkEditHabit = {
+  _id: string;
+  label: string;
+  action: HabitActions;
+  isSelected: boolean;
+};

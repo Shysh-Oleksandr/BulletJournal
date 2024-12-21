@@ -12,6 +12,7 @@ import theme from "theme";
 import { FlashList } from "@shopify/flash-list";
 import Button from "components/Button";
 import HeaderBar from "components/HeaderBar";
+import AddItemButton from "components/HeaderBar/components/AddItemButton";
 import Typography from "components/Typography";
 import {
   BG_GRADIENT_COLORS,
@@ -125,7 +126,11 @@ const SearchScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar withBackArrow withAddBtn title={t("search.search")} />
+      <HeaderBar
+        withBackArrow
+        trailingContent={(textColor) => <AddItemButton textColor={textColor} />}
+        title={t("search.search")}
+      />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}

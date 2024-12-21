@@ -13,7 +13,6 @@ type Props = {
   onPress?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
-  isTransparent?: boolean;
   wide?: boolean;
   marginTop?: number | string;
   marginBottom?: number | string;
@@ -27,6 +26,7 @@ type Props = {
   labelProps?: TypographyProps;
   Icon?: JSX.Element;
   shouldReverseBgColor?: boolean;
+  elevation?: number;
 };
 
 const Button = ({
@@ -34,7 +34,6 @@ const Button = ({
   onPress,
   disabled,
   isLoading = false,
-  isTransparent,
   labelProps,
   adjustsFontSizeToFit,
   wide,
@@ -48,6 +47,7 @@ const Button = ({
   width,
   Icon,
   shouldReverseBgColor,
+  elevation,
 }: Props): JSX.Element => {
   const gradientColors = useMemo(() => {
     const relevantBgColor = disabled ? theme.colors.darkGray : bgColor;
@@ -68,11 +68,11 @@ const Button = ({
       disabled={disabled || isLoading}
       marginTop={marginTop}
       marginBottom={marginBottom}
-      isTransparent={isTransparent}
       wide={wide}
       borderColor={borderColor}
       bgColor={bgColor}
       width={width}
+      elevation={elevation}
     >
       <SLinearGradient colors={gradientColors}>
         {Icon && <IconContainer>{Icon}</IconContainer>}
@@ -84,7 +84,7 @@ const Button = ({
         <LabelContainer isLoading={isLoading}>
           <Typography
             fontWeight="semibold"
-            fontSize="lg"
+            numberOfLines={1}
             adjustsFontSizeToFit={adjustsFontSizeToFit}
             color={theme.colors.white}
             paddingVertical={8}
@@ -104,15 +104,15 @@ const ButtonWrapper = styled.TouchableOpacity<{
   marginBottom: number | string;
   wide?: boolean;
   disabled?: boolean;
-  isTransparent?: boolean;
   borderColor?: string;
   bgColor: string;
   width?: string;
+  elevation?: number;
 }>`
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  elevation: 10;
+  elevation: ${(props) => props.elevation ?? 10};
   border-radius: 6px;
   ${(props) => props.borderColor && `border: 1px solid ${props.borderColor}`}
   margin-top: ${({ marginTop }) =>

@@ -4,25 +4,28 @@ import { useMemo } from "react";
 import { Habit } from "../types";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
-export const useHabitsWeekDates = (selectedDate: number, allHabits: Habit[]) =>
+export const useHabitsWeekDates = (
+  selectedDate: number,
+  activeHabits: Habit[],
+) =>
   useMemo(() => {
     const weekDates = getWeekDatesByDate(selectedDate);
 
-    return getWeeklyCompletionRates(allHabits, weekDates);
-  }, [allHabits, selectedDate]);
+    return getWeeklyCompletionRates(activeHabits, weekDates);
+  }, [activeHabits, selectedDate]);
 
 const getWeeklyCompletionRates = (
-  allHabits: Habit[],
+  activeHabits: Habit[],
   weekDates: number[],
 ): { date: number; percentageCompleted: number }[] => {
-  if (allHabits.length === 0)
+  if (activeHabits.length === 0)
     return weekDates.map((date) => ({ date, percentageCompleted: 0 }));
 
   const habitsByStartDate: Record<string, number> = {};
   const completionRates: { date: number; percentageCompleted: number }[] = [];
 
   // Calculate the start date for each habit
-  allHabits.forEach((habit) => {
+  activeHabits.forEach((habit) => {
     const habitStartDate = habit.logs.reduce(
       (earliestDate, log) =>
         earliestDate ? Math.min(earliestDate, log.date) : log.date,
@@ -39,7 +42,7 @@ const getWeeklyCompletionRates = (
     let completedLogs = 0;
     let mandatoryHabitsCount = 0;
 
-    allHabits.forEach((habit) => {
+    activeHabits.forEach((habit) => {
       const habitStartDate = habitsByStartDate[habit._id];
 
       // Skip habits that haven't started yet

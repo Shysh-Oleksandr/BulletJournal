@@ -7,6 +7,7 @@ import {
   FetchHabitsResponse,
   Habit,
   HabitsState,
+  ReorderHabitsRequest,
   UpdateHabitRequest,
 } from "./types";
 import { calculateHabitLogsStatus } from "./utils/calculateHabitLogsStatus";
@@ -81,6 +82,16 @@ export const habitsApi = emptyAxiosApi.injectEndpoints({
           return {
             url: `/habits/create`,
             method: Method.POST,
+            body: payload,
+          };
+        },
+        invalidatesTags: [TAG.HABITS],
+      }),
+      reorderHabits: build.mutation<void, ReorderHabitsRequest>({
+        query(payload) {
+          return {
+            url: `/habits/reorder`,
+            method: Method.PUT,
             body: payload,
           };
         },

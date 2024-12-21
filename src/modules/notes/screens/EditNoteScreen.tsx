@@ -10,6 +10,7 @@ import theme from "theme";
 import { RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
+import AddItemButton from "components/HeaderBar/components/AddItemButton";
 import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
@@ -336,7 +337,11 @@ const EditNoteScreen: FC<{
     <Wrapper onStartShouldSetResponder={onStartShouldSetResponder}>
       <HeaderBar
         title={isNewNote ? t("note.createNote") : t("note.editNote")}
-        withAddBtn={!isNewNote}
+        trailingContent={
+          isNewNote
+            ? undefined
+            : (textColor) => <AddItemButton textColor={textColor} />
+        }
         withBackArrow
         bgColor={currentColor}
       />
