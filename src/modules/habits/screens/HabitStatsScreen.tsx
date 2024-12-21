@@ -18,6 +18,7 @@ import HabitCalendar from "../components/habitStats/HabitCalendar";
 import HabitInfoCard from "../components/habitStats/HabitInfoCard";
 import HabitInfoSection from "../components/habitStats/HabitInfoSection";
 import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
+import HabitProgressBar from "../components/habitStats/HabitProgressBar";
 import { getHabitById } from "../HabitsSelectors";
 import { calculateHabitBestStreaks } from "../utils/calculateHabitBestStreaks";
 
@@ -61,8 +62,10 @@ const HabitStatsScreen: FC<{
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           contentContainerStyle={contentContainerStyle}
+          stickyHeaderIndices={[1]}
         >
           <HabitInfoSection habit={item} />
+          <HabitProgressBar habit={item} />
           <StatsContainer>
             <HabitCalendar bestStreaksData={bestStreaksData} habit={item} />
             <HabitInfoCard bestStreaksData={bestStreaksData} habit={item} />

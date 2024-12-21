@@ -4,20 +4,15 @@ import { StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "theme";
 
-import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
-import { useRoute } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { useGetCustomColor } from "hooks/useGetCustomColor";
-import { IS_ANDROID, SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
+import { IS_ANDROID } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
-import { Routes } from "modules/navigation/types";
-import { getEmptyNote } from "modules/notes/util/getEmptyNote";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
 import LogoIcon from "../../../assets/images/icon.png";
-
-import LogoutBtn from "./components/LogoutBtn";
 
 export const BUTTON_HIT_SLOP = { top: 15, bottom: 15, left: 20, right: 20 };
 
@@ -33,11 +28,8 @@ type Props = {
   paddingVertical?: number;
   bgColor?: string;
   withLogo?: boolean;
-  withLogoutBtn?: boolean;
-  withSearch?: boolean;
-  withAddBtn?: boolean;
+  trailingContent?: (textColor: string) => JSX.Element;
   onBackArrowPress?: () => void;
-  onAddBtnPress?: () => void;
   onLogoPress?: () => void;
 };
 
@@ -49,18 +41,13 @@ const HeaderBar = ({
   paddingVertical = 14,
   bgColor = theme.colors.cyan700,
   withLogo,
-  withLogoutBtn,
-  withSearch,
-  withAddBtn,
+  trailingContent,
   onBackArrowPress,
-  onAddBtnPress,
   onLogoPress,
 }: Props): JSX.Element => {
   const insets = useSafeAreaInsets();
 
   const navigation = useAppNavigation();
-
-  const route = useRoute();
 
   const { textColor, isColorLight } = useGetCustomColor(bgColor);
 
@@ -123,39 +110,7 @@ const HeaderBar = ({
             {title}
           </Title>
           <RightActionsContainer>
-            {withSearch && (
-              <SearchButtonContainer
-                onPress={() => navigation.navigate(Routes.SEARCH)}
-                hitSlop={SMALL_BUTTON_HIT_SLOP}
-              >
-                <Ionicons name="search" size={26} color={textColor} />
-              </SearchButtonContainer>
-            )}
-            {withLogoutBtn && <LogoutBtn />}
-            {withAddBtn && (
-              <AddNoteButtonContainer
-                onPress={() => {
-                  if (onAddBtnPress) {
-                    onAddBtnPress();
-
-                    return;
-                  }
-
-                  const relevantNavFn =
-                    route.name === Routes.EDIT_NOTE
-                      ? navigation.replace
-                      : navigation.navigate;
-
-                  relevantNavFn(Routes.EDIT_NOTE, {
-                    item: getEmptyNote(),
-                    isNewNote: true,
-                  });
-                }}
-                hitSlop={SMALL_BUTTON_HIT_SLOP}
-              >
-                <Entypo name="plus" size={30} color={textColor} />
-              </AddNoteButtonContainer>
-            )}
+            {trailingContent?.(textColor)}
           </RightActionsContainer>
         </HeaderWrapper>
       </LinearGradient>
@@ -205,17 +160,6 @@ const LogoContainer = styled.TouchableOpacity`
   z-index: 10;
 `;
 
-const SearchButtonContainer = styled.TouchableOpacity`
-  align-items: center;
-  justify-content: center;
-  padding-right: 20px;
-`;
-
-const AddNoteButtonContainer = styled.TouchableOpacity`
-  align-items: center;
-  justify-content: center;
-`;
-
 const LeftActionsContainer = styled.View`
   position: absolute;
   left: 20px;
@@ -230,6 +174,7 @@ const RightActionsContainer = styled.View`
   align-items: center;
   justify-content: center;
   flex-direction: row;
+  gap: 20px;
 `;
 
 const Logo = styled.Image`

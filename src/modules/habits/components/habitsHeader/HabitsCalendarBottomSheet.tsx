@@ -16,7 +16,7 @@ import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { EXTREME_PAST_DATE } from "modules/habits/data";
-import { getHabits } from "modules/habits/HabitsSelectors";
+import { getAllHabits } from "modules/habits/HabitsSelectors";
 import { getAllHabitsMarkedDates } from "modules/habits/utils/getAllHabitsMarkedDates";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
@@ -42,7 +42,7 @@ const HabitsCalendarBottomSheet = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const allHabits = useAppSelector(getHabits);
+  const allHabits = useAppSelector(getAllHabits);
 
   const calendarListRef = useRef<typeof CalendarList>(null);
 

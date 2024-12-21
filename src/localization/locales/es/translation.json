@@ -8,7 +8,8 @@
     "failure": "Falla",
     "somethingWrong": "Algo salió mal",
     "tryAgain": "Inténtalo de nuevo",
-    "areYouSure": "¿Está seguro?"
+    "areYouSure": "¿Está seguro?",
+    "confirmation": "¿Estás seguro de que quieres hacer estos cambios?"
   },
   "auth": {
     "logoutConfirmation": "¿Está seguro de que desea cerrar sesión?",
@@ -138,6 +139,12 @@
     "per": "por",
     "week": "Semana",
     "month": "Mes",
-    "daily": "Diario"
+    "daily": "Diario",
+    "notStartedYet": "Aún no se ha iniciado",
+    "archive": "Archivar",
+    "unarchive": "Desarchivar",
+    "restore": "Restaurar",
+    "theArchive": "Archivo",
+    "noArchivedHabitsText": "Aún no has archivado ningún hábito"
   }
 }

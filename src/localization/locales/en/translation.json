@@ -8,7 +8,8 @@
     "failure": "Failure",
     "somethingWrong": "Something went wrong",
     "tryAgain": "Please try again",
-    "areYouSure": "Are you sure?"
+    "areYouSure": "Are you sure?",
+    "confirmation": "Are you sure you want to make these changes?"
   },
   "auth": {
     "logoutConfirmation": "Are you sure you want to logout?",
@@ -139,6 +140,12 @@
     "per": "per",
     "week": "Week",
     "month": "Month",
-    "daily": "Daily"
+    "daily": "Daily",
+    "notStartedYet": "Not started yet",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "restore": "Restore",
+    "theArchive": "Archive",
+    "noArchivedHabitsText": "You haven't archived any habits yet"
   }
 }
