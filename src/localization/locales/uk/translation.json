@@ -147,6 +147,7 @@
     "unarchive": "Розархівувати",
     "restore": "Відновити",
     "theArchive": "Архів",
-    "noArchivedHabitsText": "Ви ще не архівували жодної звички"
+    "noArchivedHabitsText": "Ви ще не архівували жодної звички",
+    "optional": "Опціонально"
   }
 }

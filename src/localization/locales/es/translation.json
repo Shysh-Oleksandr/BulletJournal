@@ -145,6 +145,7 @@
     "unarchive": "Desarchivar",
     "restore": "Restaurar",
     "theArchive": "Archivo",
-    "noArchivedHabitsText": "Aún no has archivado ningún hábito"
+    "noArchivedHabitsText": "Aún no has archivado ningún hábito",
+    "optional": "Opcional"
   }
 }

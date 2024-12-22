@@ -58,10 +58,12 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
             : amountPercentageCompleted;
 
           return {
+            ...log,
             date: selectedDate,
             percentageCompleted,
             amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
             amountTarget: habit.amountTarget ?? 1,
+            isArtificial: false,
           } as HabitLog;
         })
       : [
