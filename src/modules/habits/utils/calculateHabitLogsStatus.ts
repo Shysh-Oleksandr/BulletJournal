@@ -23,7 +23,10 @@ export const calculateHabitLogsStatus = (
   const { days, period } = frequency;
 
   const filteredHabitLogs = habitLogs.filter(
-    (log) => log.amount && log.amount > 0,
+    (log) =>
+      (log.amount && log.amount > 0 && !log.isArtificial) ||
+      log.note ||
+      log.isManuallyOptional,
   );
 
   if (!filteredHabitLogs.length) {
@@ -50,7 +53,10 @@ export const calculateHabitLogsStatus = (
   if (days === periodLength) {
     return {
       oldestLogDate,
-      processedLogs: logs,
+      processedLogs: logs.map((log) => ({
+        ...log,
+        isOptional: log.isManuallyOptional,
+      })),
     };
   }
 
@@ -63,15 +69,20 @@ export const calculateHabitLogsStatus = (
     const isCurrentPeriod =
       logsInPeriod[logsInPeriod.length - 1].date === today;
 
-    const relevantLogsInPeriod = isCurrentPeriod
-      ? fillMissingDays(
-          logsInPeriod,
-          logsInPeriod[0].date,
-          period === HabitPeriods.MONTH
-            ? endOfMonth(logsInPeriod[0].date).getTime()
-            : endOfWeek(logsInPeriod[0].date, { weekStartsOn: 1 }).getTime(),
-        )
-      : logsInPeriod;
+    const relevantLogsInPeriod = (
+      isCurrentPeriod
+        ? fillMissingDays(
+            logsInPeriod,
+            logsInPeriod[0].date,
+            period === HabitPeriods.MONTH
+              ? endOfMonth(logsInPeriod[0].date).getTime()
+              : endOfWeek(logsInPeriod[0].date, { weekStartsOn: 1 }).getTime(),
+          )
+        : logsInPeriod
+    ).map((log) => ({
+      ...log,
+      isOptional: log.isManuallyOptional,
+    }));
 
     // Calculate the number of times the habit has been logged for this period
     const completedCount = relevantLogsInPeriod.filter(
@@ -96,7 +107,7 @@ export const calculateHabitLogsStatus = (
       processedLogs.push(
         ...relevantLogsInPeriod.map((l) => ({
           ...l,
-          isOptional: l.percentageCompleted < 100,
+          isOptional: l.percentageCompleted < 100 || l.isManuallyOptional,
         })),
       );
 
@@ -121,18 +132,26 @@ export const calculateHabitLogsStatus = (
           Math.min(lastCompletedLogIndex + spacing + 1, periodLength - 1) ===
           0;
 
-      if (isNecessaryDay) {
+      if (isNecessaryDay || log.isManuallyOptional) {
         lastCompletedLogIndex = index;
         remainingLogs--;
       }
 
-      processedLogs.push({ ...log, isOptional: !isNecessaryDay });
+      processedLogs.push({
+        ...log,
+        isOptional: !isNecessaryDay || log.isManuallyOptional,
+      });
     });
 
     // Ensure today's log is marked as necessary
     const todayLog = processedLogs.find((log) => log.date === today);
 
-    if (isCurrentPeriod && todayLog && todayLog.isOptional) {
+    if (
+      isCurrentPeriod &&
+      todayLog &&
+      todayLog.isOptional &&
+      !todayLog.isManuallyOptional
+    ) {
       todayLog.isOptional = false; // Override to make it necessary
 
       // Adjust to keep the number of necessary days equal to `adjustedDaysToComplete`

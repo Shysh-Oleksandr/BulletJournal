@@ -104,7 +104,7 @@ const ColorPicker = ({
 
       <CustomModal
         isVisible={isPickerVisible}
-        setIsVisible={setIsPickerVisible}
+        closeModal={() => setIsPickerVisible(false)}
         height={modalHeight}
       >
         <PickerContainer>
@@ -137,7 +137,6 @@ const ButtonContainer = styled.TouchableOpacity``;
 
 const PickerContainer = styled.View`
   width: 100%;
-  background-color: ${theme.colors.red500};
 `;
 
 const EditColorContainer = styled.View`

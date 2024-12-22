@@ -9,9 +9,14 @@ import HabitBody from "./HabitBody";
 type Props = {
   habit: Habit;
   selectedDate: number;
+  onLongPress?: () => void;
 };
 
-const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
+const HabitItem = ({
+  habit,
+  selectedDate,
+  onLongPress,
+}: Props): JSX.Element => {
   const { inputValue, currentLog, onChange, updateLog } = useUpdateHabitLog({
     habit,
     selectedDate,
@@ -44,6 +49,7 @@ const HabitItem = ({ habit, selectedDate }: Props): JSX.Element => {
       isActiveOnSelectedDate={isActiveOnSelectedDate}
       onChange={onChange}
       updateLog={updateLog}
+      onLongPress={onLongPress}
     />
   );
 };

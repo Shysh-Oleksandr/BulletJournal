@@ -33,6 +33,7 @@ type Props = {
   isActiveOnSelectedDate?: boolean;
   updateLog?: () => void;
   onChange?: (text: string) => void;
+  onLongPress?: () => void;
 };
 
 const HabitBody = ({
@@ -44,6 +45,7 @@ const HabitBody = ({
   isActiveOnSelectedDate = true,
   updateLog,
   onChange,
+  onLongPress,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
@@ -87,7 +89,12 @@ const HabitBody = ({
   }, [navigation, habit]);
 
   return (
-    <Container activeOpacity={0.5} disabled={!updateLog} onPress={onCardPress}>
+    <Container
+      activeOpacity={0.5}
+      disabled={!updateLog}
+      onPress={onCardPress}
+      onLongPress={onLongPress}
+    >
       <BgContainer colors={gradientColors}>
         {!isActiveOnSelectedDate && (
           <HabitTopTagContainer bgColor={labelBgColor}>

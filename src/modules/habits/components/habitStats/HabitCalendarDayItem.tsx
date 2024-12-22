@@ -18,25 +18,23 @@ const CIRCLE_WIDTH = 3;
 
 type Props = {
   habit: Habit;
-  percentageCompleted: number;
   day: number;
   timestamp: number;
-  isOptional: boolean;
   isDisabled: boolean;
   streakState?: {
     displayRightLine: boolean;
     displayLeftLine: boolean;
   };
+  onLongPress?: () => void;
 };
 
 const HabitCalendarDayItem = ({
   habit,
-  percentageCompleted,
   day,
   timestamp,
-  isOptional,
   isDisabled,
   streakState,
+  onLongPress,
 }: Props): JSX.Element => {
   const { width: screenWidth } = useWindowDimensions();
 
@@ -45,10 +43,13 @@ const HabitCalendarDayItem = ({
   const inputRef = useRef<TextInput | null>(null);
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
-  const { inputValue, onChange, updateLog } = useUpdateHabitLog({
+  const { inputValue, currentLog, onChange, updateLog } = useUpdateHabitLog({
     habit,
     selectedDate: timestamp,
   });
+
+  const isOptional = !!currentLog?.isOptional;
+  const percentageCompleted = currentLog?.percentageCompleted ?? 0;
 
   const {
     isColorLight,
@@ -65,6 +66,8 @@ const HabitCalendarDayItem = ({
 
   const itemSize = isDayOptional ? OPTIONAL_CIRCLE_SIZE : CIRCLE_SIZE;
 
+  const hasAdditionalInfo = currentLog?.isManuallyOptional || currentLog?.note;
+
   const inputFontSize = useMemo(() => {
     if (inputValue.length < 3) return "md";
 
@@ -75,39 +78,43 @@ const HabitCalendarDayItem = ({
     return "xxs";
   }, [inputValue.length]);
 
-  const { bgColor, textColor, tintColor, tintBgColor } = useMemo(() => {
-    let bgColor = theme.colors.white;
-    let textColor = theme.colors.cyan600;
-    let tintColor = theme.colors.cyan500;
-    let tintBgColor = theme.colors.cyan400;
+  const { bgColor, textColor, tintColor, tintBgColor, indicatorBgColor } =
+    useMemo(() => {
+      let bgColor = theme.colors.white;
+      let textColor = theme.colors.cyan600;
+      let tintColor = theme.colors.cyan500;
+      let tintBgColor = theme.colors.cyan400;
+      let indicatorBgColor = theme.colors.cyan500;
 
-    if (isDisabled) {
-      bgColor = theme.colors.cyan400;
-    } else if (isCompleted) {
-      bgColor = completedBgColor;
-      textColor = theme.colors.white;
-      tintColor = completedBgColor;
-    } else if (isOptional) {
-      bgColor = optionalBgColor;
-      tintColor = completedBgColor;
-      textColor = theme.colors.white;
-      tintBgColor = optionalBgColor;
-    }
+      if (isDisabled) {
+        bgColor = theme.colors.cyan400;
+      } else if (isCompleted) {
+        bgColor = completedBgColor;
+        textColor = theme.colors.white;
+        tintColor = completedBgColor;
+        indicatorBgColor = optionalBgColor;
+      } else if (isOptional) {
+        bgColor = optionalBgColor;
+        tintColor = completedBgColor;
+        textColor = theme.colors.white;
+        tintBgColor = optionalBgColor;
+        indicatorBgColor = completedBgColor;
+      }
 
-    if (isColorLight) {
-      textColor = labelTextColor;
-    }
+      if (isColorLight) {
+        textColor = labelTextColor;
+      }
 
-    return { bgColor, textColor, tintColor, tintBgColor };
-  }, [
-    completedBgColor,
-    isColorLight,
-    isCompleted,
-    isDisabled,
-    isOptional,
-    labelTextColor,
-    optionalBgColor,
-  ]);
+      return { bgColor, textColor, tintColor, tintBgColor, indicatorBgColor };
+    }, [
+      completedBgColor,
+      isColorLight,
+      isCompleted,
+      isDisabled,
+      isOptional,
+      labelTextColor,
+      optionalBgColor,
+    ]);
 
   const handleItemPress = () => {
     if (isCheckHabitType) {
@@ -138,10 +145,18 @@ const HabitCalendarDayItem = ({
 
       <TouchableContainer
         onPress={handleItemPress}
+        onLongPress={onLongPress}
         disabled={isDisabled}
         hitSlop={SMALL_BUTTON_HIT_SLOP}
         activeOpacity={0.35}
       >
+        {hasAdditionalInfo && (
+          <AdditionalInfoIndicator
+            borderColor={indicatorBgColor}
+            bgColor={bgColor}
+            isFull={!!currentLog.note}
+          />
+        )}
         <CircularProgress
           fill={isDisabled ? 0 : percentageCompleted}
           size={itemSize}
@@ -245,6 +260,23 @@ const HorizontalLine = styled.View<{
     `${isLeft ? "right" : "left"}: ${itemSize - 4}px;`}
   background-color: ${({ bgColor }) => bgColor};
   z-index: 1;
+`;
+
+const AdditionalInfoIndicator = styled.View<{
+  bgColor: string;
+  borderColor: string;
+  isFull: boolean;
+}>`
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  top: 0px;
+  right: 0px;
+  background-color: ${({ bgColor, borderColor, isFull }) =>
+    isFull ? borderColor : bgColor};
+  border: 3px solid ${({ borderColor }) => borderColor};
+  border-radius: 999px;
+  z-index: 2;
 `;
 
 export default React.memo(HabitCalendarDayItem);

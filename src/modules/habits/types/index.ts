@@ -3,6 +3,8 @@ export type HabitLog = {
   percentageCompleted: number;
   amount?: number;
   amountTarget?: number;
+  note?: string;
+  isManuallyOptional?: boolean;
   isOptional?: boolean;
   isArtificial?: boolean;
 };

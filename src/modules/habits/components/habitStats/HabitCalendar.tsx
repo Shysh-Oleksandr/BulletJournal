@@ -1,5 +1,5 @@
 import { format, startOfToday } from "date-fns";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Calendar as RNCalendar } from "react-native-calendars";
 import theme from "theme";
@@ -7,6 +7,7 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { configureCalendarLocale } from "modules/calendar/data/calendarLocaleConfig";
+import { EMPTY_HABIT } from "modules/habits/data";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { Habit, HabitStreak } from "modules/habits/types";
 import { getMarkedHabitLogsDates } from "modules/habits/utils/getMarkedHabitLogsDates";
@@ -14,6 +15,7 @@ import { Direction } from "react-native-calendars/src/types";
 import styled from "styled-components/native";
 
 import HabitCalendarDayItem from "./HabitCalendarDayItem";
+import HabitLogInfoModal from "./HabitLogInfoModal";
 
 const today = startOfToday();
 const todayString = format(today, SIMPLE_DATE_FORMAT);
@@ -41,35 +43,32 @@ type Props = {
 };
 
 const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
+  const [selectedLogTimestamp, setSelectedLogTimestamp] = useState<
+    number | null
+  >(null);
   const { textColor } = useHabitStatColors(habit.color);
 
   const markedDates = useMemo(
-    () => getMarkedHabitLogsDates(habit.logs, bestStreaksData),
-    [bestStreaksData, habit.logs],
+    () => getMarkedHabitLogsDates(habit, bestStreaksData),
+    [bestStreaksData, habit],
   );
 
   const customTheme = useMemo(() => getCalendarTheme(textColor), [textColor]);
 
-  const dayComponent = useCallback(
-    ({ date, state, marking }: any) => {
-      const percentageCompleted = marking?.percentageCompleted ?? 0;
+  const dayComponent = useCallback(({ date, state, marking }: any) => {
+    const isDisabled = state === "disabled";
 
-      const isDisabled = state === "disabled";
-
-      return (
-        <HabitCalendarDayItem
-          habit={habit}
-          percentageCompleted={percentageCompleted}
-          day={date.day}
-          timestamp={date.timestamp}
-          isOptional={marking?.isOptional}
-          isDisabled={isDisabled}
-          streakState={marking?.streakState}
-        />
-      );
-    },
-    [habit],
-  );
+    return (
+      <HabitCalendarDayItem
+        habit={marking?.habit ?? EMPTY_HABIT}
+        day={date.day}
+        timestamp={date.timestamp}
+        isDisabled={isDisabled}
+        streakState={marking?.streakState}
+        onLongPress={() => setSelectedLogTimestamp(date.timestamp)}
+      />
+    );
+  }, []);
 
   return (
     <Container>
@@ -85,6 +84,12 @@ const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
         }
         hideExtraDays
         markedDates={markedDates}
+      />
+
+      <HabitLogInfoModal
+        habit={habit}
+        selectedLogTimestamp={selectedLogTimestamp}
+        onClose={() => setSelectedLogTimestamp(null)}
       />
     </Container>
   );

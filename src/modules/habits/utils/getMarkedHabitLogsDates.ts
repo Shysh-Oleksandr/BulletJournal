@@ -9,10 +9,10 @@ import {
 
 import { SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 
-import { HabitLog, HabitStreak } from "../types";
+import { Habit, HabitStreak } from "../types";
 
 export const getMarkedHabitLogsDates = (
-  logs: HabitLog[],
+  habit: Habit,
   bestStreaksData: HabitStreak[],
 ) => {
   const streakIntervals = bestStreaksData
@@ -22,7 +22,7 @@ export const getMarkedHabitLogsDates = (
       endDate: startOfDay(streak.endDate),
     }));
 
-  return logs.reduce(
+  return habit.logs.reduce(
     (acc, item) => {
       const formattedDate = format(item.date, SIMPLE_DATE_FORMAT);
 
@@ -47,10 +47,8 @@ export const getMarkedHabitLogsDates = (
       const isFirstCalendarDay = getDay(date) === 1 || isFirstDayOfMonth(date);
 
       acc[formattedDate] = {
-        amount: item.amount,
-        percentageCompleted: item.percentageCompleted,
-        isOptional: !!item.isOptional,
         marked: true,
+        habit,
         streakState: {
           displayRightLine: startingDay || (isWithinStreak && !endingDay),
           displayLeftLine: isFirstCalendarDay && isWithinStreak && !startingDay,
@@ -61,10 +59,8 @@ export const getMarkedHabitLogsDates = (
     },
     {} as {
       [key: string]: {
-        amount: number | undefined;
-        percentageCompleted: number;
-        isOptional: boolean;
         marked: boolean;
+        habit: Habit;
         streakState?: {
           displayRightLine: boolean;
           displayLeftLine: boolean;

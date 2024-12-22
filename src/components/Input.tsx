@@ -34,6 +34,7 @@ type Props = {
   maxWidth?: number;
   maxLength?: number;
   minHeight?: number;
+  maxHeight?: number;
   numberOfLines?: number;
   paddingHorizontal?: number;
   paddingVertical?: number;
@@ -69,6 +70,7 @@ const Input = ({
   numberOfLines = 1,
   maxLength = 50,
   minHeight = 40,
+  maxHeight,
   paddingHorizontal = 20,
   paddingVertical = 8,
   borderRadius = 0,
@@ -125,6 +127,7 @@ const Input = ({
         paddingHorizontal={paddingHorizontal}
         paddingVertical={paddingVertical}
         maxWidth={maxWidth}
+        maxHeight={maxHeight}
         keyboardType={keyboardType}
         maxLength={maxLength}
         selectTextOnFocus={selectTextOnFocus}
@@ -184,6 +187,7 @@ const CustomInput = styled.TextInput<{
   paddingHorizontal: number;
   paddingVertical: number;
   maxWidth?: number;
+  maxHeight?: number;
   labelColor: string;
 }>`
   width: 100%;
@@ -194,6 +198,8 @@ const CustomInput = styled.TextInput<{
   padding-vertical: ${({ paddingVertical }) => paddingVertical}px;
   padding-horizontal: ${({ maxWidth, paddingHorizontal }) =>
     maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
+  max-height: 180px;
+  ${({ maxHeight }) => maxHeight && `max-height: ${maxHeight}px;`}
 `;
 
 const IconContainer = styled.TouchableOpacity<{ rightOffset: number }>`
