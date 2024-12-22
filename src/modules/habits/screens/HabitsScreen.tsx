@@ -22,10 +22,13 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import HabitItem from "../components/habitItem/HabitItem";
+import HabitsProgressBar from "../components/habitsHeader/HabitsProgressBar";
 import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
+import HabitLogInfoModal from "../components/habitStats/HabitLogInfoModal";
 import { EMPTY_HABIT } from "../data";
 import { habitsApi } from "../HabitsApi";
 import { getHabitsBySelectedDate } from "../HabitsSelectors";
+import { Habit } from "../types";
 
 const contentContainerStyle = {
   paddingTop: 20,
@@ -41,6 +44,9 @@ const HabitsScreen = (): JSX.Element => {
     habitsApi.useLazyFetchHabitsQuery();
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
+  const [additionalInfoHabit, setAdditionalInfoHabit] = useState<Habit | null>(
+    null,
+  );
 
   const userId = useAppSelector(getUserId);
   const { mandatoryHabits, optionalHabits } = useAppSelector((state) =>
@@ -90,6 +96,10 @@ const HabitsScreen = (): JSX.Element => {
           </>
         )}
       />
+      <HabitsProgressBar
+        mandatoryHabits={mandatoryHabits}
+        selectedDate={selectedDate}
+      />
       <AddButton contentItem={ContentItem.HABIT} />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
@@ -110,6 +120,12 @@ const HabitsScreen = (): JSX.Element => {
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
             />
+            <HabitLogInfoModal
+              habit={additionalInfoHabit}
+              selectedLogTimestamp={selectedDate}
+              onClose={() => setAdditionalInfoHabit(null)}
+            />
+
             {mandatoryHabits.length > 0 || optionalHabits.length > 0 ? (
               <>
                 {mandatoryHabits.map((habit) => (
@@ -117,6 +133,7 @@ const HabitsScreen = (): JSX.Element => {
                     key={habit._id}
                     habit={habit}
                     selectedDate={selectedDate}
+                    onLongPress={() => setAdditionalInfoHabit(habit)}
                   />
                 ))}
                 {optionalHabits.length > 0 && (
@@ -138,6 +155,7 @@ const HabitsScreen = (): JSX.Element => {
                     key={habit._id}
                     habit={habit}
                     selectedDate={selectedDate}
+                    onLongPress={() => setAdditionalInfoHabit(habit)}
                   />
                 ))}
               </>

@@ -9,7 +9,7 @@ type SwitcherProps = {
   options: string[];
   selectedOption: string;
   setSelectedOption: (option: string) => void;
-  getLocalizedOption: (option: string) => string;
+  getLocalizedOption?: (option: string) => string;
 };
 
 const Switcher = ({
@@ -35,7 +35,7 @@ const Switcher = ({
             fontWeight={selectedOption === option ? "bold" : "semibold"}
             fontSize="sm"
           >
-            {getLocalizedOption(option)}
+            {getLocalizedOption ? getLocalizedOption(option) : option}
           </Typography>
         </Option>
       ))}

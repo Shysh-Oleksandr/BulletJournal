@@ -146,6 +146,7 @@
     "unarchive": "Unarchive",
     "restore": "Restore",
     "theArchive": "Archive",
-    "noArchivedHabitsText": "You haven't archived any habits yet"
+    "noArchivedHabitsText": "You haven't archived any habits yet",
+    "optional": "Optional"
   }
 }

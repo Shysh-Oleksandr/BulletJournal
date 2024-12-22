@@ -12,21 +12,17 @@ type Props = {
   isVisible: boolean;
   modalTitle?: string;
   height?: string | number;
-  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal?: () => void;
 };
 
 const CustomModal = ({
   isVisible,
   modalTitle,
   height = "45%",
-  setIsVisible,
+  closeModal,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const { t } = useTranslation();
-
-  const dismissModal = () => {
-    setIsVisible(false);
-  };
 
   return (
     <Modal
@@ -35,7 +31,7 @@ const CustomModal = ({
       visible={isVisible}
       animationType="fade"
       presentationStyle="overFullScreen"
-      onRequestClose={dismissModal}
+      onRequestClose={closeModal}
     >
       <ModalBackground>
         <Container height={height}>
@@ -58,7 +54,7 @@ const CustomModal = ({
 
             <ContentContainer>{children}</ContentContainer>
             <ModalFooterContainer>
-              <CloseButton onPress={dismissModal} hitSlop={BUTTON_HIT_SLOP}>
+              <CloseButton onPress={closeModal} hitSlop={BUTTON_HIT_SLOP}>
                 <Typography fontWeight="bold" align="center" uppercase>
                   {t("general.close")}
                 </Typography>
@@ -114,7 +110,7 @@ const ContentContainer = styled.View`
 
 const ModalFooterContainer = styled.View`
   width: 100%;
-  padding: 30px;
+  padding: 25px;
 `;
 
 const CloseButton = styled.TouchableOpacity`
