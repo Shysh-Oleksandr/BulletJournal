@@ -15,6 +15,8 @@ const HabitsProgressBar = ({
   selectedDate,
 }: Props): JSX.Element => {
   const percentageCompleted = useMemo(() => {
+    if (mandatoryHabits.length === 0) return null;
+
     const completedLogs = mandatoryHabits.filter((habit) =>
       habit.logs.some(
         (log) =>
@@ -24,7 +26,7 @@ const HabitsProgressBar = ({
 
     const percentageCompleted = (completedLogs / mandatoryHabits.length) * 100;
 
-    return Math.min(percentageCompleted, 100);
+    return Math.min(Math.round(percentageCompleted), 100);
   }, [mandatoryHabits, selectedDate]);
 
   return (
