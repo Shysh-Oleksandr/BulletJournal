@@ -1,5 +1,7 @@
-import { isBefore, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 import React, { useMemo } from "react";
+
+import { getIsActiveOnSelectedDate } from "modules/habits/utils/getIsActiveOnSelectedDate";
 
 import { useUpdateHabitLog } from "../../hooks/useUpdateHabitLog";
 import { Habit } from "../../types";
@@ -23,10 +25,7 @@ const HabitItem = ({
   });
 
   const isActiveOnSelectedDate = useMemo(
-    () =>
-      Boolean(
-        habit.oldestLogDate && !isBefore(selectedDate, habit.oldestLogDate),
-      ),
+    () => getIsActiveOnSelectedDate(selectedDate, habit.oldestLogDate),
     [habit.oldestLogDate, selectedDate],
   );
 

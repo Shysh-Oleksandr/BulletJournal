@@ -1,6 +1,8 @@
-import { isBefore, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 
 import { Habit } from "../types";
+
+import { getIsActiveOnSelectedDate } from "./getIsActiveOnSelectedDate";
 
 export function calculateMandatoryHabitsByDate(habits: Habit[], date: number) {
   const mandatoryHabits: Habit[] = [];
@@ -8,8 +10,9 @@ export function calculateMandatoryHabitsByDate(habits: Habit[], date: number) {
 
   habits.forEach((habit) => {
     const selectedDateLog = habit.logs.find((log) => isSameDay(log.date, date));
-    const isActiveOnSelectedDate = Boolean(
-      habit.oldestLogDate && !isBefore(date, habit.oldestLogDate),
+    const isActiveOnSelectedDate = getIsActiveOnSelectedDate(
+      date,
+      habit.oldestLogDate,
     );
 
     selectedDateLog?.isOptional || !isActiveOnSelectedDate
