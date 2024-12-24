@@ -48,7 +48,6 @@ export const getMarkedHabitLogsDates = (
 
       acc[formattedDate] = {
         marked: true,
-        habit,
         streakState: {
           displayRightLine: startingDay || (isWithinStreak && !endingDay),
           displayLeftLine: isFirstCalendarDay && isWithinStreak && !startingDay,
@@ -60,7 +59,6 @@ export const getMarkedHabitLogsDates = (
     {} as {
       [key: string]: {
         marked: boolean;
-        habit: Habit;
         streakState?: {
           displayRightLine: boolean;
           displayLeftLine: boolean;
