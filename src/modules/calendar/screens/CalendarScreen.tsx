@@ -27,7 +27,7 @@ import Calendar from "../components/Calendar";
 const contentContainerStyle = {
   paddingTop: 30,
   paddingBottom: 80,
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
 };
 
 const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;

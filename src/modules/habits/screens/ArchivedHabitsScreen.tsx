@@ -21,7 +21,7 @@ import { getArchivedHabits } from "../HabitsSelectors";
 const contentContainerStyle = {
   paddingTop: 20,
   paddingBottom: 185,
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
 };
 
 const ArchivedHabitsScreen = (): JSX.Element => {

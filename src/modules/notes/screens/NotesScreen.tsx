@@ -40,7 +40,7 @@ import { getEmptyNote } from "../util/getEmptyNote";
 const contentContainerStyle = {
   paddingTop: 30,
   paddingBottom: 80,
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
 };
 
 const ITEMS_PER_PAGE = 10;

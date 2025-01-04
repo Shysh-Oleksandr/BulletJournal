@@ -19,6 +19,7 @@ const SIZE = 70;
 export enum ContentItem {
   NOTE,
   HABIT,
+  TASK,
 }
 
 type Props = {

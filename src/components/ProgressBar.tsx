@@ -14,11 +14,16 @@ import { getDifferentColor, isLightColor } from "utils/getDifferentColor";
 type Props = {
   bgColor: string;
   percentageCompleted: number | null;
+  style?: any;
 };
 
 const ANIMATION_DURATION = 600;
 
-const ProgressBar = ({ bgColor, percentageCompleted }: Props): JSX.Element => {
+const ProgressBar = ({
+  bgColor,
+  percentageCompleted,
+  style,
+}: Props): JSX.Element => {
   const progress = useSharedValue(0);
   const [containerWidth, setContainerWidth] = React.useState<number | null>(
     null,
@@ -56,7 +61,7 @@ const ProgressBar = ({ bgColor, percentageCompleted }: Props): JSX.Element => {
   };
 
   return (
-    <ProgressBarContainer onLayout={handleLayout}>
+    <ProgressBarContainer onLayout={handleLayout} style={style}>
       {containerWidth !== null && (
         <Animated.View style={animatedStyle}>
           <LinearGradient

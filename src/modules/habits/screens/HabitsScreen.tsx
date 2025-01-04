@@ -32,8 +32,8 @@ import { Habit } from "../types";
 
 const contentContainerStyle = {
   paddingTop: 20,
-  paddingBottom: 185,
-  paddingHorizontal: 20,
+  paddingBottom: 90,
+  paddingHorizontal: 16,
 };
 
 const HabitsScreen = (): JSX.Element => {
@@ -115,6 +115,7 @@ const HabitsScreen = (): JSX.Element => {
             showsVerticalScrollIndicator={false}
             overScrollMode="never"
             bounces={false}
+            automaticallyAdjustKeyboardInsets
           >
             <HabitsWeekCalendar
               selectedDate={selectedDate}

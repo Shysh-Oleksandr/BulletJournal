@@ -23,7 +23,7 @@ const Container = styled.TouchableOpacity`
   padding-top: 10px;
   padding-bottom: 10px;
   align-items: center;
-  width: 33.3%;
+  width: 25%;
 `;
 
 export default TabBarItem;
