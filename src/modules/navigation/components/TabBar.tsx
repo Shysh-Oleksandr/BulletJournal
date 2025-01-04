@@ -2,7 +2,8 @@ import React, { FC } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useIsKeyboardVisible } from "hooks/useIsKeyboardVisible";
 import styled from "styled-components/native";
 
 import { useAppNavigation } from "../NavigationService";
@@ -18,17 +19,19 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
   const navigation = useAppNavigation();
   const { t } = useTranslation();
 
+  const isKeyboardVisible = useIsKeyboardVisible();
+
   const getActiveRouteIconColor = (routeName: number) =>
     currentScreen === routeName ? theme.colors.cyan600 : theme.colors.darkGray;
 
   const navigateToTab = (
-    route: Routes.NOTES | Routes.CALENDAR | Routes.HABITS,
+    route: Routes.NOTES | Routes.CALENDAR | Routes.TASKS | Routes.HABITS,
   ) => {
     navigation.navigate(Routes.MAIN, { screen: route });
   };
 
   return (
-    <STabBar>
+    <STabBar isKeyboardVisible={isKeyboardVisible}>
       <TabBarItem
         label={t("note.notes")}
         color={getActiveRouteIconColor(TabBarRouteNumber.notes)}
@@ -54,6 +57,18 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
         onPress={() => navigateToTab(Routes.CALENDAR)}
       />
       <TabBarItem
+        label={t("tasks.tasks")}
+        color={getActiveRouteIconColor(TabBarRouteNumber.tasks)}
+        Icon={
+          <FontAwesome5
+            name="tasks"
+            color={getActiveRouteIconColor(TabBarRouteNumber.tasks)}
+            size={theme.fontSizes.xxl}
+          />
+        }
+        onPress={() => navigateToTab(Routes.TASKS)}
+      />
+      <TabBarItem
         label={t("habits.habits")}
         color={getActiveRouteIconColor(TabBarRouteNumber.habits)}
         Icon={
@@ -69,13 +84,15 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
   );
 };
 
-const STabBar = styled.View`
+const STabBar = styled.View<{ isKeyboardVisible: boolean }>`
   z-index: 1000;
   width: 100%;
   background-color: ${theme.colors.bgColor};
   z-index: 100;
   flex-direction: row;
   justify-content: space-around;
+
+  ${({ isKeyboardVisible }) => isKeyboardVisible && `display: none;`}
 `;
 
 export default TabBar;

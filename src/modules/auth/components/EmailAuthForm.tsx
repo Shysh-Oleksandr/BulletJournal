@@ -10,6 +10,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
@@ -104,7 +105,11 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
         fontSize="lg"
         fontWeight="semibold"
         onChange={(text) => setEmail(text.trim())}
-        Icon={isValidEmail ? CHECK_ICON : undefined}
+        RightContent={
+          <IconContainer disabled>
+            {isValidEmail ? CHECK_ICON : undefined}
+          </IconContainer>
+        }
       />
       <Input
         value={password}
@@ -117,9 +122,15 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
         fontSize="lg"
         fontWeight="semibold"
         onChange={(text) => setPassword(text.trim())}
-        Icon={isPasswordMasked ? EYE_WITH_LINE_ICON : EYE_ICON}
+        RightContent={
+          <IconContainer
+            onPress={() => setIsPasswordMasked((prev) => !prev)}
+            hitSlop={SMALL_BUTTON_HIT_SLOP}
+          >
+            {isPasswordMasked ? EYE_WITH_LINE_ICON : EYE_ICON}
+          </IconContainer>
+        }
         secureTextEntry={isPasswordMasked}
-        onIconPress={() => setIsPasswordMasked((prev) => !prev)}
       />
       <Button
         label={t(isSignUp ? "auth.signUp" : "auth.signIn")}
@@ -146,6 +157,12 @@ const Section = styled.View`
   justify-content: center;
   width: 100%;
   row-gap: 20px;
+`;
+
+const IconContainer = styled.TouchableOpacity`
+  position: absolute;
+  right: 12px;
+  z-index: 1000;
 `;
 
 export default EmailAuthForm;

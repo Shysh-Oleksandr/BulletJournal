@@ -9,7 +9,10 @@
     "somethingWrong": "Qualcosa è andato storto",
     "tryAgain": "Per favore riprova",
     "areYouSure": "È sicuro?",
-    "confirmation": "Siete sicuri di voler apportare queste modifiche?"
+    "confirmation": "Siete sicuri di voler apportare queste modifiche?",
+    "deleteConfirmation": "Sei sicuro di voler eliminare questo elemento?",
+    "discardChanges": "Annullare le modifiche?",
+    "discardChangesDesc": "Le modifiche apportate non saranno salvate."
   },
   "auth": {
     "logoutConfirmation": "È sicuro di voler uscire?",
@@ -147,5 +150,30 @@
     "theArchive": "Archivio",
     "noArchivedHabitsText": "Non avete ancora archiviato nessuna abitudine",
     "optional": "Opzionale"
+  },
+  "tasks": {
+    "tasks": "Attività",
+    "groups": "Gruppi",
+    "subgroups": "Sottogruppi",
+    "subtasks": "Sottoattività",
+    "projects": "Progetti",
+    "task": "Attività",
+    "group": "Gruppo",
+    "subgroup": "Sottogruppo",
+    "subtask": "Sottoattività",
+    "project": "Progetto",
+    "taskPlaceholder": "Inserisci il nome dell'attività...",
+    "groupPlaceholder": "Inserisci il nome del gruppo...",
+    "subgroupPlaceholder": "Inserisci il nome del sottogruppo...",
+    "subtaskPlaceholder": "Inserisci il nome della sottoattività...",
+    "projectPlaceholder": "Inserisci il nome del progetto...",
+    "dueDateOptions": {
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "this_week": "Questa settimana",
+      "this_month": "Questo mese",
+      "this_year": "Quest'anno",
+      "custom": "Personalizzato"
+    }
   }
 }

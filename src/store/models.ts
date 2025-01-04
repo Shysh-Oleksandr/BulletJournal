@@ -10,4 +10,7 @@ export enum TAG {
   NOTES = "NOTES",
   LABEL = "LABEL",
   HABITS = "HABITS",
+  GROUPS = "GROUPS",
+  PROJECTS = "PROJECTS",
+  TASKS = "TASKS",
 }

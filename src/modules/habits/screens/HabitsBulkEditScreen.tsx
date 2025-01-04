@@ -245,7 +245,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
           }
           contentContainerStyle={{
             paddingTop: 10,
-            paddingHorizontal: 20,
+            paddingHorizontal: 16,
             paddingBottom: 40,
           }}
           renderItem={renderItem}

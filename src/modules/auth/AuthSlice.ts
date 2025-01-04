@@ -63,8 +63,8 @@ export default AuthReducer;
 export const getUserData = (state: RootState): User | null =>
   state[STATE_KEY].user;
 
-export const getUserId = (state: RootState): string | null =>
-  state[STATE_KEY].user?._id ?? null;
+export const getUserId = (state: RootState): string =>
+  state[STATE_KEY].user?._id ?? "";
 
 export const getIsAuthenticated = (state: RootState): boolean =>
   !isNil(state[STATE_KEY].user);
