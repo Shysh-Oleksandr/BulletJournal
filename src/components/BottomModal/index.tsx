@@ -19,6 +19,7 @@ type Props = {
   paddingHorizontal?: number;
   maxHeight?: string | number;
   height?: string | number;
+  minHeight?: string;
   bgOpacity?: number;
   borderRadius?: number;
   withHeader?: boolean;
@@ -37,6 +38,7 @@ const BottomModal = ({
   isVisible,
   children,
   height,
+  minHeight,
   title,
   bgOpacity = 0.75,
   borderRadius = BOX_BORDER_RADIUS,
@@ -49,15 +51,12 @@ const BottomModal = ({
   const { t } = useTranslation();
 
   const modalHeight = useMemo(() => {
-    if (maxHeight && !height) {
-      return "auto";
-    }
     if (!height) {
-      return "86.5%";
+      return undefined;
     }
 
     return typeof height === "number" ? `${height}px` : height;
-  }, [height, maxHeight]);
+  }, [height]);
 
   const modalMaxHeight = useMemo(() => {
     if (maxHeight) {
@@ -85,6 +84,7 @@ const BottomModal = ({
         paddingHorizontal={paddingHorizontal}
         maxHeight={modalMaxHeight}
         height={modalHeight}
+        minHeight={minHeight}
         topBorderRadius={borderRadius}
       >
         {withHeader && (
@@ -132,12 +132,15 @@ const BottomModal = ({
 const SContentContainer = styled.View<{
   paddingHorizontal: number;
   maxHeight: string;
-  height: string;
+  minHeight?: string;
+  height?: string;
   topBorderRadius: number;
 }>`
   width: 100%;
   height: ${(props) => props.height};
   max-height: ${(props) => props.maxHeight};
+  ${(props) => props.height && `height: ${props.height};`}
+  ${(props) => props.minHeight && `min-height: ${props.minHeight};`}
   padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
   border-top-right-radius: ${({ topBorderRadius }) => topBorderRadius}px;
   border-top-left-radius: ${({ topBorderRadius }) => topBorderRadius}px;

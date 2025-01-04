@@ -13,6 +13,7 @@ export enum Routes {
   ARCHIVED_HABITS = "archived_habits",
   EDIT_HABIT = "edit_habit",
   HABIT_STATS = "habit_stats",
+  TASKS = "tasks",
 }
 
 export type RootStackParamList = {
@@ -32,16 +33,18 @@ export type RootStackParamList = {
     item: Habit;
     isNewHabit?: boolean;
   };
+  [Routes.TASKS]: undefined;
   [Routes.HABIT_STATS]: {
     id: string;
   };
   [Routes.MAIN]: {
-    screen: Routes.NOTES | Routes.CALENDAR | Routes.HABITS;
+    screen: Routes.NOTES | Routes.CALENDAR | Routes.TASKS | Routes.HABITS;
   };
 };
 
 export enum TabBarRouteNumber {
   notes = 0,
   calendar = 1,
-  habits = 2,
+  tasks = 2,
+  habits = 3,
 }

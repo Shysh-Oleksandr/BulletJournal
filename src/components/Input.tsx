@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import theme from "theme";
 
-import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
 
 import Typography from "./Typography";
@@ -20,7 +19,8 @@ type Props = {
   editable?: boolean;
   isCentered?: boolean;
   inputRef?: React.MutableRefObject<TextInput | null>;
-  Icon?: JSX.Element;
+  LeftContent?: JSX.Element;
+  RightContent?: JSX.Element;
   keyboardType?: KeyboardType;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   selectTextOnFocus?: boolean;
@@ -39,7 +39,6 @@ type Props = {
   paddingHorizontal?: number;
   paddingVertical?: number;
   borderRadius?: number;
-  onIconPress?: () => void;
   onChange: (text: string) => void;
   onSubmitEditing?: (
     text: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
@@ -57,7 +56,8 @@ const Input = ({
   inputRef,
   keyboardType,
   autoCapitalize,
-  Icon,
+  LeftContent,
+  RightContent,
   fontWeight,
   fontSize,
   selectTextOnFocus,
@@ -74,7 +74,6 @@ const Input = ({
   paddingHorizontal = 20,
   paddingVertical = 8,
   borderRadius = 0,
-  onIconPress,
   onChange,
   onSubmitEditing,
   onBlur,
@@ -103,6 +102,7 @@ const Input = ({
       minHeight={minHeight}
       borderRadius={borderRadius}
     >
+      {LeftContent}
       {!!placeholder && !value.length && (
         <PlaceholderContainer
           pointerEvents="none"
@@ -144,16 +144,7 @@ const Input = ({
         autoCapitalize={autoCapitalize}
         secureTextEntry={secureTextEntry}
       />
-      {Icon && (
-        <IconContainer
-          disabled={!onIconPress}
-          onPress={onIconPress}
-          rightOffset={paddingHorizontal}
-          hitSlop={SMALL_BUTTON_HIT_SLOP}
-        >
-          {Icon}
-        </IconContainer>
-      )}
+      {RightContent}
     </InputWrapper>
   );
 };
@@ -200,12 +191,6 @@ const CustomInput = styled.TextInput<{
     maxWidth && maxWidth < 60 ? 0 : paddingHorizontal}px;
   max-height: 180px;
   ${({ maxHeight }) => maxHeight && `max-height: ${maxHeight}px;`}
-`;
-
-const IconContainer = styled.TouchableOpacity<{ rightOffset: number }>`
-  position: absolute;
-  right: ${({ rightOffset }) => rightOffset}px;
-  z-index: 1000;
 `;
 
 const PlaceholderContainer = styled.View<{ paddingHorizontal: number }>`

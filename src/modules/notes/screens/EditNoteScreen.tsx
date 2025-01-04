@@ -53,7 +53,7 @@ import { cleanHtml } from "../util/cleanHtml";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 
 const contentContainerStyle = {
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
   paddingBottom: 70,
 };
 

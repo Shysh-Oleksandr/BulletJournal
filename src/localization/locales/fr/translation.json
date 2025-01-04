@@ -9,7 +9,10 @@
     "somethingWrong": "Quelque chose s'est mal passé",
     "tryAgain": "Veuillez réessayer",
     "areYouSure": "Êtes-vous sûr?",
-    "confirmation": "Êtes-vous sûr de vouloir procéder à ces changements?"
+    "confirmation": "Êtes-vous sûr de vouloir procéder à ces changements?",
+    "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet élément?",
+    "discardChanges": "Annuler les modifications?",
+    "discardChangesDesc": "Les modifications que vous avez apportées ne seront pas enregistrées."
   },
   "auth": {
     "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter?",
@@ -147,5 +150,30 @@
     "theArchive": "Archives",
     "noArchivedHabitsText": "Vous n'avez pas encore archivé d'habitudes",
     "optional": "Facultatif"
+  },
+  "tasks": {
+    "tasks": "Tâches",
+    "groups": "Groupes",
+    "subgroups": "Sous-groupes",
+    "subtasks": "Sous-tâches",
+    "projects": "Projets",
+    "task": "Tâche",
+    "group": "Groupe",
+    "subgroup": "Sous-groupe",
+    "subtask": "Sous-tâche",
+    "project": "Projet",
+    "taskPlaceholder": "Entrez le nom de la tâche...",
+    "groupPlaceholder": "Entrez le nom du groupe...",
+    "subgroupPlaceholder": "Entrez le nom du sous-groupe...",
+    "subtaskPlaceholder": "Entrez le nom de la sous-tâche...",
+    "projectPlaceholder": "Entrez le nom du projet...",
+    "dueDateOptions": {
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "this_week": "Cette semaine",
+      "this_month": "Ce mois-ci",
+      "this_year": "Cette année",
+      "custom": "Personnalisé"
+    }
   }
 }

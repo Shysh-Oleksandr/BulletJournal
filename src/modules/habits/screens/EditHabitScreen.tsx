@@ -39,7 +39,7 @@ import {
 } from "../types";
 
 const contentContainerStyle = {
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
   paddingBottom: 70,
 };
 
