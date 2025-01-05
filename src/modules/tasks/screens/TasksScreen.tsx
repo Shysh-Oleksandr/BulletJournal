@@ -16,16 +16,11 @@ import styled from "styled-components/native";
 
 import AddItemButtonsContainer from "../components/AddItemButtonsContainer";
 import AddTaskButton from "../components/AddTaskButton";
-import ProjectDisplayItem from "../components/ProjectDisplayItem";
 import TaskDisplayItem from "../components/TaskDisplayItem";
 import TaskGroupDisplayItem from "../components/TaskGroupDisplayItem";
 import { useFetchTaskElements } from "../hooks/useFetchTaskElements";
 import { tasksApi } from "../TasksApi";
-import {
-  getOrphanedGroups,
-  getOrphanedProjects,
-  getOrphanedTasks,
-} from "../TasksSelectors";
+import { getOrphanedGroups, getOrphanedTasks } from "../TasksSelectors";
 
 const contentContainerStyle = {
   paddingTop: 30,
@@ -35,14 +30,12 @@ const contentContainerStyle = {
 
 const TasksScreen = (): JSX.Element => {
   const [createGroup] = tasksApi.useCreateGroupMutation();
-  const [createProject] = tasksApi.useCreateProjectMutation();
   const [createTask] = tasksApi.useCreateTaskMutation();
 
   const { t } = useTranslation();
 
   const userId = useAppSelector(getUserId);
   const orphanedGroups = useAppSelector(getOrphanedGroups);
-  const orphanedProjects = useAppSelector(getOrphanedProjects);
   const orphanedTasks = useAppSelector(getOrphanedTasks);
 
   const isLoading = useFetchTaskElements();
@@ -85,18 +78,6 @@ const TasksScreen = (): JSX.Element => {
                 color={theme.colors.cyan700}
                 fontWeight="semibold"
               >
-                {t("tasks.projects")}:
-              </Typography>
-              <ItemListContainer>
-                {orphanedProjects.map((project) => (
-                  <ProjectDisplayItem key={project._id} project={project} />
-                ))}
-              </ItemListContainer>
-              <Typography
-                fontSize="lg"
-                color={theme.colors.cyan700}
-                fontWeight="semibold"
-              >
                 {t("tasks.tasks")}:
               </Typography>
               <ItemListContainer>
@@ -112,18 +93,6 @@ const TasksScreen = (): JSX.Element => {
                     createGroup({ author: userId, name: title.trim(), color })
                   }
                   withDueDatePicker={false}
-                />
-                <AddTaskButton
-                  inputPlaceholder={t("tasks.projectPlaceholder")}
-                  label={t("tasks.project")}
-                  onInputSubmit={({ title, color, dueDate }) =>
-                    createProject({
-                      author: userId,
-                      name: title.trim(),
-                      color,
-                      dueDate,
-                    })
-                  }
                 />
                 <AddTaskButton
                   inputPlaceholder={t("tasks.taskPlaceholder")}

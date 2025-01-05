@@ -9,27 +9,20 @@ export const useFetchTaskElements = () => {
   const userId = useAppSelector(getUserId);
   const [fetchGroups, { isLoading: isGroupsLoading, isUninitialized }] =
     tasksApi.useLazyFetchGroupsQuery();
-  const [fetchProjects, { isLoading: isProjectsLoading }] =
-    tasksApi.useLazyFetchProjectsQuery();
   const [fetchTasks, { isLoading: isTasksLoading }] =
     tasksApi.useLazyFetchTasksQuery();
 
-  const isLoading =
-    isGroupsLoading || isProjectsLoading || isTasksLoading || isUninitialized;
+  const isLoading = isGroupsLoading || isTasksLoading || isUninitialized;
 
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!userId) return;
 
-      Promise.all([
-        fetchGroups(userId),
-        fetchProjects(userId),
-        fetchTasks(userId),
-      ]);
+      Promise.all([fetchGroups(userId), fetchTasks(userId)]);
     };
 
     fetchInitialData();
-  }, [fetchGroups, fetchProjects, fetchTasks, userId]);
+  }, [fetchGroups, fetchTasks, userId]);
 
   return isLoading;
 };

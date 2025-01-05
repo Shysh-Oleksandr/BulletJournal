@@ -7,13 +7,13 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { tasksApi } from "../TasksApi";
-import { getProjectsByGroupId, getSubGroupsByGroupId } from "../TasksSelectors";
+import { getSubGroupsByGroupId, getTasksByGroupId } from "../TasksSelectors";
 import { GroupItem } from "../types";
 
 import AddItemButtonsContainer from "./AddItemButtonsContainer";
 import AddTaskButton from "./AddTaskButton";
 import EditTaskItemModal from "./EditTaskItemModal";
-import ProjectDisplayItem from "./ProjectDisplayItem";
+import TaskDisplayItem from "./TaskDisplayItem";
 import TaskGroupItemAccordion from "./TaskGroupItemAccordion";
 
 type Props = {
@@ -26,15 +26,13 @@ const TaskGroupDisplayItem = ({ group }: Props): JSX.Element => {
   const [createGroup] = tasksApi.useCreateGroupMutation();
   const [updateGroup] = tasksApi.useUpdateGroupMutation();
   const [deleteGroup] = tasksApi.useDeleteGroupMutation();
-  const [createProject] = tasksApi.useCreateProjectMutation();
+  const [createTask] = tasksApi.useCreateTaskMutation();
 
   const userId = useAppSelector(getUserId);
   const subGroups = useAppSelector((state) =>
     getSubGroupsByGroupId(state, group._id),
   );
-  const projects = useAppSelector((state) =>
-    getProjectsByGroupId(state, group._id),
-  );
+  const tasks = useAppSelector((state) => getTasksByGroupId(state, group._id));
 
   return (
     <Container>
@@ -69,7 +67,7 @@ const TaskGroupDisplayItem = ({ group }: Props): JSX.Element => {
                   {subGroups.length > 0
                     ? `${t("tasks.subgroups")}: ${subGroups.length}, `
                     : ""}
-                  {t("tasks.projects")}: {projects.length}
+                  {t("tasks.tasks")}: {tasks.length}
                 </Typography>
               </HeaderInfo>
             )}
@@ -80,15 +78,15 @@ const TaskGroupDisplayItem = ({ group }: Props): JSX.Element => {
             {subGroups.map((subGroup) => (
               <TaskGroupDisplayItem key={subGroup._id} group={subGroup} />
             ))}
-            {projects.map((project) => (
-              <ProjectDisplayItem key={project._id} project={project} />
+            {tasks.map((task) => (
+              <TaskDisplayItem key={task._id} task={task} />
             ))}
             <AddItemButtonsContainer isDark={!!group.parentGroupId}>
               <AddTaskButton
-                inputPlaceholder={t("tasks.projectPlaceholder")}
-                label={t("tasks.project")}
+                inputPlaceholder={t("tasks.taskPlaceholder")}
+                label={t("tasks.task")}
                 onInputSubmit={({ title, color, dueDate }) =>
-                  createProject({
+                  createTask({
                     author: userId,
                     name: title.trim(),
                     color,

@@ -4,18 +4,13 @@ import { Method, TAG } from "store/models";
 import {
   CreateGroupRequest,
   CreateGroupResponse,
-  CreateProjectRequest,
-  CreateProjectResponse,
   CreateTaskRequest,
   CreateTaskResponse,
   GroupItem,
   GroupsState,
-  ProjectItem,
-  ProjectsState,
   TaskItem,
   TasksState,
   UpdateGroupRequest,
-  UpdateProjectRequest,
   UpdateTaskRequest,
 } from "./types";
 
@@ -70,58 +65,6 @@ export const tasksApi = emptyAxiosApi.injectEndpoints({
           };
         },
         invalidatesTags: [TAG.GROUPS],
-      }),
-      fetchProjects: build.query<ProjectsState, string>({
-        query(userId) {
-          return {
-            url: `/projects/${userId}`,
-            method: Method.GET,
-          };
-        },
-        providesTags: [TAG.PROJECTS],
-        transformResponse: (res: ProjectItem[]) => {
-          const byId: Record<string, ProjectItem> = {};
-          const allIds: string[] = [];
-
-          res.forEach((project) => {
-            byId[project._id] = project;
-            allIds.push(project._id);
-          });
-
-          return { byId, allIds };
-        },
-      }),
-      createProject: build.mutation<
-        CreateProjectResponse,
-        CreateProjectRequest
-      >({
-        query(payload) {
-          return {
-            url: `/projects/create`,
-            method: Method.POST,
-            body: payload,
-          };
-        },
-        invalidatesTags: [TAG.PROJECTS],
-      }),
-      updateProject: build.mutation<void, UpdateProjectRequest>({
-        query(payload) {
-          return {
-            url: `/projects/update/${payload._id}`,
-            method: Method.PATCH,
-            body: payload,
-          };
-        },
-        invalidatesTags: [TAG.PROJECTS],
-      }),
-      deleteProject: build.mutation<void, string>({
-        query(groupId) {
-          return {
-            url: `/projects/${groupId}`,
-            method: Method.DELETE,
-          };
-        },
-        invalidatesTags: [TAG.PROJECTS],
       }),
       fetchTasks: build.query<TasksState, string>({
         query(userId) {
