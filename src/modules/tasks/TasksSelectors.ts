@@ -3,6 +3,7 @@ import createCachedSelector from "re-reselect";
 import { RootState } from "../../store/store";
 
 import { tasksApi } from "./TasksApi";
+import { calculateTasksCountInfo } from "./utils/calculateTasksCountInfo";
 
 export const getAllGroups = createCachedSelector(
   (state: RootState) =>
@@ -41,10 +42,20 @@ export const getTasksByGroupId = createCachedSelector(
   (tasks, groupId) => tasks.filter((task) => task.groupId === groupId),
 )((_: RootState, groupId: string) => groupId);
 
+export const getTasksCountInfoByGroupId = createCachedSelector(
+  getTasksByGroupId,
+  calculateTasksCountInfo,
+)((_: RootState, groupId: string) => groupId);
+
 export const getSubTasksByTaskId = createCachedSelector(
   getAllTasks,
   (_: RootState, taskId: string) => taskId,
   (tasks, taskId) => tasks.filter((task) => task.parentTaskId === taskId),
+)((_: RootState, taskId: string) => taskId);
+
+export const getSubTasksCountInfoByTaskId = createCachedSelector(
+  getSubTasksByTaskId,
+  calculateTasksCountInfo,
 )((_: RootState, taskId: string) => taskId);
 
 export const getOrphanedGroups = createCachedSelector(getAllGroups, (groups) =>

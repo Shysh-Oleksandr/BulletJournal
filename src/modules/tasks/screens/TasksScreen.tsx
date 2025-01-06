@@ -10,16 +10,15 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import AddItemButtonsContainer from "../components/AddItemButtonsContainer";
-import AddTaskButton from "../components/AddTaskButton";
-import TaskDisplayItem from "../components/TaskDisplayItem";
-import TaskGroupDisplayItem from "../components/TaskGroupDisplayItem";
+import AddItemButtonsContainer from "../components/common/AddItemButtonsContainer";
+import AddGroup from "../components/groups/AddGroup";
+import GroupDisplayItem from "../components/groups/GroupDisplayItem";
+import AddTaskButton from "../components/tasks/AddTaskButton";
+import TaskDisplayItem from "../components/tasks/TaskDisplayItem";
 import { useFetchTaskElements } from "../hooks/useFetchTaskElements";
-import { tasksApi } from "../TasksApi";
 import { getOrphanedGroups, getOrphanedTasks } from "../TasksSelectors";
 
 const contentContainerStyle = {
@@ -29,12 +28,8 @@ const contentContainerStyle = {
 };
 
 const TasksScreen = (): JSX.Element => {
-  const [createGroup] = tasksApi.useCreateGroupMutation();
-  const [createTask] = tasksApi.useCreateTaskMutation();
-
   const { t } = useTranslation();
 
-  const userId = useAppSelector(getUserId);
   const orphanedGroups = useAppSelector(getOrphanedGroups);
   const orphanedTasks = useAppSelector(getOrphanedTasks);
 
@@ -70,7 +65,7 @@ const TasksScreen = (): JSX.Element => {
               </Typography>
               <ItemListContainer>
                 {orphanedGroups.map((group) => (
-                  <TaskGroupDisplayItem key={group._id} group={group} />
+                  <GroupDisplayItem key={group._id} group={group} />
                 ))}
               </ItemListContainer>
               <Typography
@@ -86,26 +81,8 @@ const TasksScreen = (): JSX.Element => {
                 ))}
               </ItemListContainer>
               <AddItemButtonsContainer>
-                <AddTaskButton
-                  inputPlaceholder={t("tasks.groupPlaceholder")}
-                  label={t("tasks.group")}
-                  onInputSubmit={({ title, color }) =>
-                    createGroup({ author: userId, name: title.trim(), color })
-                  }
-                  withDueDatePicker={false}
-                />
-                <AddTaskButton
-                  inputPlaceholder={t("tasks.taskPlaceholder")}
-                  label={t("tasks.task")}
-                  onInputSubmit={({ title, color, dueDate }) =>
-                    createTask({
-                      author: userId,
-                      name: title.trim(),
-                      color,
-                      dueDate,
-                    })
-                  }
-                />
+                <AddGroup />
+                <AddTaskButton />
               </AddItemButtonsContainer>
             </TaskGroupsContainer>
           </Container>

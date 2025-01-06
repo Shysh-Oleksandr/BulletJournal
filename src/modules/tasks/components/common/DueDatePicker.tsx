@@ -26,9 +26,16 @@ enum DueDateOptions {
   THIS_YEAR = "this_year",
 }
 
-const DUE_DATE_OPTIONS = Object.values(DueDateOptions);
-
 const today = endOfToday();
+
+const dueDateMap = {
+  [DueDateOptions.TODAY]: () => endOfToday().getTime(),
+  [DueDateOptions.TOMORROW]: () => addDays(endOfToday(), 1).getTime(),
+  [DueDateOptions.THIS_WEEK]: () =>
+    endOfWeek(endOfToday(), { weekStartsOn: 1 }).getTime(),
+  [DueDateOptions.THIS_MONTH]: () => endOfMonth(endOfToday()).getTime(),
+  [DueDateOptions.THIS_YEAR]: () => endOfYear(endOfToday()).getTime(),
+};
 
 type Props = {
   dueDate: number | null;
@@ -37,43 +44,31 @@ type Props = {
 
 const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
   const { t } = useTranslation();
-
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [selectedDueDateOption, setSelectedDueDateOption] =
-    useState<DueDateOptions | null>(dueDate ? DueDateOptions.CUSTOM : null);
 
   const datePickerDate = useMemo(
     () => (dueDate ? new Date(dueDate) : today),
     [dueDate],
   );
 
+  const selectedDueDateOption = useMemo(() => {
+    if (!dueDate) return null;
+
+    for (const [option, calculateDate] of Object.entries(dueDateMap)) {
+      if (dueDate === calculateDate()) return option as DueDateOptions;
+    }
+
+    return DueDateOptions.CUSTOM;
+  }, [dueDate]);
+
   const getDueDateOptionTranslation = (option: string) =>
     t(`tasks.dueDateOptions.${option}`);
 
   const onDueDateOptionPress = (option: DueDateOptions) => {
-    const today = endOfToday().getTime();
-
-    setSelectedDueDateOption(option);
-    switch (option) {
-      case DueDateOptions.CUSTOM:
-        setIsDatePickerVisible(true);
-        break;
-      case DueDateOptions.TOMORROW:
-        setDueDate(addDays(today, 1).getTime());
-        break;
-      case DueDateOptions.THIS_WEEK:
-        setDueDate(endOfWeek(today, { weekStartsOn: 1 }).getTime());
-        break;
-      case DueDateOptions.THIS_MONTH:
-        setDueDate(endOfMonth(today).getTime());
-        break;
-      case DueDateOptions.THIS_YEAR:
-        setDueDate(endOfYear(today).getTime());
-        break;
-
-      default:
-        setDueDate(today);
-        break;
+    if (option === DueDateOptions.CUSTOM) {
+      setIsDatePickerVisible(true);
+    } else {
+      setDueDate(dueDateMap[option]?.() || null);
     }
   };
 
@@ -98,10 +93,10 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
         }}
         keyboardShouldPersistTaps="always"
       >
-        {DUE_DATE_OPTIONS.map((option) => (
+        {[DueDateOptions.CUSTOM, ...Object.keys(dueDateMap)].map((option) => (
           <DueDateOptionContainer
             key={option}
-            onPress={() => onDueDateOptionPress(option)}
+            onPress={() => onDueDateOptionPress(option as DueDateOptions)}
             isActive={option === selectedDueDateOption && !!dueDate}
           >
             <FontAwesome
@@ -110,9 +105,7 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
               size={13}
             />
             <Typography fontSize="xs">
-              {option === DueDateOptions.CUSTOM &&
-              selectedDueDateOption === DueDateOptions.CUSTOM &&
-              dueDate
+              {option === DueDateOptions.CUSTOM && dueDate
                 ? format(dueDate, "dd.MM.yyyy")
                 : getDueDateOptionTranslation(option)}
             </Typography>
@@ -121,7 +114,6 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
         <CancelDueDateButtonContainer
           onPress={() => {
             setDueDate(null);
-            setSelectedDueDateOption(null);
           }}
           hitSlop={SMALL_BUTTON_HIT_SLOP}
         >

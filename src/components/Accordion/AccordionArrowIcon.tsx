@@ -35,8 +35,6 @@ const AccordionArrowIcon = ({ isOpen }: Props) => {
 };
 
 const IconContainer = styled.View<{ isOpen: boolean }>`
-  align-items: center;
-
   ${({ isOpen }) => isOpen && "transform: rotate(180deg);"}
 `;
 

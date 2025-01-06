@@ -12,7 +12,7 @@ import AnimatedModalContainer from "./AnimatedModalContainer";
 
 const BOX_BORDER_RADIUS = 10;
 
-type Props = {
+export type BottomModalProps = {
   isVisible: boolean;
   modalAnimationTime?: number;
   closeTriggered?: boolean;
@@ -47,7 +47,7 @@ const BottomModal = ({
   onClose,
   setCloseTriggered,
   setIsVisible,
-}: PropsWithChildren<Props>): JSX.Element => {
+}: PropsWithChildren<BottomModalProps>): JSX.Element => {
   const { t } = useTranslation();
 
   const modalHeight = useMemo(() => {

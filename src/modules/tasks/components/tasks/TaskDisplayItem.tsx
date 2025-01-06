@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -9,31 +9,28 @@ import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { tasksApi } from "../TasksApi";
-import { getSubTasksByTaskId } from "../TasksSelectors";
-import { TaskItem } from "../types";
+import { tasksApi } from "../../TasksApi";
+import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
+import { TaskItem } from "../../types";
+import DueDateLabel from "../common/DueDateLabel";
 
-import DueDateLabel from "./DueDateLabel";
-import TaskInfoBottomSheet from "./TaskInfoBottomSheet";
+import SubtasksListSection from "./SubtasksListSection";
+import TaskBottomSheet from "./TaskBottomSheet";
 
 const CIRCLE_SIZE = 28;
 
 type Props = {
   task: TaskItem;
+  depth?: number;
 };
 
-const TaskDisplayItem = ({ task }: Props): JSX.Element => {
+const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
   const userId = useAppSelector(getUserId);
 
   const [updateTask] = tasksApi.useUpdateTaskMutation();
 
-  const subtasks = useAppSelector((state) =>
-    getSubTasksByTaskId(state, task._id),
-  );
-
-  const completedSubtasks = useMemo(
-    () => subtasks.filter((task) => task.isCompleted).length,
-    [subtasks],
+  const { completedTasksCount, tasksCount } = useAppSelector((state) =>
+    getSubTasksCountInfoByTaskId(state, task._id),
   );
 
   return (
@@ -58,7 +55,11 @@ const TaskDisplayItem = ({ task }: Props): JSX.Element => {
         />
       </CheckboxContainer>
 
-      <TaskInfoBottomSheet task={task}>
+      <TaskBottomSheet
+        task={task}
+        depth={depth}
+        content={<SubtasksListSection task={task} depth={depth} />}
+      >
         {(openModal) => (
           <InfoContainer onPress={openModal}>
             <Typography fontWeight="semibold" color={task.color}>
@@ -66,7 +67,7 @@ const TaskDisplayItem = ({ task }: Props): JSX.Element => {
             </Typography>
             <LabelsContainer>
               <DueDateLabel task={task} />
-              {subtasks.length > 0 && (
+              {tasksCount > 0 && (
                 <LabelContainer>
                   <FontAwesome5
                     name="tasks"
@@ -74,14 +75,14 @@ const TaskDisplayItem = ({ task }: Props): JSX.Element => {
                     size={theme.fontSizes.xxs}
                   />
                   <Typography fontSize="xxs" color={task.color}>
-                    {completedSubtasks}/{subtasks.length}
+                    {completedTasksCount}/{tasksCount}
                   </Typography>
                 </LabelContainer>
               )}
             </LabelsContainer>
           </InfoContainer>
         )}
-      </TaskInfoBottomSheet>
+      </TaskBottomSheet>
     </Container>
   );
 };

@@ -2,7 +2,7 @@ type CommonTaskItem = {
   _id: string;
   author: string;
   name: string;
-  color?: string;
+  color: string;
 };
 
 export type GroupItem = CommonTaskItem & {

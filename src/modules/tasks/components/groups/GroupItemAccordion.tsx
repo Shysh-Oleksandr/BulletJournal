@@ -14,7 +14,7 @@ type Props = Pick<AccordionProps, "headerContent" | "content" | "viewKey"> & {
   accentColor?: string;
 };
 
-const TaskGroupItemAccordion = ({
+const GroupItemAccordion = ({
   headerContent,
   content,
   viewKey,
@@ -75,4 +75,4 @@ const BgContainer = styled(LinearGradient)`
   padding-top: 8px;
 `;
 
-export default React.memo(TaskGroupItemAccordion);
+export default React.memo(GroupItemAccordion);

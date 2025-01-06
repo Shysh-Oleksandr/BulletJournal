@@ -6,7 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import styled from "styled-components/native";
 
-import { TaskItem } from "../types";
+import { TaskItem } from "../../types";
 
 type Props = {
   task: TaskItem;
