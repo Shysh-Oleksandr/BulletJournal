@@ -64,7 +64,13 @@ const HabitFrequencySelector = ({
 
   return (
     <Container>
-      <Typography fontWeight="semibold" fontSize="lg" paddingRight={8}>
+      <Typography
+        fontWeight="semibold"
+        fontSize="lg"
+        paddingRight={8}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
         {t("habits.frequency")}
       </Typography>
       <WeekdaysContainer>

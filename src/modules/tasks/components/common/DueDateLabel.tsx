@@ -24,9 +24,9 @@ const DueDateLabel = ({ task }: Props): JSX.Element | null => {
       <FontAwesome
         name="calendar-check-o"
         color={color}
-        size={theme.fontSizes.xxs}
+        size={theme.fontSizes.xs}
       />
-      <Typography fontSize="xxs" color={color}>
+      <Typography fontSize="xs" color={color}>
         {format(task.dueDate, "dd/MM/yyyy")}
       </Typography>
     </LabelContainer>

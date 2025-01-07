@@ -14,10 +14,17 @@ export type TaskItem = CommonTaskItem & {
   parentTaskId?: string;
   dueDate?: number | null;
   isCompleted?: boolean;
-  target?: number;
-  units?: string;
+  target?: number | null;
+  type: TaskTypes;
+  units?: string | null;
   completedAmount?: number;
+  isArchived?: boolean;
 };
+
+export enum TaskTypes {
+  CHECK = "check",
+  AMOUNT = "amount",
+}
 
 export type GroupsState = {
   byId: Record<string, GroupItem>;

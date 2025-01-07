@@ -2,22 +2,17 @@ import React from "react";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
-import Checkbox from "components/Checkbox";
-import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { tasksApi } from "../../TasksApi";
 import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
-import { TaskItem } from "../../types";
+import { TaskItem, TaskTypes } from "../../types";
 import DueDateLabel from "../common/DueDateLabel";
 
 import SubtasksListSection from "./SubtasksListSection";
 import TaskBottomSheet from "./TaskBottomSheet";
-
-const CIRCLE_SIZE = 28;
+import TaskCircularProgress from "./TaskCircularProgress";
 
 type Props = {
   task: TaskItem;
@@ -25,35 +20,15 @@ type Props = {
 };
 
 const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
-  const userId = useAppSelector(getUserId);
-
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
-
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getSubTasksCountInfoByTaskId(state, task._id),
   );
 
+  const isCheckType = task.type === TaskTypes.CHECK;
+
   return (
     <Container>
-      <CheckboxContainer
-        onPress={() => {
-          updateTask({
-            _id: task._id,
-            author: userId,
-            isCompleted: !task.isCompleted,
-          });
-        }}
-        hitSlop={BUTTON_HIT_SLOP}
-      >
-        <Checkbox
-          isActive={!!task.isCompleted}
-          size={CIRCLE_SIZE}
-          iconSize={theme.fontSizes.md}
-          borderRadius={6}
-          iconColor={theme.colors.white}
-          bgColor={task.color}
-        />
-      </CheckboxContainer>
+      <TaskCircularProgress task={task} />
 
       <TaskBottomSheet
         task={task}
@@ -67,14 +42,27 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
             </Typography>
             <LabelsContainer>
               <DueDateLabel task={task} />
+              {!isCheckType && (
+                <LabelContainer>
+                  <FontAwesome5
+                    name="sort-amount-up"
+                    color={task.color}
+                    size={theme.fontSizes.xs}
+                  />
+                  <Typography fontSize="xs" color={task.color}>
+                    {task.completedAmount ?? 0}/{task.target ?? 0}{" "}
+                    {task.units ?? ""}
+                  </Typography>
+                </LabelContainer>
+              )}
               {tasksCount > 0 && (
                 <LabelContainer>
                   <FontAwesome5
                     name="tasks"
                     color={task.color}
-                    size={theme.fontSizes.xxs}
+                    size={theme.fontSizes.xs}
                   />
-                  <Typography fontSize="xxs" color={task.color}>
+                  <Typography fontSize="xs" color={task.color}>
                     {completedTasksCount}/{tasksCount}
                   </Typography>
                 </LabelContainer>
@@ -91,9 +79,11 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  background-color: ${theme.colors.white};
+  border-radius: 6px;
+  padding: 10px 12px;
+  elevation: 1;
 `;
-
-const CheckboxContainer = styled.TouchableOpacity``;
 
 const LabelsContainer = styled.View`
   flex-direction: row;
