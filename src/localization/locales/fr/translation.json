@@ -171,6 +171,8 @@
       "this_month": "Ce mois-ci",
       "this_year": "Cette année",
       "custom": "Personnalisé"
-    }
+    },
+    "moveOutside": "Déplacer à l'extérieur",
+    "moveTo": "Déplacer vers"
   }
 }

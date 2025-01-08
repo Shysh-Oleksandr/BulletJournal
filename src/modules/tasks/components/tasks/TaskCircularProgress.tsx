@@ -8,6 +8,7 @@ import React, {
 import { TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
+import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import ItemCircularProgress from "components/ItemCircularProgress";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -20,40 +21,73 @@ const CIRCLE_WIDTH = 4;
 
 type Props = {
   task: TaskItem;
+  currentType?: TaskTypes;
+  currentTarget?: number;
+  currentCompletedAmount?: number;
+  setCurrentCompletedAmount?: (val: number) => void;
 };
 
-const TaskCircularProgress = ({ task }: Props): JSX.Element => {
+const TaskCircularProgress = ({
+  task,
+  currentType,
+  currentTarget,
+  currentCompletedAmount,
+  setCurrentCompletedAmount,
+}: Props): JSX.Element => {
   const userId = useAppSelector(getUserId);
 
   const inputRef = useRef<TextInput | null>(null);
 
   const [updateTask] = tasksApi.useUpdateTaskMutation();
 
-  const isCheckType = task.type === TaskTypes.CHECK;
-  const initialLogValue = task.completedAmount?.toString() ?? "0";
+  const shouldUpdateLocally = currentCompletedAmount !== undefined;
+
+  const isCheckType = (currentType ?? task.type) === TaskTypes.CHECK;
+  const relevantCompletedAmount = shouldUpdateLocally
+    ? currentCompletedAmount
+    : task.completedAmount;
+  const relevantTarget = shouldUpdateLocally ? currentTarget : task.target;
+  const relevantIsCompleted = shouldUpdateLocally
+    ? !!currentCompletedAmount
+    : !!task.isCompleted;
+  const initialLogValue = relevantCompletedAmount?.toString() ?? "0";
 
   const [inputValue, setInputValue] = useState(initialLogValue);
 
   const percentageCompleted = useMemo(() => {
-    if (isCheckType) return task.isCompleted ? 100 : 0;
+    if (isCheckType) return relevantIsCompleted ? 100 : 0;
 
-    if (task.completedAmount && task.target)
-      return Math.min((task.completedAmount / task.target) * 100, 100);
+    if (relevantCompletedAmount && relevantTarget)
+      return Math.min((relevantCompletedAmount / relevantTarget) * 100, 100);
 
     return 0;
-  }, [isCheckType, task.completedAmount, task.isCompleted, task.target]);
+  }, [
+    isCheckType,
+    relevantCompletedAmount,
+    relevantIsCompleted,
+    relevantTarget,
+  ]);
 
-  const onChange = useCallback((text: string) => {
-    const newValue = Number(text);
+  const onChange = useCallback(
+    (text: string) => {
+      const newValue = Number(text);
 
-    if (newValue < 0) {
-      setInputValue("0");
+      if (newValue < 0) {
+        setInputValue("0");
 
-      return;
-    }
+        return;
+      }
 
-    setInputValue(text);
-  }, []);
+      setInputValue(text);
+
+      if (shouldUpdateLocally) {
+        const value = +text.replace(",", ".");
+
+        !isNaN(value) && setCurrentCompletedAmount?.(value);
+      }
+    },
+    [setCurrentCompletedAmount, shouldUpdateLocally],
+  );
 
   const updateLog = useCallback(() => {
     if (inputValue.trim().length === 0) {
@@ -70,9 +104,15 @@ const TaskCircularProgress = ({ task }: Props): JSX.Element => {
       return;
     }
 
-    const isSameValue = value === task.completedAmount;
+    const isSameValue = value === relevantCompletedAmount;
 
     if (isSameValue) return;
+
+    if (shouldUpdateLocally) {
+      setCurrentCompletedAmount?.(value);
+
+      return;
+    }
 
     updateTask({
       _id: task._id,
@@ -82,40 +122,58 @@ const TaskCircularProgress = ({ task }: Props): JSX.Element => {
     });
   }, [
     inputValue,
-    task.completedAmount,
+    relevantCompletedAmount,
+    shouldUpdateLocally,
+    updateTask,
     task._id,
     task.target,
-    updateTask,
     userId,
     initialLogValue,
+    setCurrentCompletedAmount,
   ]);
 
   const onCirclePress = useCallback(() => {
     if (isCheckType) {
+      if (shouldUpdateLocally) {
+        setCurrentCompletedAmount?.(relevantIsCompleted ? 0 : 1);
+
+        return;
+      }
+
       updateTask({
         _id: task._id,
         author: userId,
         isCompleted: !task.isCompleted,
+        completedAmount: task.isCompleted ? 0 : 1,
       });
 
       return;
     }
 
     inputRef.current?.focus();
-  }, [isCheckType, task._id, task.isCompleted, updateTask, userId]);
+  }, [
+    isCheckType,
+    relevantIsCompleted,
+    setCurrentCompletedAmount,
+    shouldUpdateLocally,
+    task._id,
+    task.isCompleted,
+    updateTask,
+    userId,
+  ]);
 
   useEffect(() => {
     setInputValue(initialLogValue);
   }, [initialLogValue]);
 
   return (
-    <TouchableOpacity onPress={onCirclePress}>
+    <TouchableOpacity onPress={onCirclePress} hitSlop={BUTTON_HIT_SLOP}>
       <ItemCircularProgress
         inputValue={inputValue}
         color={task.color}
         isCheckType={isCheckType}
         isCompleted={
-          isCheckType ? !!task.isCompleted : percentageCompleted >= 100
+          isCheckType ? relevantIsCompleted : percentageCompleted >= 100
         }
         percentageCompleted={percentageCompleted}
         handleUpdate={updateLog}

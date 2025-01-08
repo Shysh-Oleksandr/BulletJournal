@@ -1,7 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { FontAwesome5 } from "@expo/vector-icons";
+import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
@@ -9,6 +10,7 @@ import styled from "styled-components/native";
 import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
 import { TaskItem, TaskTypes } from "../../types";
 import DueDateLabel from "../common/DueDateLabel";
+import ItemActionsList from "../common/ItemActionsList";
 
 import SubtasksListSection from "./SubtasksListSection";
 import TaskBottomSheet from "./TaskBottomSheet";
@@ -20,6 +22,8 @@ type Props = {
 };
 
 const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
+  const { t } = useTranslation();
+
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getSubTasksCountInfoByTaskId(state, task._id),
   );
@@ -33,7 +37,12 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
       <TaskBottomSheet
         task={task}
         depth={depth}
-        content={<SubtasksListSection task={task} depth={depth} />}
+        content={
+          <>
+            <ItemActionsList task={task} />
+            <SubtasksListSection task={task} depth={depth} />
+          </>
+        }
       >
         {(openModal) => (
           <InfoContainer onPress={openModal}>
@@ -64,6 +73,18 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   />
                   <Typography fontSize="xs" color={task.color}>
                     {completedTasksCount}/{tasksCount}
+                  </Typography>
+                </LabelContainer>
+              )}
+              {task.isArchived && (
+                <LabelContainer>
+                  <Entypo
+                    name="archive"
+                    size={theme.fontSizes.xs}
+                    color={task.color}
+                  />
+                  <Typography fontSize="xs" color={task.color}>
+                    {t("habits.theArchive")}
                   </Typography>
                 </LabelContainer>
               )}

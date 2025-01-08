@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Switcher from "components/Switcher";
 import TargetAmountSelector from "modules/habits/components/habitForm/TargetAmountSelector";
+import { EMPTY_TASK } from "modules/tasks/data";
 import { TaskItem, TaskTypes } from "modules/tasks/types";
 import styled from "styled-components/native";
 
@@ -13,25 +14,38 @@ const TASK_TYPES = Object.values(TaskTypes);
 type Props = {
   task?: TaskItem;
   selectedType: TaskTypes;
-  currentAmount: number | null;
+  currentTarget: number | null;
   currentUnits: string;
+  currentCompletedAmount: number;
   setSelectedType: (val: TaskTypes) => void;
   setCurrentAmount: (val: number) => void;
   setCurrentUnits: (val: string) => void;
+  setCurrentCompletedAmount: (val: number) => void;
 };
 
 const TaskTypeSelector = ({
   task,
   selectedType,
-  currentAmount,
+  currentTarget,
   currentUnits,
+  currentCompletedAmount,
   setSelectedType,
   setCurrentAmount,
   setCurrentUnits,
+  setCurrentCompletedAmount,
 }: Props) => {
   const { t } = useTranslation();
 
   const setSelectedOption = (option: string) => {
+    if (option === selectedType) return;
+
+    if (option === TaskTypes.AMOUNT) {
+      setCurrentCompletedAmount(0);
+    } else {
+      setCurrentCompletedAmount(
+        currentTarget && currentCompletedAmount >= currentTarget ? 1 : 0,
+      );
+    }
     setSelectedType(option as TaskTypes);
   };
 
@@ -41,7 +55,13 @@ const TaskTypeSelector = ({
     <Container>
       <ContentContainer>
         <Row>
-          {task && <TaskCircularProgress task={task} />}
+          <TaskCircularProgress
+            task={task ?? EMPTY_TASK}
+            currentType={selectedType}
+            currentCompletedAmount={currentCompletedAmount}
+            setCurrentCompletedAmount={setCurrentCompletedAmount}
+            currentTarget={currentTarget ?? 0}
+          />
           <Switcher
             options={TASK_TYPES}
             selectedOption={selectedType}
@@ -52,7 +72,7 @@ const TaskTypeSelector = ({
         </Row>
         {selectedType !== TaskTypes.CHECK && (
           <TargetAmountSelector
-            currentAmount={currentAmount}
+            currentAmount={currentTarget}
             currentUnits={currentUnits}
             setCurrentAmount={setCurrentAmount}
             setCurrentUnits={setCurrentUnits}

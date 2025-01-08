@@ -50,11 +50,12 @@ const TaskBottomSheet = ({
   const defaultValues = useMemo(
     () => ({
       name: task?.name ?? "",
-      color: task?.color ?? theme.colors.cyan600,
+      color: task?.color ?? theme.colors.cyan700,
       dueDate: task?.dueDate ?? null,
       selectedType: task?.type ?? TaskTypes.CHECK,
-      currentAmount: task?.target ?? 100,
+      currentTarget: task?.target ?? 100,
       currentUnits: task?.units ?? "%",
+      currentCompletedAmount: task?.completedAmount ?? 0,
     }),
     [task],
   );
@@ -75,34 +76,34 @@ const TaskBottomSheet = ({
 
     if (normalizedName.length === 0) return;
 
+    const isCheckType = formValues.selectedType === TaskTypes.CHECK;
+
+    const commonFields = {
+      author: userId,
+      dueDate: formValues.dueDate,
+      color: formValues.color,
+      name: normalizedName,
+      type: formValues.selectedType,
+      units: isCheckType ? null : formValues.currentUnits,
+      target: isCheckType ? null : formValues.currentTarget,
+      completedAmount: formValues.currentCompletedAmount,
+      isCompleted: isCheckType
+        ? !!formValues.currentCompletedAmount
+        : formValues.currentCompletedAmount >= formValues.currentTarget,
+    };
+
     if (task) {
-      // TODO: show alert if invalid data
       if (hasChanges) {
         updateTask({
           _id: task._id,
-          author: userId,
-          dueDate: formValues.dueDate,
-          color: formValues.color,
-          name: normalizedName,
-          type: formValues.selectedType,
-          units:
-            formValues.selectedType === TaskTypes.CHECK
-              ? null
-              : formValues.currentUnits,
-          target:
-            formValues.selectedType === TaskTypes.CHECK
-              ? null
-              : formValues.currentAmount,
+          ...commonFields,
         });
       }
     } else {
       createTask({
-        author: userId,
-        ...formValues,
-        name: normalizedName,
         groupId,
         parentTaskId,
-        type: formValues.selectedType,
+        ...commonFields,
       });
 
       handleReset();
@@ -163,16 +164,23 @@ const TaskBottomSheet = ({
           <TaskTypeSelector
             task={task}
             selectedType={formValues.selectedType}
-            currentAmount={formValues.currentAmount}
+            currentTarget={formValues.currentTarget}
             currentUnits={formValues.currentUnits}
+            currentCompletedAmount={formValues.currentCompletedAmount}
             setSelectedType={(type) =>
               setFormValues((prev) => ({ ...prev, selectedType: type }))
             }
             setCurrentAmount={(amount) =>
-              setFormValues((prev) => ({ ...prev, currentAmount: amount }))
+              setFormValues((prev) => ({ ...prev, currentTarget: amount }))
             }
             setCurrentUnits={(units) =>
               setFormValues((prev) => ({ ...prev, currentUnits: units }))
+            }
+            setCurrentCompletedAmount={(completedAmount) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentCompletedAmount: completedAmount,
+              }))
             }
           />
           {content}

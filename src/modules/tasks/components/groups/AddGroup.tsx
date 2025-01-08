@@ -26,7 +26,7 @@ const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
   const inputRef = useRef<TextInput | null>(null);
 
   const [name, setName] = useState("");
-  const [color, setColor] = useState(theme.colors.cyan600);
+  const [color, setColor] = useState(theme.colors.cyan700);
 
   const hasChanges = useMemo(
     () => name.trim().length > 0 || color !== theme.colors.cyan600,

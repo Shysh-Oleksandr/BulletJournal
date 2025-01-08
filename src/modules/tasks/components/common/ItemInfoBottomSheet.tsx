@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from "react";
+import { Keyboard } from "react-native";
 
 import BottomModal, { BottomModalProps } from "components/BottomModal";
 import styled from "styled-components/native";
 
 type Props = {
-  onClose: () => void;
+  onClose?: () => void;
   onOpen?: () => void;
   bottomModalProps?: Partial<BottomModalProps>;
   content: (closeModal: () => void) => JSX.Element;
@@ -22,8 +23,9 @@ const ItemInfoBottomSheet = ({
   const [closeTriggered, setCloseTriggered] = useState(false);
 
   const handleClose = () => {
-    onClose();
+    onClose?.();
 
+    Keyboard.dismiss();
     setIsVisible(false);
   };
 

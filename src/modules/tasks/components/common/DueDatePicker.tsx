@@ -91,7 +91,7 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
           alignItems: "center",
           gap: 6,
         }}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="handled"
       >
         {[DueDateOptions.CUSTOM, ...Object.keys(dueDateMap)].map((option) => (
           <DueDateOptionContainer

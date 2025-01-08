@@ -10,8 +10,8 @@ export type GroupItem = CommonTaskItem & {
 };
 
 export type TaskItem = CommonTaskItem & {
-  groupId?: string;
-  parentTaskId?: string;
+  groupId?: string | null;
+  parentTaskId?: string | null;
   dueDate?: number | null;
   isCompleted?: boolean;
   target?: number | null;

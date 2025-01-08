@@ -53,7 +53,7 @@ const TasksScreen = (): JSX.Element => {
             overScrollMode="never"
             bounces={false}
             automaticallyAdjustKeyboardInsets
-            keyboardShouldPersistTaps="always"
+            keyboardShouldPersistTaps="handled"
           >
             <TaskGroupsContainer>
               <Typography
