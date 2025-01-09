@@ -41,7 +41,6 @@ const TaskBottomSheet = ({
 
   const [createTask] = tasksApi.useCreateTaskMutation();
   const [updateTask] = tasksApi.useUpdateTaskMutation();
-  const [deleteTask] = tasksApi.useDeleteTaskMutation();
 
   const userId = useAppSelector(getUserId);
 
@@ -116,7 +115,9 @@ const TaskBottomSheet = ({
 
   return (
     <ItemInfoBottomSheet
-      bottomModalProps={{ minHeight: task ? `${50 - 1 * depth}%` : undefined }}
+      bottomModalProps={{
+        minHeight: task ? `${50 - 1 * depth}%` : undefined,
+      }}
       onOpen={() => {
         if (task) return;
 
@@ -145,14 +146,6 @@ const TaskBottomSheet = ({
               handleUpdateTask();
               closeModal();
             }}
-            onDelete={
-              task
-                ? () => {
-                    deleteTask(task._id);
-                    closeModal();
-                  }
-                : undefined
-            }
             onReset={hasChanges ? handleReset : undefined}
           />
           <DueDatePicker

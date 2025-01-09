@@ -3,10 +3,11 @@ type CommonTaskItem = {
   author: string;
   name: string;
   color: string;
+  isArchived?: boolean;
 };
 
 export type GroupItem = CommonTaskItem & {
-  parentGroupId?: string;
+  parentGroupId?: string | null;
 };
 
 export type TaskItem = CommonTaskItem & {
@@ -18,7 +19,7 @@ export type TaskItem = CommonTaskItem & {
   type: TaskTypes;
   units?: string | null;
   completedAmount?: number;
-  isArchived?: boolean;
+  completedAt?: number | null;
 };
 
 export enum TaskTypes {

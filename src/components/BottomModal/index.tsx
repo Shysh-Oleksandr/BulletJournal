@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { PropsWithChildren, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
@@ -28,6 +29,7 @@ export type BottomModalProps = {
   onClose?: () => void;
   setCloseTriggered?: (value: boolean) => void;
   withDividerBelowHeader?: boolean;
+  gradientColors?: string[];
 };
 
 const BottomModal = ({
@@ -44,6 +46,7 @@ const BottomModal = ({
   borderRadius = BOX_BORDER_RADIUS,
   withHeader = true,
   withDividerBelowHeader = true,
+  gradientColors,
   onClose,
   setCloseTriggered,
   setIsVisible,
@@ -66,6 +69,12 @@ const BottomModal = ({
     return "auto";
   }, [maxHeight]);
 
+  const gradientBgColors = useMemo(() => {
+    if (gradientColors) return gradientColors;
+
+    return [theme.colors.white, theme.colors.cyan300];
+  }, [gradientColors]);
+
   const closeModal = () => {
     setCloseTriggered?.(true);
   };
@@ -80,71 +89,78 @@ const BottomModal = ({
       setCloseTriggered={setCloseTriggered}
       onClose={onClose}
     >
-      <SContentContainer
-        paddingHorizontal={paddingHorizontal}
+      <SLinearGradient
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        colors={gradientBgColors}
         maxHeight={modalMaxHeight}
         height={modalHeight}
         minHeight={minHeight}
         topBorderRadius={borderRadius}
       >
-        {withHeader && (
-          <>
-            <SModalHeader withPadding={paddingHorizontal === 0}>
-              <Typography
-                fontSize="xl"
-                align="center"
-                fontWeight="bold"
-                lineHeight={27}
-              >
-                {title}
-              </Typography>
-
-              <CloseButtonContainer
-                onPress={closeModal}
-                hitSlop={BIG_BUTTON_HIT_SLOP}
-              >
+        <SContentContainer paddingHorizontal={paddingHorizontal}>
+          {withHeader && (
+            <>
+              <SModalHeader withPadding={paddingHorizontal === 0}>
                 <Typography
-                  fontWeight="semibold"
-                  fontSize="md"
-                  color={theme.colors.darkGray}
+                  fontSize="xl"
+                  align="center"
+                  fontWeight="bold"
+                  lineHeight={27}
                 >
-                  {t("general.close")}
+                  {title}
                 </Typography>
-              </CloseButtonContainer>
-            </SModalHeader>
 
-            {withDividerBelowHeader && (
-              <Divider
-                lineColor={theme.colors.darkBlueText}
-                lineOpacity={0.2}
-              />
-            )}
-          </>
-        )}
+                <CloseButtonContainer
+                  onPress={closeModal}
+                  hitSlop={BIG_BUTTON_HIT_SLOP}
+                >
+                  <Typography
+                    fontWeight="semibold"
+                    fontSize="md"
+                    color={theme.colors.darkGray}
+                  >
+                    {t("general.close")}
+                  </Typography>
+                </CloseButtonContainer>
+              </SModalHeader>
 
-        {children}
-      </SContentContainer>
+              {withDividerBelowHeader && (
+                <Divider
+                  lineColor={theme.colors.darkBlueText}
+                  lineOpacity={0.2}
+                />
+              )}
+            </>
+          )}
+
+          {children}
+        </SContentContainer>
+      </SLinearGradient>
       <Toast topOffset={60} visibilityTime={2000} />
     </AnimatedModalContainer>
   );
 };
 
-const SContentContainer = styled.View<{
-  paddingHorizontal: number;
+const SLinearGradient = styled(LinearGradient)<{
   maxHeight: string;
   minHeight?: string;
   height?: string;
   topBorderRadius: number;
 }>`
   width: 100%;
-  height: ${(props) => props.height};
   max-height: ${(props) => props.maxHeight};
   ${(props) => props.height && `height: ${props.height};`}
   ${(props) => props.minHeight && `min-height: ${props.minHeight};`}
-  padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
   border-top-right-radius: ${({ topBorderRadius }) => topBorderRadius}px;
   border-top-left-radius: ${({ topBorderRadius }) => topBorderRadius}px;
-  background-color: ${({ theme }) => theme.colors.white};
+`;
+
+const SContentContainer = styled.View<{
+  paddingHorizontal: number;
+}>`
+  width: 100%;
+  padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
 `;
 
 const SModalHeader = styled.View<{ withPadding: boolean }>`

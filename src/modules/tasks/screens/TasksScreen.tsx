@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, RefreshControl } from "react-native";
 import theme from "theme";
 
 import HeaderBar from "components/HeaderBar";
@@ -33,7 +33,7 @@ const TasksScreen = (): JSX.Element => {
   const orphanedGroups = useAppSelector(getOrphanedGroups);
   const orphanedTasks = useAppSelector(getOrphanedTasks);
 
-  const isLoading = useFetchTaskElements();
+  const { fetchInitialData, isLoading, isFetching } = useFetchTaskElements();
 
   return (
     <>
@@ -54,6 +54,13 @@ const TasksScreen = (): JSX.Element => {
             bounces={false}
             automaticallyAdjustKeyboardInsets
             keyboardShouldPersistTaps="handled"
+            refreshControl={
+              <RefreshControl
+                colors={[theme.colors.cyan600]}
+                refreshing={isFetching}
+                onRefresh={fetchInitialData}
+              />
+            }
           >
             <TaskGroupsContainer>
               <Typography

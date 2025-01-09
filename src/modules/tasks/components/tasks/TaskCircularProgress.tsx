@@ -114,11 +114,14 @@ const TaskCircularProgress = ({
       return;
     }
 
+    const isCompleted = value >= task.target!;
+
     updateTask({
       _id: task._id,
       author: userId,
-      isCompleted: value >= task.target!,
+      isCompleted,
       completedAmount: value,
+      completedAt: isCompleted ? Date.now() : null,
     });
   }, [
     inputValue,
@@ -140,11 +143,14 @@ const TaskCircularProgress = ({
         return;
       }
 
+      const isCompleted = !task.isCompleted;
+
       updateTask({
         _id: task._id,
         author: userId,
-        isCompleted: !task.isCompleted,
-        completedAmount: task.isCompleted ? 0 : 1,
+        isCompleted,
+        completedAmount: isCompleted ? 1 : 0,
+        completedAt: isCompleted ? Date.now() : null,
       });
 
       return;

@@ -22,23 +22,31 @@ import MoveToListItem from "./MoveToListItem";
 const DEBOUNCE_DELAY = 300;
 
 type Props = {
-  task: TaskItem;
+  item: GroupItem | TaskItem;
+  canMoveOutside?: boolean;
   closeModal: () => void;
 };
 
 const ItemMoveToBottomSheetContent = ({
-  task,
+  item,
+  canMoveOutside,
   closeModal,
 }: Props): JSX.Element | null => {
   const [updateTask] = tasksApi.useUpdateTaskMutation();
+  const [updateGroup] = tasksApi.useUpdateGroupMutation();
 
   const userId = useAppSelector(getUserId);
   const orphanedGroups = useAppSelector(getOrphanedGroups);
   const orphanedTasks = useAppSelector(getOrphanedTasks);
 
+  const isTask = "type" in item;
+
   const orphanedItems = useMemo(
-    () => [...orphanedGroups, ...orphanedTasks],
-    [orphanedGroups, orphanedTasks],
+    () =>
+      (isTask ? [...orphanedGroups, ...orphanedTasks] : orphanedGroups).filter(
+        (orphanedItem) => orphanedItem._id !== item._id,
+      ),
+    [isTask, item._id, orphanedGroups, orphanedTasks],
   );
 
   const { t } = useTranslation();
@@ -54,21 +62,37 @@ const ItemMoveToBottomSheetContent = ({
     if (!selectedItem && !shouldMoveOutside) return;
 
     if (shouldMoveOutside) {
-      updateTask({
-        _id: task._id,
-        author: userId,
-        groupId: null,
-        parentTaskId: null,
-      });
+      if (isTask) {
+        updateTask({
+          _id: item._id,
+          author: userId,
+          groupId: null,
+          parentTaskId: null,
+        });
+      } else {
+        updateGroup({
+          _id: item._id,
+          author: userId,
+          parentGroupId: null,
+        });
+      }
     } else {
-      const isTask = "type" in selectedItem!;
+      const isSelectedItemTask = "type" in selectedItem!;
 
-      updateTask({
-        _id: task._id,
-        author: userId,
-        groupId: isTask ? null : selectedItem!._id,
-        parentTaskId: isTask ? selectedItem._id : null,
-      });
+      if (isTask) {
+        updateTask({
+          _id: item._id,
+          author: userId,
+          groupId: isSelectedItemTask ? null : selectedItem!._id,
+          parentTaskId: isSelectedItemTask ? selectedItem._id : null,
+        });
+      } else {
+        updateGroup({
+          _id: item._id,
+          author: userId,
+          parentGroupId: selectedItem?._id,
+        });
+      }
     }
 
     closeModal();
@@ -99,9 +123,8 @@ const ItemMoveToBottomSheetContent = ({
           onChange={setSearchValue}
           minHeight={55}
         />
-
         <ItemsListContainer>
-          {(task.groupId || task.parentTaskId) && (
+          {canMoveOutside && (
             <OutsideItemContainer onPress={() => handleMove(true)}>
               <Feather
                 name="log-out"
@@ -114,14 +137,13 @@ const ItemMoveToBottomSheetContent = ({
             </OutsideItemContainer>
           )}
 
-          {orphanedItems.map((item) => (
+          {orphanedItems.map((orphanedItem) => (
             <MoveToListItem
-              key={item._id}
-              item={item}
+              key={orphanedItem._id}
+              item={orphanedItem}
               searchValue={debouncedSearchValue}
-              handlePress={(item) =>
-                item._id !== task._id && setSelectedItem(item)
-              }
+              handlePress={setSelectedItem}
+              onlyGroups={!isTask}
             />
           ))}
         </ItemsListContainer>

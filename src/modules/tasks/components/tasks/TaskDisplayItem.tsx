@@ -39,7 +39,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
         depth={depth}
         content={
           <>
-            <ItemActionsList task={task} />
+            <ItemActionsList item={task} />
             <SubtasksListSection task={task} depth={depth} />
           </>
         }

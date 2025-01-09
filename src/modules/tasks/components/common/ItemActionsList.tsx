@@ -10,29 +10,47 @@ import { tasksApi } from "modules/tasks/TasksApi";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { TaskItem } from "../../types";
+import { GroupItem, TaskItem } from "../../types";
 
 import ItemInfoBottomSheet from "./ItemInfoBottomSheet";
 import ItemMoveToBottomSheetContent from "./ItemMoveToBottomSheetContent";
 
 type Props = {
-  task: TaskItem;
+  item: GroupItem | TaskItem;
 };
 
-const ItemActionsList = ({ task }: Props): JSX.Element | null => {
+const ItemActionsList = ({ item }: Props): JSX.Element | null => {
   const [updateTask] = tasksApi.useUpdateTaskMutation();
+  const [updateGroup] = tasksApi.useUpdateGroupMutation();
+  const [deleteTask] = tasksApi.useDeleteTaskMutation();
+  const [deleteGroup] = tasksApi.useDeleteGroupMutation();
 
   const userId = useAppSelector(getUserId);
 
   const { t } = useTranslation();
 
   const [isArchiveAlertVisible, setIsArchiveAlertVisible] = useState(false);
+  const [isDeletionAlertVisible, setIsDeletionAlertVisible] = useState(false);
+
+  const isTask = "type" in item;
+
+  const canMoveOutside = Boolean(
+    isTask ? item.groupId || item.parentTaskId : item.parentGroupId,
+  );
+
+  const handleDelete = () => {
+    const relevantDeleteFunction = isTask ? deleteTask : deleteGroup;
+
+    relevantDeleteFunction(item._id);
+  };
 
   const handleArchive = () => {
-    updateTask({
-      _id: task._id,
+    const relevantUpdateFunction = isTask ? updateTask : updateGroup;
+
+    relevantUpdateFunction({
+      _id: item._id,
       author: userId,
-      isArchived: !task.isArchived,
+      isArchived: !item.isArchived,
     });
   };
 
@@ -49,7 +67,7 @@ const ItemActionsList = ({ task }: Props): JSX.Element | null => {
         <ActionItemContainer
           onPress={() => setIsArchiveAlertVisible(true)}
           bgColor={
-            task.isArchived ? theme.colors.cyan500 : theme.colors.cyan600
+            item.isArchived ? theme.colors.cyan500 : theme.colors.cyan600
           }
         >
           <Entypo
@@ -62,7 +80,7 @@ const ItemActionsList = ({ task }: Props): JSX.Element | null => {
             fontWeight="semibold"
             color={theme.colors.white}
           >
-            {t(task.isArchived ? "habits.unarchive" : "habits.archive")}
+            {t(item.isArchived ? "habits.unarchive" : "habits.archive")}
           </Typography>
         </ActionItemContainer>
         <ItemInfoBottomSheet
@@ -73,7 +91,11 @@ const ItemActionsList = ({ task }: Props): JSX.Element | null => {
             title: t("tasks.moveTo"),
           }}
           content={(closeModal) => (
-            <ItemMoveToBottomSheetContent task={task} closeModal={closeModal} />
+            <ItemMoveToBottomSheetContent
+              item={item}
+              canMoveOutside={canMoveOutside}
+              closeModal={closeModal}
+            />
           )}
         >
           {(openModal) => (
@@ -93,6 +115,24 @@ const ItemActionsList = ({ task }: Props): JSX.Element | null => {
             </ActionItemContainer>
           )}
         </ItemInfoBottomSheet>
+
+        <ActionItemContainer
+          onPress={() => setIsDeletionAlertVisible(true)}
+          bgColor={theme.colors.red600}
+        >
+          <MaterialIcons
+            name="delete"
+            size={theme.fontSizes.lg}
+            color={theme.colors.white}
+          />
+          <Typography
+            fontSize="sm"
+            fontWeight="semibold"
+            color={theme.colors.white}
+          >
+            {t("note.delete")}
+          </Typography>
+        </ActionItemContainer>
       </Container>
 
       <ConfirmAlert
@@ -100,6 +140,13 @@ const ItemActionsList = ({ task }: Props): JSX.Element | null => {
         isDialogVisible={isArchiveAlertVisible}
         setIsDialogVisible={setIsArchiveAlertVisible}
         onConfirm={handleArchive}
+      />
+      <ConfirmAlert
+        isDeletion
+        message={t("general.deleteConfirmation")}
+        isDialogVisible={isDeletionAlertVisible}
+        setIsDialogVisible={setIsDeletionAlertVisible}
+        onConfirm={handleDelete}
       />
     </>
   );

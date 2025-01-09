@@ -16,6 +16,7 @@ type Props = {
   item: GroupItem | TaskItem;
   depth?: number;
   searchValue?: string;
+  onlyGroups?: boolean;
   handlePress: (item: GroupItem | TaskItem) => void;
 };
 
@@ -23,6 +24,7 @@ const MoveToListItem = ({
   item,
   searchValue = "",
   depth = 0,
+  onlyGroups = false,
   handlePress,
 }: Props): JSX.Element | null => {
   const subGroups = useAppSelector((state) =>
@@ -34,8 +36,8 @@ const MoveToListItem = ({
   );
 
   const allSubItems = useMemo(
-    () => [...subGroups, ...tasks, ...subTasks],
-    [subGroups, tasks, subTasks],
+    () => (onlyGroups ? subGroups : [...subGroups, ...tasks, ...subTasks]),
+    [onlyGroups, subGroups, tasks, subTasks],
   );
 
   // Recursive function to check if any descendant matches the searchValue
@@ -110,6 +112,7 @@ const MoveToListItem = ({
             searchValue={searchValue}
             depth={depth + 1}
             handlePress={handlePress}
+            onlyGroups={onlyGroups}
           />
         ))}
       </SubItemsContainer>

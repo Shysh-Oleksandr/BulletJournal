@@ -14,6 +14,7 @@ import {
   getTasksCountInfoByGroupId,
 } from "../../TasksSelectors";
 import { GroupItem } from "../../types";
+import ItemActionsList from "../common/ItemActionsList";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
 import TaskItemInput from "../common/TaskItemInput";
 
@@ -29,7 +30,6 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const [updateGroup] = tasksApi.useUpdateGroupMutation();
-  const [deleteGroup] = tasksApi.useDeleteGroupMutation();
 
   const userId = useAppSelector(getUserId);
   const subGroups = useAppSelector((state) =>
@@ -79,16 +79,13 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
             color={color}
             setColor={setColor}
             inputPlaceholder={t("tasks.groupPlaceholder")}
-            onDelete={() => {
-              deleteGroup(group._id);
-              closeModal();
-            }}
             onSubmitEditing={() => {
               handleUpdateGroup();
               closeModal();
             }}
             onReset={hasChanges ? resetState : undefined}
           />
+          <ItemActionsList item={group} />
           <SubgroupsListSection group={group} depth={depth} />
         </>
       )}

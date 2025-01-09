@@ -196,6 +196,7 @@ const CategoriesSelector = ({
           extraScrollHeight={20}
           extraHeight={150}
           contentContainerStyle={{ paddingBottom: 10 }}
+          keyboardShouldPersistTaps="handled"
         />
       </BottomModal>
       <FormLabel label={t("note.categories")} bottomOffset={-13} />

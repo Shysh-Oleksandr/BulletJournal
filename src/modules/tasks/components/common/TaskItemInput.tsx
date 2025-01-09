@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
 import { TextInput } from "react-native";
 import theme from "theme";
 
 import { MaterialIcons } from "@expo/vector-icons";
-import ConfirmAlert from "components/ConfirmAlert";
 import Input from "components/Input";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
@@ -18,7 +16,6 @@ type Props = {
   setName: (name: string) => void;
   setColor: (color: string) => void;
   onSubmitEditing?: () => void;
-  onDelete?: () => void;
   onReset?: () => void;
 };
 
@@ -30,13 +27,8 @@ const TaskItemInput = ({
   setName,
   setColor,
   onSubmitEditing,
-  onDelete,
   onReset,
 }: Props): JSX.Element => {
-  const { t } = useTranslation();
-
-  const [isDeletionAlertVisible, setIsDeletionAlertVisible] = useState(false);
-
   return (
     <>
       <InputSection>
@@ -54,16 +46,16 @@ const TaskItemInput = ({
           labelColor={color}
           onSubmitEditing={onSubmitEditing}
           LeftContent={
-            onDelete || onReset ? (
+            onReset ? (
               <IconContainer
                 leftOffset={0}
                 hitSlop={SMALL_BUTTON_HIT_SLOP}
-                onPress={onReset ?? (() => setIsDeletionAlertVisible(true))}
+                onPress={onReset}
               >
                 <MaterialIcons
-                  name={onReset ? "restore" : "delete"}
+                  name="restore"
                   size={28}
-                  color={onReset ? theme.colors.cyan600 : theme.colors.red600}
+                  color={theme.colors.cyan600}
                 />
               </IconContainer>
             ) : undefined
@@ -79,16 +71,6 @@ const TaskItemInput = ({
           }
         />
       </InputSection>
-
-      {onDelete && (
-        <ConfirmAlert
-          isDeletion
-          message={t("general.deleteConfirmation")}
-          isDialogVisible={isDeletionAlertVisible}
-          setIsDialogVisible={setIsDeletionAlertVisible}
-          onConfirm={onDelete}
-        />
-      )}
     </>
   );
 };
