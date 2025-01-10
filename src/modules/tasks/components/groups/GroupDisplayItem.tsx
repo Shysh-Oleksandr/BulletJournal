@@ -30,29 +30,25 @@ const GroupDisplayItem = ({ group }: Props): JSX.Element => {
   );
 
   return (
-    <Container>
-      <GroupItemAccordion
-        headerContent={<GroupHeaderDisplayItem group={group} />}
-        content={
-          <ContentContainer>
-            {subGroups.map((subGroup) => (
-              <GroupDisplayItem key={subGroup._id} group={subGroup} />
-            ))}
-            {tasks.map((task) => (
-              <TaskDisplayItem key={task._id} task={task} />
-            ))}
-            <AddTaskButton groupId={group._id} />
-          </ContentContainer>
-        }
-        viewKey={group._id}
-        accentColor={group.color}
-        percentageCompleted={percentageCompleted}
-      />
-    </Container>
+    <GroupItemAccordion
+      headerContent={<GroupHeaderDisplayItem group={group} />}
+      content={
+        <ContentContainer>
+          {subGroups.map((subGroup) => (
+            <GroupDisplayItem key={subGroup._id} group={subGroup} />
+          ))}
+          {tasks.map((task) => (
+            <TaskDisplayItem key={task._id} task={task} />
+          ))}
+          <AddTaskButton groupId={group._id} />
+        </ContentContainer>
+      }
+      viewKey={group._id}
+      accentColor={group.color}
+      percentageCompleted={percentageCompleted}
+    />
   );
 };
-
-const Container = styled.View``;
 
 const ContentContainer = styled.View`
   width: 100%;

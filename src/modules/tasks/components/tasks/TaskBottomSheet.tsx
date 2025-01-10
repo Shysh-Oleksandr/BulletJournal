@@ -24,7 +24,8 @@ type Props = {
   groupId?: string;
   parentTaskId?: string;
   task?: TaskItem;
-  content?: JSX.Element;
+  content?: (closeModal: () => void) => JSX.Element;
+  defaultDueDate?: number;
   depth?: number;
   children: (openModal: () => void) => JSX.Element;
 };
@@ -34,6 +35,7 @@ const TaskBottomSheet = ({
   parentTaskId,
   task,
   content,
+  defaultDueDate,
   depth = 0,
   children,
 }: Props): JSX.Element => {
@@ -50,13 +52,13 @@ const TaskBottomSheet = ({
     () => ({
       name: task?.name ?? "",
       color: task?.color ?? theme.colors.cyan700,
-      dueDate: task?.dueDate ?? null,
+      dueDate: task?.dueDate ?? defaultDueDate ?? null,
       selectedType: task?.type ?? TaskTypes.CHECK,
       currentTarget: task?.target ?? 100,
       currentUnits: task?.units ?? "%",
       currentCompletedAmount: task?.completedAmount ?? 0,
     }),
-    [task],
+    [task, defaultDueDate],
   );
 
   const [formValues, setFormValues] = useState(defaultValues);
@@ -176,7 +178,7 @@ const TaskBottomSheet = ({
               }))
             }
           />
-          {content}
+          {content?.(closeModal)}
         </>
       )}
     >

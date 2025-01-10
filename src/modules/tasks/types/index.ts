@@ -22,6 +22,13 @@ export type TaskItem = CommonTaskItem & {
   completedAt?: number | null;
 };
 
+export type TaskCategoryPeriod = {
+  name: string;
+  start: number;
+  end: number;
+  color?: string;
+};
+
 export enum TaskTypes {
   CHECK = "check",
   AMOUNT = "amount",

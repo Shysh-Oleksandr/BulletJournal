@@ -17,9 +17,10 @@ import ItemMoveToBottomSheetContent from "./ItemMoveToBottomSheetContent";
 
 type Props = {
   item: GroupItem | TaskItem;
+  closeModal: () => void;
 };
 
-const ItemActionsList = ({ item }: Props): JSX.Element | null => {
+const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   const [updateTask] = tasksApi.useUpdateTaskMutation();
   const [updateGroup] = tasksApi.useUpdateGroupMutation();
   const [deleteTask] = tasksApi.useDeleteTaskMutation();
@@ -42,6 +43,8 @@ const ItemActionsList = ({ item }: Props): JSX.Element | null => {
     const relevantDeleteFunction = isTask ? deleteTask : deleteGroup;
 
     relevantDeleteFunction(item._id);
+
+    closeModal();
   };
 
   const handleArchive = () => {
@@ -86,7 +89,6 @@ const ItemActionsList = ({ item }: Props): JSX.Element | null => {
         <ItemInfoBottomSheet
           bottomModalProps={{
             minHeight: "49%",
-            maxHeight: "85%",
             withHeader: true,
             title: t("tasks.moveTo"),
           }}

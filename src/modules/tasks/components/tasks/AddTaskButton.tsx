@@ -8,13 +8,22 @@ import TaskBottomSheet from "./TaskBottomSheet";
 type Props = {
   groupId?: string;
   parentTaskId?: string;
+  defaultDueDate?: number;
 };
 
-const AddTaskButton = ({ groupId, parentTaskId }: Props): JSX.Element => {
+const AddTaskButton = ({
+  groupId,
+  parentTaskId,
+  defaultDueDate,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
 
   return (
-    <TaskBottomSheet parentTaskId={parentTaskId} groupId={groupId}>
+    <TaskBottomSheet
+      parentTaskId={parentTaskId}
+      groupId={groupId}
+      defaultDueDate={defaultDueDate}
+    >
       {(openModal) => (
         <AddItemButton
           label={t(parentTaskId ? "tasks.subtask" : "tasks.task")}

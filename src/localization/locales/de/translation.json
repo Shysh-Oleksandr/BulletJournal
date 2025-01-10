@@ -173,6 +173,18 @@
       "custom": "Benutzerdefiniert"
     },
     "moveOutside": "Nach draußen bewegen",
-    "moveTo": "Verschieben nach"
+    "moveTo": "Verschieben nach",
+    "noDueDate": "Kein Fälligkeitsdatum",
+    "categoriesTab": "Kategorien",
+    "allTasks": "Alle Aufgaben",
+    "categories": {
+      "overdue": "Überfällig",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "this_week": "Diese Woche",
+      "next_week": "Nächste Woche",
+      "this_month": "Dieser Monat",
+      "this_year": "Dieses Jahr"
+    }
   }
 }

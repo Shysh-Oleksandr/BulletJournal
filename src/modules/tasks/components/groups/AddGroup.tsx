@@ -29,7 +29,7 @@ const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
   const [color, setColor] = useState(theme.colors.cyan700);
 
   const hasChanges = useMemo(
-    () => name.trim().length > 0 || color !== theme.colors.cyan600,
+    () => name.trim().length > 0 || color !== theme.colors.cyan700,
     [color, name],
   );
 

@@ -37,12 +37,12 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
       <TaskBottomSheet
         task={task}
         depth={depth}
-        content={
+        content={(closeModal) => (
           <>
-            <ItemActionsList item={task} />
+            <ItemActionsList item={task} closeModal={closeModal} />
             <SubtasksListSection task={task} depth={depth} />
           </>
-        }
+        )}
       >
         {(openModal) => (
           <InfoContainer onPress={openModal}>
@@ -101,7 +101,7 @@ const Container = styled.View`
   align-items: center;
   gap: 8px;
   background-color: ${theme.colors.white};
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 10px 12px;
   elevation: 1;
 `;

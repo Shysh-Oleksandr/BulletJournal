@@ -109,13 +109,7 @@ const ItemMoveToBottomSheetContent = ({
 
   return (
     <>
-      <Container
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-        overScrollMode="never"
-        contentContainerStyle={{ gap: 6 }}
-        keyboardShouldPersistTaps="handled"
-      >
+      <Container>
         <Input
           value={searchValue}
           placeholder={t("search.search")}
@@ -158,7 +152,10 @@ const ItemMoveToBottomSheetContent = ({
   );
 };
 
-const Container = styled.ScrollView``;
+const Container = styled.View`
+  gap: 6px;
+  padding-bottom: 85px;
+`;
 
 const ItemsListContainer = styled.View`
   gap: 4px;

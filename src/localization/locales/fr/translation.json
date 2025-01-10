@@ -173,6 +173,18 @@
       "custom": "Personnalisé"
     },
     "moveOutside": "Déplacer à l'extérieur",
-    "moveTo": "Déplacer vers"
+    "moveTo": "Déplacer vers",
+    "noDueDate": "Aucune date d'échéance",
+    "categoriesTab": "Catégories",
+    "allTasks": "Toutes les tâches",
+    "categories": {
+      "overdue": "En retard",
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "this_week": "Cette semaine",
+      "next_week": "La semaine prochaine",
+      "this_month": "Ce mois-ci",
+      "this_year": "Cette année"
+    }
   }
 }

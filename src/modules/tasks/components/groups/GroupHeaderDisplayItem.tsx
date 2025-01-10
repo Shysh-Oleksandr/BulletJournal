@@ -85,7 +85,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
             }}
             onReset={hasChanges ? resetState : undefined}
           />
-          <ItemActionsList item={group} />
+          <ItemActionsList item={group} closeModal={closeModal} />
           <SubgroupsListSection group={group} depth={depth} />
         </>
       )}

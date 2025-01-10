@@ -6,9 +6,13 @@ import styled from "styled-components/native";
 
 type Props = {
   isOpen: boolean;
+  color?: string;
 };
 
-const AccordionArrowIcon = ({ isOpen }: Props) => {
+const AccordionArrowIcon = ({
+  isOpen,
+  color = theme.colors.darkBlueText,
+}: Props) => {
   // TODO: handle animation
   // Create a shared value for rotation
   // const rotation = useSharedValue(0);
@@ -25,11 +29,7 @@ const AccordionArrowIcon = ({ isOpen }: Props) => {
 
   return (
     <IconContainer isOpen={isOpen}>
-      <MaterialIcons
-        name="keyboard-arrow-down"
-        color={theme.colors.darkBlueText}
-        size={28}
-      />
+      <MaterialIcons name="keyboard-arrow-down" color={color} size={28} />
     </IconContainer>
   );
 };
