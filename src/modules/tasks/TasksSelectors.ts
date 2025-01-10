@@ -1,24 +1,14 @@
+import { isWithinInterval } from "date-fns";
 import createCachedSelector from "re-reselect";
 
 import { RootState } from "../../store/store";
 
 import { tasksApi } from "./TasksApi";
+import { calculateTasksCountInfo } from "./utils/calculateTasksCountInfo";
 
 export const getAllGroups = createCachedSelector(
   (state: RootState) =>
     tasksApi.endpoints.fetchGroups.select(state.auth.user!._id)(state),
-  (result) => {
-    if (!result?.data) return [];
-
-    const { allIds, byId } = result.data;
-
-    return allIds.map((id) => byId[id]);
-  },
-)((state: RootState) => state.auth.user?._id ?? "no_user");
-
-export const getAllProjects = createCachedSelector(
-  (state: RootState) =>
-    tasksApi.endpoints.fetchProjects.select(state.auth.user!._id)(state),
   (result) => {
     if (!result?.data) return [];
 
@@ -36,7 +26,13 @@ export const getAllTasks = createCachedSelector(
 
     const { allIds, byId } = result.data;
 
-    return allIds.map((id) => byId[id]);
+    return allIds
+      .map((id) => byId[id])
+      .sort((a, b) => {
+        if (!a.dueDate || !b.dueDate) return 0;
+
+        return a.dueDate - b.dueDate;
+      });
   },
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
@@ -47,18 +43,16 @@ export const getSubGroupsByGroupId = createCachedSelector(
     groups.filter((group) => group.parentGroupId === groupId),
 )((_: RootState, groupId: string) => groupId);
 
-export const getProjectsByGroupId = createCachedSelector(
-  getAllProjects,
+export const getTasksByGroupId = createCachedSelector(
+  getAllTasks,
   (_: RootState, groupId: string) => groupId,
-  (projects, groupId) =>
-    projects.filter((project) => project.groupId === groupId),
+  (tasks, groupId) => tasks.filter((task) => task.groupId === groupId),
 )((_: RootState, groupId: string) => groupId);
 
-export const getTasksByProjectId = createCachedSelector(
-  getAllTasks,
-  (_: RootState, projectId: string) => projectId,
-  (tasks, projectId) => tasks.filter((task) => task.projectId === projectId),
-)((_: RootState, projectId: string) => projectId);
+export const getTasksCountInfoByGroupId = createCachedSelector(
+  getTasksByGroupId,
+  calculateTasksCountInfo,
+)((_: RootState, groupId: string) => groupId);
 
 export const getSubTasksByTaskId = createCachedSelector(
   getAllTasks,
@@ -66,15 +60,39 @@ export const getSubTasksByTaskId = createCachedSelector(
   (tasks, taskId) => tasks.filter((task) => task.parentTaskId === taskId),
 )((_: RootState, taskId: string) => taskId);
 
+export const getSubTasksCountInfoByTaskId = createCachedSelector(
+  getSubTasksByTaskId,
+  calculateTasksCountInfo,
+)((_: RootState, taskId: string) => taskId);
+
 export const getOrphanedGroups = createCachedSelector(getAllGroups, (groups) =>
   groups.filter((group) => !group.parentGroupId),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
-export const getOrphanedProjects = createCachedSelector(
-  getAllProjects,
-  (projects) => projects.filter((project) => !project.groupId),
+export const getOrphanedTasks = createCachedSelector(getAllTasks, (tasks) =>
+  tasks.filter((task) => !task.groupId && !task.parentTaskId),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
-export const getOrphanedTasks = createCachedSelector(getAllTasks, (tasks) =>
-  tasks.filter((task) => !task.projectId && !task.parentTaskId),
+export const getArchivedTasks = createCachedSelector(getAllTasks, (tasks) =>
+  tasks.filter((task) => task.isArchived),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
+
+export const getTasksWithoutDueDate = createCachedSelector(
+  getAllTasks,
+  (tasks) => tasks.filter((task) => !task.dueDate),
+)((state: RootState) => state.auth.user?._id ?? "no_user");
+
+export const getTasksWithinPeriod = createCachedSelector(
+  getAllTasks,
+  (_: RootState, startDate: number, endDate: number) => ({
+    startDate,
+    endDate,
+  }),
+  (tasks, { startDate, endDate }) =>
+    tasks.filter(
+      (task) =>
+        !task.isArchived &&
+        task.dueDate &&
+        isWithinInterval(task.dueDate, { start: startDate, end: endDate }),
+    ),
+)((_, startDate, endDate) => `${startDate}-${endDate}`);

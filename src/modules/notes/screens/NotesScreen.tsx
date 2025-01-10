@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, RefreshControl } from "react-native";
 import theme from "theme";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -50,7 +50,7 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const NotesScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const [fetchNotes, { isLoading: isNotesLoading }] =
+  const [fetchNotes, { isLoading: isNotesLoading, isFetching }] =
     notesApi.useLazyFetchNotesQuery();
   const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
 
@@ -125,14 +125,17 @@ const NotesScreen = (): JSX.Element => {
     setPage(nextPage);
   }, [allNotes, page]);
 
+  const fetchData = useCallback(async () => {
+    await fetchNotes(userId);
+    await fetchLabels(userId);
+  }, [fetchLabels, fetchNotes, userId]);
+
   const fetchInitialData = useCallback(async () => {
     if (!isLoaded && userId) {
-      await fetchNotes(userId);
-      await fetchLabels(userId);
-
+      await fetchData();
       setIsLoaded(true);
     }
-  }, [isLoaded, userId, fetchNotes, fetchLabels]);
+  }, [isLoaded, userId, fetchData]);
 
   useEffect(() => {
     if (notes.length === 0 && allNotes.length > 0) {
@@ -190,6 +193,13 @@ const NotesScreen = (): JSX.Element => {
             overScrollMode="never"
             ref={flashListRef}
             bounces={false}
+            refreshControl={
+              <RefreshControl
+                colors={[theme.colors.cyan600]}
+                refreshing={isFetching}
+                onRefresh={fetchData}
+              />
+            }
           />
         )}
       </SLinearGradient>

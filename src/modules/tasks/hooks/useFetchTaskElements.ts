@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -7,29 +7,34 @@ import { tasksApi } from "../TasksApi";
 
 export const useFetchTaskElements = () => {
   const userId = useAppSelector(getUserId);
-  const [fetchGroups, { isLoading: isGroupsLoading, isUninitialized }] =
-    tasksApi.useLazyFetchGroupsQuery();
-  const [fetchProjects, { isLoading: isProjectsLoading }] =
-    tasksApi.useLazyFetchProjectsQuery();
-  const [fetchTasks, { isLoading: isTasksLoading }] =
-    tasksApi.useLazyFetchTasksQuery();
+  const [
+    fetchGroups,
+    {
+      isLoading: isGroupsLoading,
+      isUninitialized,
+      isFetching: isGroupsFetching,
+    },
+  ] = tasksApi.useLazyFetchGroupsQuery();
+  const [
+    fetchTasks,
+    { isLoading: isTasksLoading, isFetching: isTasksFetching },
+  ] = tasksApi.useLazyFetchTasksQuery();
 
-  const isLoading =
-    isGroupsLoading || isProjectsLoading || isTasksLoading || isUninitialized;
+  const isLoading = isGroupsLoading || isTasksLoading || isUninitialized;
+  const isFetching = isGroupsFetching || isTasksFetching;
+
+  const fetchInitialData = useCallback(async () => {
+    if (!userId) return;
+
+    Promise.all([fetchGroups(userId), fetchTasks(userId)]);
+  }, [fetchGroups, fetchTasks, userId]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      if (!userId) return;
-
-      Promise.all([
-        fetchGroups(userId),
-        fetchProjects(userId),
-        fetchTasks(userId),
-      ]);
-    };
-
     fetchInitialData();
-  }, [fetchGroups, fetchProjects, fetchTasks, userId]);
+  }, [fetchInitialData]);
 
-  return isLoading;
+  return useMemo(
+    () => ({ fetchInitialData, isLoading, isFetching }),
+    [fetchInitialData, isFetching, isLoading],
+  );
 };

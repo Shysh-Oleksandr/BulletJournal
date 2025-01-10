@@ -42,7 +42,7 @@ type Props = {
   isFormItem?: boolean;
   isEditing?: boolean;
   isSelected?: boolean;
-  setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentColor: (color: string) => void;
   onPress?: () => void;
 };
 
