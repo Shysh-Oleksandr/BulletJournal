@@ -14,12 +14,12 @@ type Props = Pick<AccordionProps, "headerContent" | "content" | "viewKey"> & {
   accentColor?: string;
 };
 
-const TaskGroupItemAccordion = ({
+const GroupItemAccordion = ({
   headerContent,
   content,
   viewKey,
   percentageCompleted,
-  accentColor = theme.colors.cyan400,
+  accentColor,
 }: Props): JSX.Element => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -30,13 +30,13 @@ const TaskGroupItemAccordion = ({
           headerContent={
             <HeaderContainer>
               {headerContent}
-              <AccordionArrowIcon isOpen={isExpanded} />
+              <AccordionArrowIcon isOpen={isExpanded} color={accentColor} />
             </HeaderContainer>
           }
           content={
             <>
               <ProgressBar
-                bgColor={accentColor}
+                bgColor={accentColor ?? theme.colors.cyan400}
                 percentageCompleted={percentageCompleted || 0}
                 style={{ height: 3 }}
               />
@@ -52,7 +52,7 @@ const TaskGroupItemAccordion = ({
 };
 
 const Container = styled.View`
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid ${theme.colors.cyan400};
 `;
 
@@ -75,4 +75,4 @@ const BgContainer = styled(LinearGradient)`
   padding-top: 8px;
 `;
 
-export default React.memo(TaskGroupItemAccordion);
+export default React.memo(GroupItemAccordion);

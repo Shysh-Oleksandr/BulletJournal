@@ -2,36 +2,40 @@ type CommonTaskItem = {
   _id: string;
   author: string;
   name: string;
-  color?: string;
+  color: string;
+  isArchived?: boolean;
 };
 
 export type GroupItem = CommonTaskItem & {
-  parentGroupId?: string;
-};
-
-export type ProjectItem = CommonTaskItem & {
-  groupId?: string;
-  dueDate?: number | null;
-  target?: number;
-  units?: string;
-  completedAmount?: number;
+  parentGroupId?: string | null;
 };
 
 export type TaskItem = CommonTaskItem & {
-  isCompleted?: boolean;
-  projectId?: string;
+  groupId?: string | null;
+  parentTaskId?: string | null;
   dueDate?: number | null;
-  percentageCompleted?: number;
-  parentTaskId?: string;
+  isCompleted?: boolean;
+  target?: number | null;
+  type: TaskTypes;
+  units?: string | null;
+  completedAmount?: number;
+  completedAt?: number | null;
 };
+
+export type TaskCategoryPeriod = {
+  name: string;
+  start: number;
+  end: number;
+  color?: string;
+};
+
+export enum TaskTypes {
+  CHECK = "check",
+  AMOUNT = "amount",
+}
 
 export type GroupsState = {
   byId: Record<string, GroupItem>;
-  allIds: string[];
-};
-
-export type ProjectsState = {
-  byId: Record<string, ProjectItem>;
   allIds: string[];
 };
 
@@ -44,28 +48,16 @@ export type CreateGroupResponse = {
   group: GroupItem;
 };
 
-export type CreateGroupRequest = Omit<
-  GroupItem,
-  "_id" | "subGroupIds" | "projectIds"
->;
+export type CreateGroupRequest = Omit<GroupItem, "_id">;
 
 export type UpdateGroupRequest = Partial<CreateGroupRequest> &
   Pick<GroupItem, "_id" | "author">;
-
-export type CreateProjectResponse = {
-  project: ProjectItem;
-};
-
-export type CreateProjectRequest = Omit<ProjectItem, "_id" | "taskIds">;
-
-export type UpdateProjectRequest = Partial<CreateProjectRequest> &
-  Pick<ProjectItem, "_id" | "author">;
 
 export type CreateTaskResponse = {
   task: TaskItem;
 };
 
-export type CreateTaskRequest = Omit<TaskItem, "_id" | "subTaskIds">;
+export type CreateTaskRequest = Omit<TaskItem, "_id">;
 
 export type UpdateTaskRequest = Partial<CreateTaskRequest> &
   Pick<TaskItem, "_id" | "author">;

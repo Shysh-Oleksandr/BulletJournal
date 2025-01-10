@@ -1,28 +1,21 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Easing } from "react-native";
-import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { TextInput } from "react-native-gesture-handler";
 import theme from "theme";
 
 import { Entypo } from "@expo/vector-icons";
-import Checkbox from "components/Checkbox";
-import Input from "components/Input";
+import ItemCircularProgress from "components/ItemCircularProgress";
 import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useHabitColors } from "modules/habits/hooks/useHabitColors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
-import { noop } from "utils/utilityFunctions";
 
 import { Habit, HabitTypes } from "../../types";
 
 import HabitTags from "./HabitTags";
-
-const CIRCLE_SIZE = 42;
-const CIRCLE_WIDTH = 5;
 
 type Props = {
   habit: Habit;
@@ -55,24 +48,10 @@ const HabitBody = ({
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 
-  const {
-    textColor,
-    gradientColors,
-    labelBgColor,
-    checkboxBgColor,
-    tintColor,
-    bgTintColor,
-  } = useHabitColors(isCompleted, habit.color);
-
-  const inputFontSize = useMemo(() => {
-    if (inputValue.length < 3) return "md";
-
-    if (inputValue.length < 4) return "sm";
-
-    if (inputValue.length < 5) return "xs";
-
-    return "xxs";
-  }, [inputValue.length]);
+  const { textColor, gradientColors, labelBgColor } = useHabitColors(
+    isCompleted,
+    habit.color,
+  );
 
   const onCardPress = useCallback(() => {
     if (isCheckHabitType) {
@@ -105,53 +84,16 @@ const HabitBody = ({
         )}
         <RowContainer>
           <InfoContainer>
-            <AnimatedCircularProgress
-              duration={600}
-              easing={Easing.ease}
-              fill={Math.min(percentageCompleted ?? 0, 100)}
-              size={CIRCLE_SIZE}
-              width={CIRCLE_WIDTH}
-              rotation={0}
-              tintColor={tintColor}
-              backgroundColor={bgTintColor}
-            >
-              {() => (
-                <InnerContainer isCompleted={isCompleted}>
-                  {isCheckHabitType ? (
-                    <Checkbox
-                      isActive={isCompleted}
-                      borderRadius={0}
-                      size={CIRCLE_SIZE}
-                      iconSize={theme.fontSizes.md}
-                      iconColor={textColor}
-                      bgColor={checkboxBgColor}
-                    />
-                  ) : (
-                    <>
-                      <Input
-                        value={inputValue}
-                        inputRef={inputRef}
-                        isCentered
-                        paddingHorizontal={0}
-                        maxLength={7}
-                        numberOfLines={1}
-                        keyboardType="number-pad"
-                        fontWeight="semibold"
-                        labelColor={textColor}
-                        bgColor={checkboxBgColor}
-                        withBorder={false}
-                        selectTextOnFocus
-                        fontSize={inputFontSize}
-                        onChange={onChange ?? noop}
-                        onBlur={updateLog}
-                        editable={!!onChange}
-                      />
-                    </>
-                  )}
-                </InnerContainer>
-              )}
-            </AnimatedCircularProgress>
-
+            <ItemCircularProgress
+              inputValue={inputValue}
+              color={habit.color}
+              isCheckType={isCheckHabitType}
+              isCompleted={isCompleted}
+              percentageCompleted={percentageCompleted}
+              handleUpdate={updateLog}
+              onChange={onChange}
+              inputRef={inputRef}
+            />
             <LabelContainer>
               <Typography
                 color={textColor}
@@ -219,14 +161,6 @@ const InfoContainer = styled.View`
   flex-direction: row;
   align-items: center;
   flex: 1;
-`;
-
-const InnerContainer = styled.View<{ isCompleted: boolean }>`
-  border-radius: 999px;
-  height: 100%;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
 `;
 
 const LabelContainer = styled.View`

@@ -157,17 +157,14 @@
     "groups": "Groups",
     "subgroups": "Subgroups",
     "subtasks": "Subtasks",
-    "projects": "Projects",
     "task": "Task",
     "group": "Group",
     "subgroup": "Subgroup",
     "subtask": "Subtask",
-    "project": "Project",
     "taskPlaceholder": "Enter task name...",
     "groupPlaceholder": "Enter group name...",
     "subgroupPlaceholder": "Enter subgroup name...",
     "subtaskPlaceholder": "Enter subtask name...",
-    "projectPlaceholder": "Enter project name...",
     "dueDateOptions": {
       "today": "Today",
       "tomorrow": "Tomorrow",
@@ -175,6 +172,20 @@
       "this_month": "This month",
       "this_year": "This year",
       "custom": "Custom"
+    },
+    "moveOutside": "Move outside",
+    "moveTo": "Move to",
+    "noDueDate": "No due date",
+    "categoriesTab": "Categories",
+    "allTasks": "All tasks",
+    "categories": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this_week": "This week",
+      "next_week": "Next week",
+      "this_month": "This month",
+      "this_year": "This year"
     }
   }
 }

@@ -2,7 +2,7 @@ import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, RefreshControl } from "react-native";
 import theme from "theme";
 
 import { Entypo, Ionicons } from "@expo/vector-icons";
@@ -40,7 +40,7 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const [fetchHabits, { isLoading, isUninitialized }] =
+  const [fetchHabits, { isLoading, isUninitialized, isFetching }] =
     habitsApi.useLazyFetchHabitsQuery();
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
@@ -116,6 +116,13 @@ const HabitsScreen = (): JSX.Element => {
             overScrollMode="never"
             bounces={false}
             automaticallyAdjustKeyboardInsets
+            refreshControl={
+              <RefreshControl
+                colors={[theme.colors.cyan600]}
+                refreshing={isFetching}
+                onRefresh={fetchInitialData}
+              />
+            }
           >
             <HabitsWeekCalendar
               selectedDate={selectedDate}

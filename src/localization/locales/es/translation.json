@@ -156,17 +156,14 @@
     "groups": "Grupos",
     "subgroups": "Subgrupos",
     "subtasks": "Subtareas",
-    "projects": "Proyectos",
     "task": "Tarea",
     "group": "Grupo",
     "subgroup": "Subgrupo",
     "subtask": "Subtarea",
-    "project": "Proyecto",
     "taskPlaceholder": "Introduce el nombre de la tarea...",
     "groupPlaceholder": "Introduce el nombre del grupo...",
     "subgroupPlaceholder": "Introduce el nombre del subgrupo...",
     "subtaskPlaceholder": "Introduce el nombre de la subtarea...",
-    "projectPlaceholder": "Introduce el nombre del proyecto...",
     "dueDateOptions": {
       "today": "Hoy",
       "tomorrow": "Mañana",
@@ -174,6 +171,20 @@
       "this_month": "Este mes",
       "this_year": "Este año",
       "custom": "Personalizado"
+    },
+    "moveOutside": "Mover afuera",
+    "moveTo": "Mover a",
+    "noDueDate": "Sin fecha de vencimiento",
+    "categoriesTab": "Categorías",
+    "allTasks": "Todas las tareas",
+    "categories": {
+      "overdue": "Atrasadas",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "this_week": "Esta semana",
+      "next_week": "La próxima semana",
+      "this_month": "Este mes",
+      "this_year": "Este año"
     }
   }
 }

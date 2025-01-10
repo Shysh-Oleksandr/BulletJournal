@@ -356,6 +356,7 @@ const EditNoteScreen: FC<{
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           contentContainerStyle={contentContainerStyle}
+          keyboardShouldPersistTaps="handled"
         >
           <HeaderSection>
             <ButtonGroup>

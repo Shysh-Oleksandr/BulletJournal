@@ -10,6 +10,7 @@ type SwitcherProps = {
   selectedOption: string;
   setSelectedOption: (option: string) => void;
   getLocalizedOption?: (option: string) => string;
+  fullWidth?: boolean;
 };
 
 const Switcher = ({
@@ -17,14 +18,16 @@ const Switcher = ({
   selectedOption,
   setSelectedOption,
   getLocalizedOption,
+  fullWidth,
 }: SwitcherProps) => {
   return (
-    <Container>
+    <Container fullWidth={fullWidth}>
       {options.map((option) => (
         <Option
           key={option}
           isSelected={selectedOption === option}
           onPress={() => setSelectedOption(option)}
+          fullWidth={fullWidth}
         >
           <Typography
             color={
@@ -34,6 +37,8 @@ const Switcher = ({
             }
             fontWeight={selectedOption === option ? "bold" : "semibold"}
             fontSize="sm"
+            numberOfLines={1}
+            adjustsFontSizeToFit
           >
             {getLocalizedOption ? getLocalizedOption(option) : option}
           </Typography>
@@ -45,17 +50,23 @@ const Switcher = ({
 
 export default Switcher;
 
-const Container = styled.View`
+const Container = styled.View<{ fullWidth?: boolean }>`
   flex-direction: row;
   background-color: ${theme.colors.cyan300};
   border-radius: 20px;
-  padding: 3px;
+  padding: 2px;
+  ${({ fullWidth }) => fullWidth && `flex: 1;`}
 `;
 
-const Option = styled.TouchableOpacity<{ isSelected: boolean }>`
-  padding: 9px 12px;
+const Option = styled.TouchableOpacity<{
+  isSelected: boolean;
+  fullWidth?: boolean;
+}>`
+  padding: 9px 10px;
   align-items: center;
   border-radius: 20px;
   background-color: ${({ isSelected }) =>
     isSelected ? theme.colors.cyan500 : "transparent"};
+
+  ${({ fullWidth }) => fullWidth && `flex: 1;`}
 `;

@@ -158,17 +158,14 @@
     "groups": "Групи",
     "subgroups": "Підгрупи",
     "subtasks": "Підзавдання",
-    "projects": "Проєкти",
     "task": "Завдання",
     "group": "Група",
     "subgroup": "Підгрупа",
     "subtask": "Підзавдання",
-    "project": "Проєкт",
     "taskPlaceholder": "Введіть назву завдання...",
     "groupPlaceholder": "Введіть назву групи...",
     "subgroupPlaceholder": "Введіть назву підгрупи...",
     "subtaskPlaceholder": "Введіть назву підзавдання...",
-    "projectPlaceholder": "Введіть назву проєкту...",
     "dueDateOptions": {
       "today": "Сьогодні",
       "tomorrow": "Завтра",
@@ -176,6 +173,20 @@
       "this_month": "Цього місяця",
       "this_year": "Цього року",
       "custom": "Власний"
+    },
+    "moveOutside": "Перемістити назовні",
+    "moveTo": "Перемістити до",
+    "noDueDate": "Без дати завершення",
+    "categoriesTab": "Категорії",
+    "allTasks": "Усі завдання",
+    "categories": {
+      "overdue": "Прострочені",
+      "today": "Сьогодні",
+      "tomorrow": "Завтра",
+      "this_week": "Цього тижня",
+      "next_week": "Наступного тижня",
+      "this_month": "Цього місяця",
+      "this_year": "Цього року"
     }
   }
 }
