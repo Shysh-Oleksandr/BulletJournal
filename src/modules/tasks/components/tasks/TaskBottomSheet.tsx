@@ -9,7 +9,9 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import theme from "theme";
 
+import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
+import { getTaskPath } from "modules/tasks/TasksSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
 
 import { tasksApi } from "../../TasksApi";
@@ -45,6 +47,11 @@ const TaskBottomSheet = ({
   const [updateTask] = tasksApi.useUpdateTaskMutation();
 
   const userId = useAppSelector(getUserId);
+  const taskPath = useAppSelector((state) =>
+    task || parentTaskId
+      ? getTaskPath(state, task?._id ?? parentTaskId!, !task?._id)
+      : null,
+  );
 
   const inputRef = useRef<TextInput | null>(null);
 
@@ -133,6 +140,15 @@ const TaskBottomSheet = ({
       onClose={handleUpdateTask}
       content={(closeModal) => (
         <>
+          {taskPath && (
+            <Typography
+              color={task?.color ?? theme.colors.darkBlueText}
+              fontWeight="semibold"
+            >
+              {taskPath}
+            </Typography>
+          )}
+
           <TaskItemInput
             inputRef={inputRef}
             name={formValues.name}

@@ -10,6 +10,7 @@ import styled from "styled-components/native";
 
 import { tasksApi } from "../../TasksApi";
 import {
+  getGroupPath,
   getSubGroupsByGroupId,
   getTasksCountInfoByGroupId,
 } from "../../TasksSelectors";
@@ -39,6 +40,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getTasksCountInfoByGroupId(state, group._id),
   );
+  const groupPath = useAppSelector((state) => getGroupPath(state, group._id));
 
   const [name, setName] = useState(group.name);
   const [color, setColor] = useState(group.color);
@@ -74,6 +76,14 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
       onClose={handleUpdateGroup}
       content={(closeModal) => (
         <>
+          {groupPath && (
+            <Typography
+              color={group?.color ?? theme.colors.darkBlueText}
+              fontWeight="semibold"
+            >
+              {groupPath}
+            </Typography>
+          )}
           <TaskItemInput
             name={name}
             setName={setName}

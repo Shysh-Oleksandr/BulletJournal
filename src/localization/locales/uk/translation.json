@@ -179,6 +179,7 @@
     "noDueDate": "Без дати завершення",
     "categoriesTab": "Категорії",
     "allTasks": "Усі завдання",
+    "previouslyCompleted": "Раніше виконано",
     "categories": {
       "overdue": "Прострочені",
       "today": "Сьогодні",

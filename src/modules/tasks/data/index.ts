@@ -36,11 +36,13 @@ export const PERIODS_DATA: TaskCategoryPeriod[] = [
     name: "today",
     start: START_OF_TODAY,
     end: END_OF_TODAY,
+    color: theme.colors.cyan600,
   },
   {
     name: "tomorrow",
     start: addDays(START_OF_TODAY, 1).getTime(),
     end: addDays(END_OF_TODAY, 1).getTime(),
+    color: theme.colors.policeBlue,
   },
   {
     name: "this_week",

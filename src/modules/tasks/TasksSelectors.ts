@@ -4,6 +4,7 @@ import createCachedSelector from "re-reselect";
 import { RootState } from "../../store/store";
 
 import { tasksApi } from "./TasksApi";
+import { GroupItem, TaskItem } from "./types";
 import { calculateTasksCountInfo } from "./utils/calculateTasksCountInfo";
 
 export const getAllGroups = createCachedSelector(
@@ -48,6 +49,105 @@ export const getTasksByGroupId = createCachedSelector(
   (_: RootState, groupId: string) => groupId,
   (tasks, groupId) => tasks.filter((task) => task.groupId === groupId),
 )((_: RootState, groupId: string) => groupId);
+
+export const getTaskPath = createCachedSelector(
+  [
+    (state: RootState) => getAllGroups(state),
+    (state: RootState) => getAllTasks(state),
+    (_: RootState, taskId: string) => taskId,
+    (_: RootState, _taskId: string, includeCurrentTask: boolean) =>
+      includeCurrentTask,
+  ],
+  (groups, tasks, taskId, includeCurrentTask) => {
+    const taskMap = new Map(tasks.map((task) => [task._id, task]));
+    const groupMap = new Map(groups.map((group) => [group._id, group]));
+
+    const buildPath = (
+      itemId: string | null | undefined,
+      isTask = true,
+      includeCurrent = false,
+    ): string[] => {
+      if (!itemId) return [];
+      const map = isTask ? taskMap : groupMap;
+      const item = map.get(itemId);
+
+      if (!item) return [];
+      const parentId = isTask
+        ? (item as TaskItem).parentTaskId || (item as TaskItem).groupId
+        : (item as GroupItem).parentGroupId;
+
+      const currentName = includeCurrent ? [item.name] : [];
+
+      return [
+        ...buildPath(parentId, !isTask && !parentId, true),
+        ...currentName,
+      ];
+    };
+
+    const task = taskMap.get(taskId);
+
+    if (!task) return "";
+
+    // Determine the starting point for the path
+    const parentId = task.parentTaskId || task.groupId;
+
+    // Build path excluding or including the current task's name based on `includeCurrentTask`
+    const path = parentId
+      ? buildPath(parentId, !!task.parentTaskId, true)
+      : includeCurrentTask
+        ? [task.name]
+        : [];
+
+    // Add the current task's name if needed
+    if (includeCurrentTask && task.name) {
+      path.push(task.name);
+    }
+
+    return path.length > 0 ? `${path.join(" > ")} >` : "";
+  },
+)(
+  (_: RootState, taskId: string, includeCurrentTask: boolean) =>
+    `${taskId}_${includeCurrentTask}`,
+);
+
+export const getGroupPath = createCachedSelector(
+  [
+    (state: RootState) => getAllGroups(state),
+    (_: RootState, groupId: string) => groupId,
+    (_: RootState, _groupId: string, includeCurrentGroup: boolean) =>
+      includeCurrentGroup,
+  ],
+  (groups, groupId, includeCurrentGroup) => {
+    const groupMap = new Map(groups.map((group) => [group._id, group]));
+
+    const buildPath = (
+      groupId: string | null | undefined,
+      includeCurrent = false,
+    ): string[] => {
+      if (!groupId) return [];
+      const group = groupMap.get(groupId);
+
+      if (!group) return [];
+      const parentGroupId = group.parentGroupId;
+
+      const currentName = includeCurrent ? [group.name] : [];
+
+      return [...buildPath(parentGroupId, true), ...currentName];
+    };
+
+    const group = groupMap.get(groupId);
+
+    if (!group) return "";
+
+    // Build path excluding or including the current group's name based on `includeCurrentGroup`
+    const path = buildPath(groupId, includeCurrentGroup).join(" > ");
+
+    return path ? `${path} >` : "";
+  },
+)(
+  (_: RootState, groupId: string, includeCurrentGroup: boolean) =>
+    `${groupId}_${includeCurrentGroup}`,
+);
 
 export const getTasksCountInfoByGroupId = createCachedSelector(
   getTasksByGroupId,

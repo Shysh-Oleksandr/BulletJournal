@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import theme from "theme";
 
+import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
+import { getGroupPath } from "modules/tasks/TasksSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
 
 import { tasksApi } from "../../TasksApi";
@@ -20,6 +22,9 @@ const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const [createGroup] = tasksApi.useCreateGroupMutation();
+  const groupPath = useAppSelector((state) =>
+    parentGroupId ? getGroupPath(state, parentGroupId, true) : null,
+  );
 
   const userId = useAppSelector(getUserId);
 
@@ -61,21 +66,30 @@ const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
       }}
       onClose={handleCreateGroup}
       content={(closeModal) => (
-        <TaskItemInput
-          inputRef={inputRef}
-          name={name}
-          setName={setName}
-          color={color}
-          setColor={setColor}
-          inputPlaceholder={t(
-            isSubgroup ? "tasks.subgroupPlaceholder" : "tasks.groupPlaceholder",
+        <>
+          {groupPath && (
+            <Typography color={color} fontWeight="semibold">
+              {groupPath}
+            </Typography>
           )}
-          onSubmitEditing={() => {
-            handleCreateGroup();
-            closeModal();
-          }}
-          onReset={hasChanges ? handleReset : undefined}
-        />
+          <TaskItemInput
+            inputRef={inputRef}
+            name={name}
+            setName={setName}
+            color={color}
+            setColor={setColor}
+            inputPlaceholder={t(
+              isSubgroup
+                ? "tasks.subgroupPlaceholder"
+                : "tasks.groupPlaceholder",
+            )}
+            onSubmitEditing={() => {
+              handleCreateGroup();
+              closeModal();
+            }}
+            onReset={hasChanges ? handleReset : undefined}
+          />
+        </>
       )}
     >
       {(openModal) => (

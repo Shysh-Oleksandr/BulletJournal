@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import theme from "theme";
 
 import { PERIODS_DATA } from "modules/tasks/data";
 import {
@@ -48,10 +49,12 @@ const CategorizedTasksSection = (): JSX.Element => {
         <CategorizedTasksListItem
           tasks={completedPastTasks}
           name={t("tasks.previouslyCompleted")}
+          color={theme.colors.green700}
         />
         <CategorizedTasksListItem
           tasks={archivedTasks}
           name={t("habits.theArchive")}
+          color={theme.colors.darkGray}
         />
       </CategoryContainer>
     </Container>

@@ -21,6 +21,7 @@ declare module "styled-components/native" {
       red600: string;
       red500: string;
       green600: string;
+      green700: string;
       policeBlue: string;
       darkSkyBlue: string;
       bubbles: string;
