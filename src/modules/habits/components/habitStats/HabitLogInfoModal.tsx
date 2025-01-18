@@ -17,7 +17,7 @@ const screenHeight = Dimensions.get("window").height;
 const isSmallScreen = screenHeight < 700;
 const isBigScreen = screenHeight > 800;
 
-const regularModalHeight = isSmallScreen ? 0.57 : 0.47;
+const regularModalHeight = isSmallScreen ? 0.6 : 0.5;
 const modalHeight = screenHeight * (isBigScreen ? 0.42 : regularModalHeight);
 
 enum LogOptionalStatus {
@@ -153,7 +153,7 @@ const HabitLogInfoModal = ({
           maxLength={400}
           fontSize="lg"
           onChange={setNote}
-          maxHeight={isSmallScreen ? 150 : 174}
+          maxHeight={150}
         />
       </LogNoteContainer>
     </CustomModal>
