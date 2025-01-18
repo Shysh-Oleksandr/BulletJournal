@@ -1,4 +1,4 @@
-import { isWithinInterval } from "date-fns";
+import { isPast, isWithinInterval } from "date-fns";
 import createCachedSelector from "re-reselect";
 
 import { RootState } from "../../store/store";
@@ -69,8 +69,14 @@ export const getOrphanedGroups = createCachedSelector(getAllGroups, (groups) =>
   groups.filter((group) => !group.parentGroupId),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
-export const getOrphanedTasks = createCachedSelector(getAllTasks, (tasks) =>
+export const getAllOrphanedTasks = createCachedSelector(getAllTasks, (tasks) =>
   tasks.filter((task) => !task.groupId && !task.parentTaskId),
+)((state: RootState) => state.auth.user?._id ?? "no_user");
+
+export const getOrphanedTasks = createCachedSelector(getAllTasks, (tasks) =>
+  tasks.filter(
+    (task) => !task.groupId && !task.parentTaskId && !task.isArchived,
+  ),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
 export const getArchivedTasks = createCachedSelector(getAllTasks, (tasks) =>
@@ -80,6 +86,14 @@ export const getArchivedTasks = createCachedSelector(getAllTasks, (tasks) =>
 export const getTasksWithoutDueDate = createCachedSelector(
   getAllTasks,
   (tasks) => tasks.filter((task) => !task.dueDate),
+)((state: RootState) => state.auth.user?._id ?? "no_user");
+
+export const getCompletedPastTasks = createCachedSelector(
+  getAllTasks,
+  (tasks) =>
+    tasks.filter(
+      (task) => task.isCompleted && task.dueDate && isPast(task.dueDate),
+    ),
 )((state: RootState) => state.auth.user?._id ?? "no_user");
 
 export const getTasksWithinPeriod = createCachedSelector(
@@ -93,6 +107,7 @@ export const getTasksWithinPeriod = createCachedSelector(
       (task) =>
         !task.isArchived &&
         task.dueDate &&
+        (!task.isCompleted || startDate > 0) &&
         isWithinInterval(task.dueDate, { start: startDate, end: endDate }),
     ),
 )((_, startDate, endDate) => `${startDate}-${endDate}`);

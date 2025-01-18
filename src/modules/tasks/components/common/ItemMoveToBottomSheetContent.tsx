@@ -11,7 +11,7 @@ import { getUserId } from "modules/auth/AuthSlice";
 import { tasksApi } from "modules/tasks/TasksApi";
 import {
   getOrphanedGroups,
-  getOrphanedTasks,
+  getAllOrphanedTasks,
 } from "modules/tasks/TasksSelectors";
 import { GroupItem, TaskItem } from "modules/tasks/types";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -37,7 +37,7 @@ const ItemMoveToBottomSheetContent = ({
 
   const userId = useAppSelector(getUserId);
   const orphanedGroups = useAppSelector(getOrphanedGroups);
-  const orphanedTasks = useAppSelector(getOrphanedTasks);
+  const orphanedTasks = useAppSelector(getAllOrphanedTasks);
 
   const isTask = "type" in item;
 
@@ -154,7 +154,7 @@ const ItemMoveToBottomSheetContent = ({
 
 const Container = styled.View`
   gap: 6px;
-  padding-bottom: 85px;
+  padding-bottom: 20px;
 `;
 
 const ItemsListContainer = styled.View`

@@ -100,7 +100,7 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
             isActive={option === selectedDueDateOption && !!dueDate}
           >
             <FontAwesome
-              name="calendar-check-o"
+              name="calendar-times-o"
               color={theme.colors.darkBlueText}
               size={13}
             />

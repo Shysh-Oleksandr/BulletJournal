@@ -11,6 +11,7 @@ import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
 import { TaskItem, TaskTypes } from "../../types";
 import DueDateLabel from "../common/DueDateLabel";
 import ItemActionsList from "../common/ItemActionsList";
+import { TaskLabelContainer } from "../common/TaskLabelContainer";
 
 import SubtasksListSection from "./SubtasksListSection";
 import TaskBottomSheet from "./TaskBottomSheet";
@@ -52,7 +53,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
             <LabelsContainer>
               <DueDateLabel task={task} />
               {!isCheckType && (
-                <LabelContainer>
+                <TaskLabelContainer>
                   <FontAwesome5
                     name="sort-amount-up"
                     color={task.color}
@@ -62,10 +63,10 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                     {task.completedAmount ?? 0}/{task.target ?? 0}{" "}
                     {task.units ?? ""}
                   </Typography>
-                </LabelContainer>
+                </TaskLabelContainer>
               )}
               {tasksCount > 0 && (
-                <LabelContainer>
+                <TaskLabelContainer>
                   <FontAwesome5
                     name="tasks"
                     color={task.color}
@@ -74,10 +75,10 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   <Typography fontSize="xs" color={task.color}>
                     {completedTasksCount}/{tasksCount}
                   </Typography>
-                </LabelContainer>
+                </TaskLabelContainer>
               )}
               {task.isArchived && (
-                <LabelContainer>
+                <TaskLabelContainer>
                   <Entypo
                     name="archive"
                     size={theme.fontSizes.xs}
@@ -86,7 +87,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   <Typography fontSize="xs" color={task.color}>
                     {t("habits.theArchive")}
                   </Typography>
-                </LabelContainer>
+                </TaskLabelContainer>
               )}
             </LabelsContainer>
           </InfoContainer>
@@ -113,14 +114,6 @@ const LabelsContainer = styled.View`
 
 const InfoContainer = styled.TouchableOpacity`
   flex: 1;
-`;
-
-const LabelContainer = styled.View`
-  padding: 3px 6px;
-  border-radius: 6px;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
 `;
 
 export default React.memo(TaskDisplayItem);

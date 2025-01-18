@@ -17,6 +17,7 @@ import { GroupItem } from "../../types";
 import ItemActionsList from "../common/ItemActionsList";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
 import TaskItemInput from "../common/TaskItemInput";
+import { TaskLabelContainer } from "../common/TaskLabelContainer";
 
 import SubgroupsListSection from "./SubgroupsListSection";
 
@@ -102,7 +103,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
           </Typography>
           <LabelsContainer>
             {subGroups.length > 0 && (
-              <LabelContainer>
+              <TaskLabelContainer>
                 <FontAwesome5
                   name="layer-group"
                   color={group.color}
@@ -111,10 +112,10 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
                 <Typography fontSize="xs" color={group.color}>
                   {subGroups.length}
                 </Typography>
-              </LabelContainer>
+              </TaskLabelContainer>
             )}
             {tasksCount > 0 && (
-              <LabelContainer>
+              <TaskLabelContainer>
                 <FontAwesome5
                   name="tasks"
                   color={group.color}
@@ -123,7 +124,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
                 <Typography fontSize="xs" color={group.color}>
                   {completedTasksCount}/{tasksCount}
                 </Typography>
-              </LabelContainer>
+              </TaskLabelContainer>
             )}
           </LabelsContainer>
         </HeaderInfo>
@@ -135,14 +136,6 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
 const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
-`;
-
-const LabelContainer = styled.View`
-  padding: 3px 6px;
-  border-radius: 6px;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
 `;
 
 const HeaderInfo = styled.TouchableOpacity`

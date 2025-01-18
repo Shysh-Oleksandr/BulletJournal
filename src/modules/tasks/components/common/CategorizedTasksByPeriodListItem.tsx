@@ -31,6 +31,7 @@ const CategorizedTasksByPeriodListItem = ({
       name={t("tasks.categories." + taskCategoryPeriod.name)}
       color={taskCategoryPeriod.color}
       defaultDueDate={taskCategoryPeriod.end}
+      startDate={taskCategoryPeriod.start}
     />
   );
 };
