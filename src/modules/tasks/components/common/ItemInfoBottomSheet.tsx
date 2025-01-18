@@ -49,7 +49,6 @@ const ItemInfoBottomSheet = ({
         setCloseTriggered={setCloseTriggered}
         bgOpacity={0.4}
         modalAnimationTime={200}
-        maxHeight="85%"
         {...bottomModalProps}
       >
         <ContentContainer
