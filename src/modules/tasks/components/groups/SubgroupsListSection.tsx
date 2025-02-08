@@ -26,22 +26,24 @@ const SubgroupsListSection = ({ group, depth }: Props): JSX.Element => {
 
   return (
     <SubGroupsSectionContainer>
-      <Typography
-        fontWeight="semibold"
-        fontSize="xl"
-        color={theme.colors.darkBlueText}
-      >
-        {t("tasks.subgroups")}:
-      </Typography>
-      <SubGroupsContainer>
-        {subgroups.map((subgroup) => (
-          <GroupHeaderDisplayItem
-            key={subgroup._id}
-            group={subgroup}
-            depth={depth + 1}
-          />
-        ))}
-      </SubGroupsContainer>
+      {subgroups.length > 0 && (
+        <>
+          <Typography
+            fontWeight="semibold"
+            fontSize="xl"
+            color={theme.colors.darkBlueText}
+          >
+            {t("tasks.subgroups")}:
+          </Typography>
+          <SubGroupsContainer>
+            {subgroups.map((subgroup) => (
+              <SubGroupItemContainer key={subgroup._id}>
+                <GroupHeaderDisplayItem group={subgroup} depth={depth + 1} />
+              </SubGroupItemContainer>
+            ))}
+          </SubGroupsContainer>
+        </>
+      )}
       <AddGroup parentGroupId={group._id} isSubgroup />
     </SubGroupsSectionContainer>
   );
@@ -52,8 +54,14 @@ const SubGroupsSectionContainer = styled.View`
   gap: 10px;
 `;
 const SubGroupsContainer = styled.View`
-  gap: 12px;
-  padding-horizontal: 8px;
+  gap: 8px;
+`;
+
+const SubGroupItemContainer = styled.View`
+  background-color: ${theme.colors.white};
+  border-radius: 8px;
+  padding: 8px 12px;
+  elevation: 1;
 `;
 
 export default React.memo(SubgroupsListSection);

@@ -20,7 +20,7 @@ type Props = {
   handlePress: (item: GroupItem | TaskItem) => void;
 };
 
-const MoveToListItem = ({
+const TaskSearchItem = ({
   item,
   searchValue = "",
   depth = 0,
@@ -106,7 +106,7 @@ const MoveToListItem = ({
 
       <SubItemsContainer>
         {filteredSubItems.map((subItem) => (
-          <MoveToListItem
+          <TaskSearchItem
             key={subItem._id}
             item={subItem}
             searchValue={searchValue}
@@ -135,4 +135,4 @@ const SubItemsContainer = styled.View`
   margin-top: 6px;
 `;
 
-export default React.memo(MoveToListItem);
+export default React.memo(TaskSearchItem);

@@ -177,6 +177,7 @@
     "noDueDate": "Kein Fälligkeitsdatum",
     "categoriesTab": "Kategorien",
     "allTasks": "Alle Aufgaben",
+    "previouslyCompleted": "Zuvor erledigt",
     "categories": {
       "overdue": "Überfällig",
       "today": "Heute",

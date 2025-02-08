@@ -177,6 +177,7 @@
     "noDueDate": "Sin fecha de vencimiento",
     "categoriesTab": "Categorías",
     "allTasks": "Todas las tareas",
+    "previouslyCompleted": "Anteriormente completadas",
     "categories": {
       "overdue": "Atrasadas",
       "today": "Hoy",

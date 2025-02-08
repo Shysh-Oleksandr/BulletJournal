@@ -14,10 +14,10 @@ import TaskDisplayItem from "./TaskDisplayItem";
 
 type Props = {
   task: TaskItem;
-  depth: number;
+  depth?: number;
 };
 
-const SubtasksListSection = ({ task, depth }: Props): JSX.Element => {
+const SubtasksListSection = ({ task, depth = 0 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const subtasks = useAppSelector((state) =>

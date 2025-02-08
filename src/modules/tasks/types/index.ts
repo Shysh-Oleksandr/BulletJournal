@@ -1,4 +1,4 @@
-type CommonTaskItem = {
+export type CommonTaskItem = {
   _id: string;
   author: string;
   name: string;

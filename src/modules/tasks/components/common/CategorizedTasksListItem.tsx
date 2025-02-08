@@ -1,7 +1,8 @@
+import { format, isSameDay } from "date-fns";
 import React, { useMemo } from "react";
 import theme from "theme";
 
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { calculateTasksCountInfo } from "modules/tasks/utils/calculateTasksCountInfo";
 import styled from "styled-components/native";
@@ -11,11 +12,14 @@ import GroupItemAccordion from "../groups/GroupItemAccordion";
 import AddTaskButton from "../tasks/AddTaskButton";
 import TaskDisplayItem from "../tasks/TaskDisplayItem";
 
+import { TaskLabelContainer } from "./TaskLabelContainer";
+
 type Props = {
   tasks: TaskItem[];
   name: string;
   color?: string;
   defaultDueDate?: number;
+  startDate?: number;
 };
 
 const CategorizedTasksListItem = ({
@@ -23,6 +27,7 @@ const CategorizedTasksListItem = ({
   name,
   color,
   defaultDueDate,
+  startDate,
 }: Props): JSX.Element | null => {
   const { percentageCompleted, completedTasksCount, tasksCount } = useMemo(
     () => calculateTasksCountInfo(tasks),
@@ -38,16 +43,30 @@ const CategorizedTasksListItem = ({
           <Typography fontWeight="bold" color={color}>
             {name}
           </Typography>
-          <LabelContainer>
-            <FontAwesome5
-              name="tasks"
-              color={color}
-              size={theme.fontSizes.xs}
-            />
-            <Typography fontSize="xs" color={color}>
-              {completedTasksCount}/{tasksCount}
-            </Typography>
-          </LabelContainer>
+          <LabelsContainer>
+            <TaskLabelContainer>
+              <FontAwesome5
+                name="tasks"
+                color={color}
+                size={theme.fontSizes.xs}
+              />
+              <Typography fontSize="xs" color={color}>
+                {completedTasksCount}/{tasksCount}
+              </Typography>
+            </TaskLabelContainer>
+            {!!startDate && !!defaultDueDate && (
+              <TaskLabelContainer>
+                <FontAwesome
+                  name="calendar-check-o"
+                  color={color}
+                  size={theme.fontSizes.xs}
+                />
+                <Typography fontSize="xs" color={color}>
+                  {`${format(startDate, "dd/MM/yyyy")}${isSameDay(startDate, defaultDueDate) ? "" : ` - ${format(defaultDueDate, "dd/MM/yyyy")}`}`}
+                </Typography>
+              </TaskLabelContainer>
+            )}
+          </LabelsContainer>
         </HeaderContainer>
       }
       content={
@@ -72,12 +91,9 @@ const ContentContainer = styled.View`
   padding: 2px 0px 8px;
 `;
 
-const LabelContainer = styled.View`
-  padding: 3px 6px;
-  border-radius: 6px;
+const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  gap: 4px;
 `;
 
 export default React.memo(CategorizedTasksListItem);
