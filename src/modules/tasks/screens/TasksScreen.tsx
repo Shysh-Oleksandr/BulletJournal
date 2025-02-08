@@ -15,6 +15,7 @@ import styled from "styled-components/native";
 
 import AllTasksContent from "../components/AllTasksContent";
 import CategorizedTasksSection from "../components/common/CategorizedTasksSection";
+import TasksSearch from "../components/common/TasksSearch";
 import TaskBottomSheet from "../components/tasks/TaskBottomSheet";
 import { useFetchTaskElements } from "../hooks/useFetchTaskElements";
 
@@ -27,7 +28,10 @@ const TasksScreen = (): JSX.Element => {
 
   return (
     <>
-      <HeaderBar title={t("tasks.tasks")} />
+      <HeaderBar
+        title={t("tasks.tasks")}
+        trailingContent={() => <TasksSearch />}
+      />
 
       <TaskBottomSheet>
         {(openModal) => (

@@ -125,7 +125,6 @@ const HabitsCalendarBottomSheet = ({
   return (
     <BottomModal
       title={t("calendar.calendar")}
-      height="85%"
       isVisible={isVisible}
       setIsVisible={setIsVisible}
       onClose={onClose}

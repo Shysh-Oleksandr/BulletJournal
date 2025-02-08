@@ -36,7 +36,7 @@ const BottomModal = ({
   modalAnimationTime = 300,
   closeTriggered,
   paddingHorizontal = 20,
-  maxHeight,
+  maxHeight = "85%",
   isVisible,
   children,
   height,
@@ -97,45 +97,44 @@ const BottomModal = ({
         height={modalHeight}
         minHeight={minHeight}
         topBorderRadius={borderRadius}
+        paddingHorizontal={paddingHorizontal}
       >
-        <SContentContainer paddingHorizontal={paddingHorizontal}>
-          {withHeader && (
-            <>
-              <SModalHeader withPadding={paddingHorizontal === 0}>
+        {withHeader && (
+          <>
+            <SModalHeader withPadding={paddingHorizontal === 0}>
+              <Typography
+                fontSize="xl"
+                align="center"
+                fontWeight="bold"
+                lineHeight={27}
+              >
+                {title}
+              </Typography>
+
+              <CloseButtonContainer
+                onPress={closeModal}
+                hitSlop={BIG_BUTTON_HIT_SLOP}
+              >
                 <Typography
-                  fontSize="xl"
-                  align="center"
-                  fontWeight="bold"
-                  lineHeight={27}
+                  fontWeight="semibold"
+                  fontSize="md"
+                  color={theme.colors.darkGray}
                 >
-                  {title}
+                  {t("general.close")}
                 </Typography>
+              </CloseButtonContainer>
+            </SModalHeader>
 
-                <CloseButtonContainer
-                  onPress={closeModal}
-                  hitSlop={BIG_BUTTON_HIT_SLOP}
-                >
-                  <Typography
-                    fontWeight="semibold"
-                    fontSize="md"
-                    color={theme.colors.darkGray}
-                  >
-                    {t("general.close")}
-                  </Typography>
-                </CloseButtonContainer>
-              </SModalHeader>
+            {withDividerBelowHeader && (
+              <Divider
+                lineColor={theme.colors.darkBlueText}
+                lineOpacity={0.2}
+              />
+            )}
+          </>
+        )}
 
-              {withDividerBelowHeader && (
-                <Divider
-                  lineColor={theme.colors.darkBlueText}
-                  lineOpacity={0.2}
-                />
-              )}
-            </>
-          )}
-
-          {children}
-        </SContentContainer>
+        {children}
       </SLinearGradient>
       <Toast topOffset={60} visibilityTime={2000} />
     </AnimatedModalContainer>
@@ -147,6 +146,7 @@ const SLinearGradient = styled(LinearGradient)<{
   minHeight?: string;
   height?: string;
   topBorderRadius: number;
+  paddingHorizontal: number;
 }>`
   width: 100%;
   max-height: ${(props) => props.maxHeight};
@@ -154,12 +154,6 @@ const SLinearGradient = styled(LinearGradient)<{
   ${(props) => props.minHeight && `min-height: ${props.minHeight};`}
   border-top-right-radius: ${({ topBorderRadius }) => topBorderRadius}px;
   border-top-left-radius: ${({ topBorderRadius }) => topBorderRadius}px;
-`;
-
-const SContentContainer = styled.View<{
-  paddingHorizontal: number;
-}>`
-  width: 100%;
   padding-horizontal: ${({ paddingHorizontal }) => paddingHorizontal}px;
 `;
 

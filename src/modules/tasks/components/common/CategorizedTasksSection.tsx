@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import theme from "theme";
 
 import { PERIODS_DATA } from "modules/tasks/data";
 import {
   getArchivedTasks,
+  getCompletedPastTasks,
   getTasksWithoutDueDate,
 } from "modules/tasks/TasksSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -22,6 +24,7 @@ const CategorizedTasksSection = (): JSX.Element => {
 
   const archivedTasks = useAppSelector(getArchivedTasks);
   const tasksWithoutDueDate = useAppSelector(getTasksWithoutDueDate);
+  const completedPastTasks = useAppSelector(getCompletedPastTasks);
 
   return (
     <Container
@@ -44,8 +47,14 @@ const CategorizedTasksSection = (): JSX.Element => {
           name={t("tasks.noDueDate")}
         />
         <CategorizedTasksListItem
+          tasks={completedPastTasks}
+          name={t("tasks.previouslyCompleted")}
+          color={theme.colors.green700}
+        />
+        <CategorizedTasksListItem
           tasks={archivedTasks}
           name={t("habits.theArchive")}
+          color={theme.colors.darkGray}
         />
       </CategoryContainer>
     </Container>

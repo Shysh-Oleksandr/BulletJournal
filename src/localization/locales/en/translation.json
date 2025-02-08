@@ -178,6 +178,7 @@
     "noDueDate": "No due date",
     "categoriesTab": "Categories",
     "allTasks": "All tasks",
+    "previouslyCompleted": "Previously completed",
     "categories": {
       "overdue": "Overdue",
       "today": "Today",

@@ -1,25 +1,17 @@
-import debounce from "lodash.debounce";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { Feather } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
-import Input from "components/Input";
 import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
 import { tasksApi } from "modules/tasks/TasksApi";
-import {
-  getOrphanedGroups,
-  getOrphanedTasks,
-} from "modules/tasks/TasksSelectors";
 import { GroupItem, TaskItem } from "modules/tasks/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import MoveToListItem from "./MoveToListItem";
-
-const DEBOUNCE_DELAY = 300;
+import TasksSearchContent from "./TasksSearchContent";
 
 type Props = {
   item: GroupItem | TaskItem;
@@ -36,23 +28,10 @@ const ItemMoveToBottomSheetContent = ({
   const [updateGroup] = tasksApi.useUpdateGroupMutation();
 
   const userId = useAppSelector(getUserId);
-  const orphanedGroups = useAppSelector(getOrphanedGroups);
-  const orphanedTasks = useAppSelector(getOrphanedTasks);
 
   const isTask = "type" in item;
 
-  const orphanedItems = useMemo(
-    () =>
-      (isTask ? [...orphanedGroups, ...orphanedTasks] : orphanedGroups).filter(
-        (orphanedItem) => orphanedItem._id !== item._id,
-      ),
-    [isTask, item._id, orphanedGroups, orphanedTasks],
-  );
-
   const { t } = useTranslation();
-
-  const [searchValue, setSearchValue] = useState("");
-  const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
 
   const [selectedItem, setSelectedItem] = useState<GroupItem | TaskItem | null>(
     null,
@@ -98,27 +77,14 @@ const ItemMoveToBottomSheetContent = ({
     closeModal();
   };
 
-  const searchValueDebouncer = useMemo(
-    () => debounce(setDebouncedSearchValue, DEBOUNCE_DELAY),
-    [setDebouncedSearchValue],
-  );
-
-  useEffect(() => {
-    searchValueDebouncer(searchValue);
-  }, [searchValue, searchValueDebouncer]);
-
   return (
     <>
-      <Container>
-        <Input
-          value={searchValue}
-          placeholder={t("search.search")}
-          isCentered
-          onChange={setSearchValue}
-          minHeight={55}
-        />
-        <ItemsListContainer>
-          {canMoveOutside && (
+      <TasksSearchContent
+        setSelectedItem={setSelectedItem}
+        excludedItemId={item._id}
+        shouldSearchTasks={isTask}
+        extraContent={
+          canMoveOutside ? (
             <OutsideItemContainer onPress={() => handleMove(true)}>
               <Feather
                 name="log-out"
@@ -129,19 +95,10 @@ const ItemMoveToBottomSheetContent = ({
                 {t("tasks.moveOutside")}
               </Typography>
             </OutsideItemContainer>
-          )}
+          ) : null
+        }
+      />
 
-          {orphanedItems.map((orphanedItem) => (
-            <MoveToListItem
-              key={orphanedItem._id}
-              item={orphanedItem}
-              searchValue={debouncedSearchValue}
-              handlePress={setSelectedItem}
-              onlyGroups={!isTask}
-            />
-          ))}
-        </ItemsListContainer>
-      </Container>
       <ConfirmAlert
         message={t("general.confirmation")}
         isDialogVisible={!!selectedItem}
@@ -151,15 +108,6 @@ const ItemMoveToBottomSheetContent = ({
     </>
   );
 };
-
-const Container = styled.View`
-  gap: 6px;
-  padding-bottom: 85px;
-`;
-
-const ItemsListContainer = styled.View`
-  gap: 4px;
-`;
 
 const OutsideItemContainer = styled.TouchableOpacity`
   padding: 6px 10px;

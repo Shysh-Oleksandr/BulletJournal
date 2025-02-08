@@ -40,11 +40,20 @@ const dueDateMap = {
 type Props = {
   dueDate: number | null;
   setDueDate: (date: number | null) => void;
+  completedAt?: number | null;
+  setCompletedAt?: (date: number | null) => void;
 };
 
-const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
+const DueDatePicker = ({
+  dueDate,
+  setDueDate,
+  completedAt,
+  setCompletedAt,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isCompletedAtDatePickerVisible, setIsCompletedAtDatePickerVisible] =
+    useState(false);
 
   const datePickerDate = useMemo(
     () => (dueDate ? new Date(dueDate) : today),
@@ -72,13 +81,6 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
     }
   };
 
-  const onDatePickerConfirm = (newDate: Date) => {
-    setIsDatePickerVisible(false);
-    requestAnimationFrame(() => {
-      setDueDate(endOfDay(newDate).getTime());
-    });
-  };
-
   return (
     <>
       <DueDatePickerContainer
@@ -93,6 +95,39 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
         }}
         keyboardShouldPersistTaps="handled"
       >
+        {completedAt && (
+          <>
+            <DueDateOptionContainer
+              onPress={() => setIsCompletedAtDatePickerVisible(true)}
+              isActive
+            >
+              <FontAwesome
+                name="calendar-check-o"
+                color={theme.colors.darkBlueText}
+                size={13}
+              />
+              <Typography fontSize="xs">
+                {format(completedAt, "dd/MM/yyyy")}
+              </Typography>
+            </DueDateOptionContainer>
+            <VerticalDivider />
+
+            <DateTimePickerModal
+              isVisible={isCompletedAtDatePickerVisible}
+              date={new Date(completedAt)}
+              accentColor={theme.colors.cyan600}
+              mode="date"
+              onConfirm={(newDate: Date) => {
+                setIsCompletedAtDatePickerVisible(false);
+                requestAnimationFrame(() => {
+                  setCompletedAt?.(endOfDay(newDate).getTime());
+                });
+              }}
+              onCancel={() => setIsCompletedAtDatePickerVisible(false)}
+              maximumDate={today}
+            />
+          </>
+        )}
         {[DueDateOptions.CUSTOM, ...Object.keys(dueDateMap)].map((option) => (
           <DueDateOptionContainer
             key={option}
@@ -100,13 +135,13 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
             isActive={option === selectedDueDateOption && !!dueDate}
           >
             <FontAwesome
-              name="calendar-check-o"
+              name="calendar-times-o"
               color={theme.colors.darkBlueText}
               size={13}
             />
             <Typography fontSize="xs">
               {option === DueDateOptions.CUSTOM && dueDate
-                ? format(dueDate, "dd.MM.yyyy")
+                ? format(dueDate, "dd/MM/yyyy")
                 : getDueDateOptionTranslation(option)}
             </Typography>
           </DueDateOptionContainer>
@@ -126,7 +161,12 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
         date={datePickerDate}
         accentColor={theme.colors.cyan600}
         mode="date"
-        onConfirm={onDatePickerConfirm}
+        onConfirm={(newDate: Date) => {
+          setIsDatePickerVisible(false);
+          requestAnimationFrame(() => {
+            setDueDate(endOfDay(newDate).getTime());
+          });
+        }}
         onCancel={() => setIsDatePickerVisible(false)}
         minimumDate={today}
       />
@@ -137,6 +177,12 @@ const DueDatePicker = ({ dueDate, setDueDate }: Props): JSX.Element => {
 const CancelDueDateButtonContainer = styled.TouchableOpacity``;
 
 const DueDatePickerContainer = styled.ScrollView``;
+
+const VerticalDivider = styled.View`
+  height: 100%;
+  width: 2px;
+  background-color: ${theme.colors.cyan400};
+`;
 
 const DueDateOptionContainer = styled.TouchableOpacity<{ isActive: boolean }>`
   padding: 4px 6px;

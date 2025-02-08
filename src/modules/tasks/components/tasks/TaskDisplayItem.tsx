@@ -1,16 +1,17 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
 import { TaskItem, TaskTypes } from "../../types";
+import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import DueDateLabel from "../common/DueDateLabel";
 import ItemActionsList from "../common/ItemActionsList";
+import { TaskLabelContainer } from "../common/TaskLabelContainer";
 
 import SubtasksListSection from "./SubtasksListSection";
 import TaskBottomSheet from "./TaskBottomSheet";
@@ -22,8 +23,6 @@ type Props = {
 };
 
 const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
-  const { t } = useTranslation();
-
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getSubTasksCountInfoByTaskId(state, task._id),
   );
@@ -52,7 +51,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
             <LabelsContainer>
               <DueDateLabel task={task} />
               {!isCheckType && (
-                <LabelContainer>
+                <TaskLabelContainer>
                   <FontAwesome5
                     name="sort-amount-up"
                     color={task.color}
@@ -62,10 +61,10 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                     {task.completedAmount ?? 0}/{task.target ?? 0}{" "}
                     {task.units ?? ""}
                   </Typography>
-                </LabelContainer>
+                </TaskLabelContainer>
               )}
               {tasksCount > 0 && (
-                <LabelContainer>
+                <TaskLabelContainer>
                   <FontAwesome5
                     name="tasks"
                     color={task.color}
@@ -74,20 +73,12 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   <Typography fontSize="xs" color={task.color}>
                     {completedTasksCount}/{tasksCount}
                   </Typography>
-                </LabelContainer>
+                </TaskLabelContainer>
               )}
-              {task.isArchived && (
-                <LabelContainer>
-                  <Entypo
-                    name="archive"
-                    size={theme.fontSizes.xs}
-                    color={task.color}
-                  />
-                  <Typography fontSize="xs" color={task.color}>
-                    {t("habits.theArchive")}
-                  </Typography>
-                </LabelContainer>
-              )}
+              <ArchivedItemLabel
+                isArchived={task.isArchived}
+                color={task.color}
+              />
             </LabelsContainer>
           </InfoContainer>
         )}
@@ -109,18 +100,11 @@ const Container = styled.View`
 const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
 `;
 
 const InfoContainer = styled.TouchableOpacity`
   flex: 1;
-`;
-
-const LabelContainer = styled.View`
-  padding: 3px 6px;
-  border-radius: 6px;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
 `;
 
 export default React.memo(TaskDisplayItem);

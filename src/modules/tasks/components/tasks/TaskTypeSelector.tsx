@@ -21,6 +21,7 @@ type Props = {
   setCurrentAmount: (val: number) => void;
   setCurrentUnits: (val: string) => void;
   setCurrentCompletedAmount: (val: number) => void;
+  setCurrentCompletedAt: (val: number | null) => void;
 };
 
 const TaskTypeSelector = ({
@@ -33,6 +34,7 @@ const TaskTypeSelector = ({
   setCurrentAmount,
   setCurrentUnits,
   setCurrentCompletedAmount,
+  setCurrentCompletedAt,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -61,6 +63,7 @@ const TaskTypeSelector = ({
             currentCompletedAmount={currentCompletedAmount}
             setCurrentCompletedAmount={setCurrentCompletedAmount}
             currentTarget={currentTarget ?? 0}
+            setCurrentCompletedAt={setCurrentCompletedAt}
           />
           <Switcher
             options={TASK_TYPES}

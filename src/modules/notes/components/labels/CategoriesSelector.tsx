@@ -170,7 +170,6 @@ const CategoriesSelector = ({
       </SelectedTypeContainer>
       <BottomModal
         title={t("note.chooseCategories")}
-        maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         onClose={onClose}

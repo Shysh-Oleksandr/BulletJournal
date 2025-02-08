@@ -47,7 +47,7 @@ const ProgressBar = ({
   const secondaryBgColor = useMemo(
     () =>
       isLightColor(bgColor)
-        ? getDifferentColor(bgColor, 20)
+        ? getDifferentColor(bgColor, 10)
         : getDifferentColor(bgColor, 35),
     [bgColor],
   );

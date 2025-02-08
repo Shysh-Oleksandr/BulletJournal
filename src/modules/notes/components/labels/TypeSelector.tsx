@@ -161,7 +161,6 @@ const TypeSelector = ({
       </SelectedTypeContainer>
       <BottomModal
         title={t("note.chooseType")}
-        maxHeight="85%"
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         onClose={onClose}
