@@ -1,14 +1,14 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
 import { TaskItem, TaskTypes } from "../../types";
+import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import DueDateLabel from "../common/DueDateLabel";
 import ItemActionsList from "../common/ItemActionsList";
 import { TaskLabelContainer } from "../common/TaskLabelContainer";
@@ -23,8 +23,6 @@ type Props = {
 };
 
 const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
-  const { t } = useTranslation();
-
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getSubTasksCountInfoByTaskId(state, task._id),
   );
@@ -77,18 +75,10 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   </Typography>
                 </TaskLabelContainer>
               )}
-              {task.isArchived && (
-                <TaskLabelContainer>
-                  <Entypo
-                    name="archive"
-                    size={theme.fontSizes.xs}
-                    color={task.color}
-                  />
-                  <Typography fontSize="xs" color={task.color}>
-                    {t("habits.theArchive")}
-                  </Typography>
-                </TaskLabelContainer>
-              )}
+              <ArchivedItemLabel
+                isArchived={task.isArchived}
+                color={task.color}
+              />
             </LabelsContainer>
           </InfoContainer>
         )}
@@ -110,6 +100,7 @@ const Container = styled.View`
 const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
 `;
 
 const InfoContainer = styled.TouchableOpacity`

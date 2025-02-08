@@ -32,7 +32,7 @@ const HabitInfoSection = ({ habit }: Props): JSX.Element => {
         ? Math.min(...habit.logs.map((log) => log.date))
         : new Date();
 
-    return format(firstCompletedLogDate, "dd.MM.yyyy");
+    return format(firstCompletedLogDate, "dd/MM/yyyy");
   }, [habit.logs]);
 
   return (

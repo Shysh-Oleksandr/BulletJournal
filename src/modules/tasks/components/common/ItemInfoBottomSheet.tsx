@@ -7,6 +7,7 @@ import styled from "styled-components/native";
 type Props = {
   onClose?: () => void;
   onOpen?: () => void;
+  openByDefault?: boolean;
   bottomModalProps?: Partial<BottomModalProps>;
   content: (closeModal: () => void) => JSX.Element;
   children: (openModal: () => void) => JSX.Element;
@@ -16,12 +17,14 @@ const ItemInfoBottomSheet = ({
   onClose,
   onOpen,
   content,
+  openByDefault = false,
   bottomModalProps,
   children,
 }: Props): JSX.Element => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(openByDefault);
   const [closeTriggered, setCloseTriggered] = useState(false);
 
+  openByDefault && console.log("isVisible:", isVisible);
   const handleClose = () => {
     onClose?.();
 

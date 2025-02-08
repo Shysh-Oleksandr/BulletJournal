@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 
 import {
   getSubGroupsByGroupId,
-  getTasksByGroupId,
+  getUnarchivedTasksByGroupId,
   getTasksCountInfoByGroupId,
 } from "../../TasksSelectors";
 import { GroupItem } from "../../types";
@@ -23,7 +23,9 @@ const GroupDisplayItem = ({ group }: Props): JSX.Element => {
   const subGroups = useAppSelector((state) =>
     getSubGroupsByGroupId(state, group._id),
   );
-  const tasks = useAppSelector((state) => getTasksByGroupId(state, group._id));
+  const tasks = useAppSelector((state) =>
+    getUnarchivedTasksByGroupId(state, group._id),
+  );
 
   const { percentageCompleted } = useAppSelector((state) =>
     getTasksCountInfoByGroupId(state, group._id),

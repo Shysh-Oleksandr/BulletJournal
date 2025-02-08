@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
-import { FontAwesome5 } from "@expo/vector-icons";
+import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
 import { useAppSelector } from "store/helpers/storeHooks";
@@ -10,16 +10,19 @@ import styled from "styled-components/native";
 
 import { tasksApi } from "../../TasksApi";
 import {
+  getArchivedTasksCountInfoByGroupId,
   getGroupPath,
   getSubGroupsByGroupId,
   getTasksCountInfoByGroupId,
 } from "../../TasksSelectors";
 import { GroupItem } from "../../types";
+import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import ItemActionsList from "../common/ItemActionsList";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
 import TaskItemInput from "../common/TaskItemInput";
 import { TaskLabelContainer } from "../common/TaskLabelContainer";
 
+import ArchivedSubtasksListSection from "./ArchivedSubtasksListSection";
 import SubgroupsListSection from "./SubgroupsListSection";
 
 type Props = {
@@ -37,8 +40,15 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
   const subGroups = useAppSelector((state) =>
     getSubGroupsByGroupId(state, group._id),
   );
+
   const { completedTasksCount, tasksCount } = useAppSelector((state) =>
     getTasksCountInfoByGroupId(state, group._id),
+  );
+  const {
+    completedTasksCount: completedArchivedTasksCount,
+    tasksCount: archivedTasksCount,
+  } = useAppSelector((state) =>
+    getArchivedTasksCountInfoByGroupId(state, group._id),
   );
   const groupPath = useAppSelector((state) => getGroupPath(state, group._id));
 
@@ -98,6 +108,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
           />
           <ItemActionsList item={group} closeModal={closeModal} />
           <SubgroupsListSection group={group} depth={depth} />
+          <ArchivedSubtasksListSection groupId={group._id} />
         </>
       )}
     >
@@ -136,6 +147,23 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
                 </Typography>
               </TaskLabelContainer>
             )}
+            {archivedTasksCount > 0 && (
+              <TaskLabelContainer>
+                <Entypo
+                  name="archive"
+                  color={group.color}
+                  size={theme.fontSizes.xs}
+                />
+
+                <Typography fontSize="xs" color={group.color}>
+                  {completedArchivedTasksCount}/{archivedTasksCount}
+                </Typography>
+              </TaskLabelContainer>
+            )}
+            <ArchivedItemLabel
+              isArchived={group.isArchived}
+              color={group.color}
+            />
           </LabelsContainer>
         </HeaderInfo>
       )}

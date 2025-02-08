@@ -50,6 +50,20 @@ export const getTasksByGroupId = createCachedSelector(
   (tasks, groupId) => tasks.filter((task) => task.groupId === groupId),
 )((_: RootState, groupId: string) => groupId);
 
+export const getArchivedTasksByGroupId = createCachedSelector(
+  getAllTasks,
+  (_: RootState, groupId: string) => groupId,
+  (tasks, groupId) =>
+    tasks.filter((task) => task.groupId === groupId && task.isArchived),
+)((_: RootState, groupId: string) => groupId);
+
+export const getUnarchivedTasksByGroupId = createCachedSelector(
+  getAllTasks,
+  (_: RootState, groupId: string) => groupId,
+  (tasks, groupId) =>
+    tasks.filter((task) => task.groupId === groupId && !task.isArchived),
+)((_: RootState, groupId: string) => groupId);
+
 export const getTaskPath = createCachedSelector(
   [
     (state: RootState) => getAllGroups(state),
@@ -150,7 +164,12 @@ export const getGroupPath = createCachedSelector(
 );
 
 export const getTasksCountInfoByGroupId = createCachedSelector(
-  getTasksByGroupId,
+  getUnarchivedTasksByGroupId,
+  calculateTasksCountInfo,
+)((_: RootState, groupId: string) => groupId);
+
+export const getArchivedTasksCountInfoByGroupId = createCachedSelector(
+  getArchivedTasksByGroupId,
   calculateTasksCountInfo,
 )((_: RootState, groupId: string) => groupId);
 

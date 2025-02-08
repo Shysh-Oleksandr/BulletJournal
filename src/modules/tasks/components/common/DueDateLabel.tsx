@@ -21,7 +21,7 @@ const DueDateLabel = ({ task }: Props): JSX.Element | null => {
   const isCompletedPastDueDate =
     task.completedAt && task.dueDate && isAfter(task.completedAt, task.dueDate);
 
-  if (!task.dueDate) return null;
+  if (!task.dueDate && !task.completedAt) return null;
 
   return (
     <>
@@ -37,7 +37,7 @@ const DueDateLabel = ({ task }: Props): JSX.Element | null => {
           </Typography>
         </TaskLabelContainer>
       )}
-      {(!task.completedAt || isCompletedPastDueDate) && (
+      {task.dueDate && (!task.completedAt || isCompletedPastDueDate) && (
         <TaskLabelContainer>
           <FontAwesome
             name="calendar-times-o"

@@ -25,6 +25,7 @@ type Props = {
   currentTarget?: number;
   currentCompletedAmount?: number;
   setCurrentCompletedAmount?: (val: number) => void;
+  setCurrentCompletedAt?: (val: number | null) => void;
 };
 
 const TaskCircularProgress = ({
@@ -33,6 +34,7 @@ const TaskCircularProgress = ({
   currentTarget,
   currentCompletedAmount,
   setCurrentCompletedAmount,
+  setCurrentCompletedAt,
 }: Props): JSX.Element => {
   const userId = useAppSelector(getUserId);
 
@@ -108,37 +110,44 @@ const TaskCircularProgress = ({
 
     if (isSameValue) return;
 
+    const isCompleted = value >= task.target!;
+    const completedAt = isCompleted ? (task.completedAt ?? Date.now()) : null;
+
     if (shouldUpdateLocally) {
       setCurrentCompletedAmount?.(value);
+      setCurrentCompletedAt?.(completedAt);
 
       return;
     }
-
-    const isCompleted = value >= task.target!;
 
     updateTask({
       _id: task._id,
       author: userId,
       isCompleted,
       completedAmount: value,
-      completedAt: isCompleted ? Date.now() : null,
+      completedAt,
     });
   }, [
     inputValue,
     relevantCompletedAmount,
+    task.target,
+    task.completedAt,
+    task._id,
     shouldUpdateLocally,
     updateTask,
-    task._id,
-    task.target,
     userId,
     initialLogValue,
     setCurrentCompletedAmount,
+    setCurrentCompletedAt,
   ]);
 
   const onCirclePress = useCallback(() => {
     if (isCheckType) {
       if (shouldUpdateLocally) {
         setCurrentCompletedAmount?.(relevantIsCompleted ? 0 : 1);
+        setCurrentCompletedAt?.(
+          relevantIsCompleted ? null : (task.completedAt ?? Date.now()),
+        );
 
         return;
       }
@@ -161,8 +170,10 @@ const TaskCircularProgress = ({
     isCheckType,
     relevantIsCompleted,
     setCurrentCompletedAmount,
+    setCurrentCompletedAt,
     shouldUpdateLocally,
     task._id,
+    task.completedAt,
     task.isCompleted,
     updateTask,
     userId,

@@ -28,7 +28,9 @@ type Props = {
   task?: TaskItem;
   content?: (closeModal: () => void) => JSX.Element;
   defaultDueDate?: number;
+  openByDefault?: boolean;
   depth?: number;
+  onClose?: () => void;
   children: (openModal: () => void) => JSX.Element;
 };
 
@@ -38,7 +40,9 @@ const TaskBottomSheet = ({
   task,
   content,
   defaultDueDate,
+  openByDefault,
   depth = 0,
+  onClose,
   children,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
@@ -64,6 +68,7 @@ const TaskBottomSheet = ({
       currentTarget: task?.target ?? 100,
       currentUnits: task?.units ?? "%",
       currentCompletedAmount: task?.completedAmount ?? 0,
+      currentCompletedAt: task?.completedAt ?? null,
     }),
     [task, defaultDueDate],
   );
@@ -80,12 +85,17 @@ const TaskBottomSheet = ({
   }, [defaultValues]);
 
   const handleUpdateTask = () => {
+    onClose?.();
+
     const normalizedName = formValues.name.trim();
 
     if (normalizedName.length === 0) return;
 
     const isCheckType = formValues.selectedType === TaskTypes.CHECK;
 
+    const isCompleted = isCheckType
+      ? !!formValues.currentCompletedAmount
+      : formValues.currentCompletedAmount >= formValues.currentTarget;
     const commonFields = {
       author: userId,
       dueDate: formValues.dueDate,
@@ -95,9 +105,10 @@ const TaskBottomSheet = ({
       units: isCheckType ? null : formValues.currentUnits,
       target: isCheckType ? null : formValues.currentTarget,
       completedAmount: formValues.currentCompletedAmount,
-      isCompleted: isCheckType
-        ? !!formValues.currentCompletedAmount
-        : formValues.currentCompletedAmount >= formValues.currentTarget,
+      isCompleted,
+      completedAt: isCompleted
+        ? (formValues.currentCompletedAt ?? Date.now())
+        : null,
     };
 
     if (task) {
@@ -138,6 +149,7 @@ const TaskBottomSheet = ({
         }, 200);
       }}
       onClose={handleUpdateTask}
+      openByDefault={openByDefault}
       content={(closeModal) => (
         <>
           {taskPath && (
@@ -171,6 +183,13 @@ const TaskBottomSheet = ({
             setDueDate={(dueDate) =>
               setFormValues((prev) => ({ ...prev, dueDate }))
             }
+            completedAt={formValues?.currentCompletedAt}
+            setCompletedAt={(completedAt) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentCompletedAt: completedAt,
+              }))
+            }
           />
           <TaskTypeSelector
             task={task}
@@ -191,6 +210,12 @@ const TaskBottomSheet = ({
               setFormValues((prev) => ({
                 ...prev,
                 currentCompletedAmount: completedAmount,
+              }))
+            }
+            setCurrentCompletedAt={(completedAt) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentCompletedAt: completedAt,
               }))
             }
           />
