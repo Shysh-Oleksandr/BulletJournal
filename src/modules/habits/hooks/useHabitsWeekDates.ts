@@ -1,18 +1,21 @@
 import { isSameDay } from "date-fns";
 import { useMemo } from "react";
 
+import { useAppSelector } from "store/helpers/storeHooks";
+
+import { getActiveHabits } from "../HabitsSelectors";
 import { Habit } from "../types";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
-export const useHabitsWeekDates = (
-  selectedDate: number,
-  activeHabits: Habit[],
-) =>
-  useMemo(() => {
+export const useHabitsWeekDates = (selectedDate: number) => {
+  const activeHabits = useAppSelector(getActiveHabits);
+
+  return useMemo(() => {
     const weekDates = getWeekDatesByDate(selectedDate);
 
     return getWeeklyCompletionRates(activeHabits, weekDates);
   }, [activeHabits, selectedDate]);
+};
 
 const getWeeklyCompletionRates = (
   activeHabits: Habit[],

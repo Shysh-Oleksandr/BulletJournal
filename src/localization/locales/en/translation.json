@@ -165,14 +165,6 @@
     "groupPlaceholder": "Enter group name...",
     "subgroupPlaceholder": "Enter subgroup name...",
     "subtaskPlaceholder": "Enter subtask name...",
-    "dueDateOptions": {
-      "today": "Today",
-      "tomorrow": "Tomorrow",
-      "this_week": "This week",
-      "this_month": "This month",
-      "this_year": "This year",
-      "custom": "Custom"
-    },
     "moveOutside": "Move outside",
     "moveTo": "Move to",
     "noDueDate": "No due date",
@@ -186,7 +178,8 @@
       "this_week": "This week",
       "next_week": "Next week",
       "this_month": "This month",
-      "this_year": "This year"
+      "this_year": "This year",
+      "custom": "Custom"
     }
   }
 }

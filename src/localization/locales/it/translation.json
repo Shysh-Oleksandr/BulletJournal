@@ -164,14 +164,6 @@
     "groupPlaceholder": "Inserisci il nome del gruppo...",
     "subgroupPlaceholder": "Inserisci il nome del sottogruppo...",
     "subtaskPlaceholder": "Inserisci il nome della sottoattività...",
-    "dueDateOptions": {
-      "today": "Oggi",
-      "tomorrow": "Domani",
-      "this_week": "Questa settimana",
-      "this_month": "Questo mese",
-      "this_year": "Quest'anno",
-      "custom": "Personalizzato"
-    },
     "moveOutside": "Sposta fuori",
     "moveTo": "Sposta in",
     "noDueDate": "Nessuna data di scadenza",
@@ -185,7 +177,8 @@
       "this_week": "Questa settimana",
       "next_week": "La prossima settimana",
       "this_month": "Questo mese",
-      "this_year": "Quest'anno"
+      "this_year": "Quest'anno",
+      "custom": "Personalizzato"
     }
   }
 }

@@ -1,5 +1,6 @@
 import {
   addDays,
+  addWeeks,
   endOfDay,
   endOfMonth,
   endOfToday,
@@ -22,6 +23,7 @@ enum DueDateOptions {
   TODAY = "today",
   TOMORROW = "tomorrow",
   THIS_WEEK = "this_week",
+  NEXT_WEEK = "next_week",
   THIS_MONTH = "this_month",
   THIS_YEAR = "this_year",
 }
@@ -29,12 +31,14 @@ enum DueDateOptions {
 const today = endOfToday();
 
 const dueDateMap = {
-  [DueDateOptions.TODAY]: () => endOfToday().getTime(),
-  [DueDateOptions.TOMORROW]: () => addDays(endOfToday(), 1).getTime(),
+  [DueDateOptions.TODAY]: () => today.getTime(),
+  [DueDateOptions.TOMORROW]: () => addDays(today, 1).getTime(),
   [DueDateOptions.THIS_WEEK]: () =>
-    endOfWeek(endOfToday(), { weekStartsOn: 1 }).getTime(),
-  [DueDateOptions.THIS_MONTH]: () => endOfMonth(endOfToday()).getTime(),
-  [DueDateOptions.THIS_YEAR]: () => endOfYear(endOfToday()).getTime(),
+    endOfWeek(today, { weekStartsOn: 1 }).getTime(),
+  [DueDateOptions.NEXT_WEEK]: () =>
+    endOfWeek(addWeeks(today, 1), { weekStartsOn: 1 }).getTime(),
+  [DueDateOptions.THIS_MONTH]: () => endOfMonth(today).getTime(),
+  [DueDateOptions.THIS_YEAR]: () => endOfYear(today).getTime(),
 };
 
 type Props = {
@@ -71,7 +75,7 @@ const DueDatePicker = ({
   }, [dueDate]);
 
   const getDueDateOptionTranslation = (option: string) =>
-    t(`tasks.dueDateOptions.${option}`);
+    t(`tasks.categories.${option}`);
 
   const onDueDateOptionPress = (option: DueDateOptions) => {
     if (option === DueDateOptions.CUSTOM) {
