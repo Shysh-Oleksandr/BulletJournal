@@ -6,6 +6,7 @@ import {
   CreateGroupResponse,
   CreateTaskRequest,
   CreateTaskResponse,
+  DeleteTaskRequest,
   GroupItem,
   GroupsState,
   TaskItem,
@@ -45,7 +46,43 @@ export const tasksApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        invalidatesTags: [TAG.GROUPS],
+        async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+          const tempId = `temp-${Date.now()}`;
+          const tempGroup = { ...payload, _id: tempId };
+
+          const patchResult = dispatch(
+            tasksApi.util.updateQueryData(
+              "fetchGroups",
+              payload.author,
+              (draft) => {
+                draft.byId[tempId] = tempGroup;
+                draft.allIds.push(tempId);
+              },
+            ),
+          );
+
+          try {
+            const {
+              data: { group },
+            } = await queryFulfilled;
+
+            dispatch(
+              tasksApi.util.updateQueryData(
+                "fetchGroups",
+                payload.author,
+                (draft) => {
+                  delete draft.byId[tempId];
+                  draft.byId[group._id] = group;
+                  draft.allIds = draft.allIds.map((id) =>
+                    id === tempId ? group._id : id,
+                  );
+                },
+              ),
+            );
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
       updateGroup: build.mutation<void, UpdateGroupRequest>({
         query(payload) {
@@ -55,16 +92,47 @@ export const tasksApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        invalidatesTags: [TAG.GROUPS],
+        async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+          const patchResult = dispatch(
+            tasksApi.util.updateQueryData(
+              "fetchGroups",
+              payload.author,
+              (draft) => {
+                if (draft.byId[payload._id]) {
+                  Object.assign(draft.byId[payload._id], payload);
+                }
+              },
+            ),
+          );
+
+          try {
+            await queryFulfilled;
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
-      deleteGroup: build.mutation<void, string>({
-        query(groupId) {
+      deleteGroup: build.mutation<void, DeleteTaskRequest>({
+        query({ _id }) {
           return {
-            url: `/groups/${groupId}`,
+            url: `/groups/${_id}`,
             method: Method.DELETE,
           };
         },
-        invalidatesTags: [TAG.GROUPS],
+        async onQueryStarted({ _id, author }, { dispatch, queryFulfilled }) {
+          const patchResult = dispatch(
+            tasksApi.util.updateQueryData("fetchGroups", author, (draft) => {
+              delete draft.byId[_id];
+              draft.allIds = draft.allIds.filter((id) => id !== _id);
+            }),
+          );
+
+          try {
+            await queryFulfilled;
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
       fetchTasks: build.query<TasksState, string>({
         query(userId) {
@@ -94,7 +162,43 @@ export const tasksApi = emptyAxiosApi.injectEndpoints({
             body: payload,
           };
         },
-        invalidatesTags: [TAG.TASKS],
+        async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+          const tempId = `temp-${Date.now()}`;
+          const tempTask = { ...payload, _id: tempId };
+
+          const patchResult = dispatch(
+            tasksApi.util.updateQueryData(
+              "fetchTasks",
+              payload.author,
+              (draft) => {
+                draft.byId[tempId] = tempTask;
+                draft.allIds.push(tempId);
+              },
+            ),
+          );
+
+          try {
+            const {
+              data: { task },
+            } = await queryFulfilled;
+
+            dispatch(
+              tasksApi.util.updateQueryData(
+                "fetchTasks",
+                payload.author,
+                (draft) => {
+                  delete draft.byId[tempId];
+                  draft.byId[task._id] = task;
+                  draft.allIds = draft.allIds.map((id) =>
+                    id === tempId ? task._id : id,
+                  );
+                },
+              ),
+            );
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
       updateTask: build.mutation<void, UpdateTaskRequest>({
         query(payload) {
@@ -125,17 +229,29 @@ export const tasksApi = emptyAxiosApi.injectEndpoints({
           }
         },
       }),
-      deleteTask: build.mutation<void, string>({
-        query(groupId) {
+      deleteTask: build.mutation<void, DeleteTaskRequest>({
+        query({ _id }) {
           return {
-            url: `/tasks/${groupId}`,
+            url: `/tasks/${_id}`,
             method: Method.DELETE,
           };
         },
-        invalidatesTags: [TAG.TASKS],
+        async onQueryStarted({ _id, author }, { dispatch, queryFulfilled }) {
+          const patchResult = dispatch(
+            tasksApi.util.updateQueryData("fetchTasks", author, (draft) => {
+              delete draft.byId[_id];
+              draft.allIds = draft.allIds.filter((id) => id !== _id);
+            }),
+          );
+
+          try {
+            await queryFulfilled;
+          } catch {
+            patchResult.undo();
+          }
+        },
       }),
     };
   },
-
   overrideExisting: false,
 });

@@ -61,3 +61,5 @@ export type CreateTaskRequest = Omit<TaskItem, "_id">;
 
 export type UpdateTaskRequest = Partial<CreateTaskRequest> &
   Pick<TaskItem, "_id" | "author">;
+
+export type DeleteTaskRequest = Pick<TaskItem, "_id" | "author">;

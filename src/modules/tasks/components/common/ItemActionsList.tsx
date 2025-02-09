@@ -40,9 +40,11 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   );
 
   const handleDelete = () => {
-    const relevantDeleteFunction = isTask ? deleteTask : deleteGroup;
-
-    relevantDeleteFunction(item._id);
+    if (isTask) {
+      deleteTask({ _id: item._id, author: userId });
+    } else {
+      deleteGroup({ _id: item._id, author: userId });
+    }
 
     closeModal();
   };
