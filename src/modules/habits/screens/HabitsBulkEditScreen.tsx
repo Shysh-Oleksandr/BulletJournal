@@ -23,9 +23,9 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { alertError } from "utils/alertMessages";
 
+import { habitsApi } from "../api/habitsApi";
+import { useAllHabits } from "../api/habitsSelectors";
 import HabitBulkEditItem from "../components/habitItem/HabitBulkEditItem";
-import { habitsApi } from "../HabitsApi";
-import { getAllHabits } from "../HabitsSelectors";
 import { BulkEditHabit, HabitActions } from "../types";
 import { getHabitActionButtonsData } from "../utils/getHabitActionButtonsData";
 
@@ -34,14 +34,14 @@ const HabitsBulkEditScreen = (): JSX.Element => {
 
   const navigation = useAppNavigation();
 
-  const [reorderHabits] = habitsApi.useReorderHabitsMutation();
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
-  const [deleteHabit] = habitsApi.useDeleteHabitMutation();
+  const { mutateAsync: reorderHabits } = habitsApi.useReorderHabitsMutation();
+  const { mutateAsync: updateHabit } = habitsApi.useUpdateHabitMutation();
+  const { mutateAsync: deleteHabit } = habitsApi.useDeleteHabitMutation();
 
   const [isUpdating, setIsUpdating] = useState(false);
 
   const userId = useAppSelector(getUserId) ?? "";
-  const allHabits = useAppSelector(getAllHabits);
+  const { allHabits } = useAllHabits();
 
   const initialHabits = useMemo(
     () =>
@@ -142,7 +142,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
           await Promise.all(
             changedHabits.map((habit) => {
               if (habit.action === HabitActions.DELETE) {
-                return deleteHabit(habit._id);
+                return deleteHabit({ _id: habit._id, userId });
               }
               if (
                 habit.action === HabitActions.ARCHIVE ||
@@ -161,7 +161,10 @@ const HabitsBulkEditScreen = (): JSX.Element => {
         }
 
         if (isOrderChanged) {
-          await reorderHabits(currentHabits.map((habit) => habit._id));
+          await reorderHabits({
+            habitIds: currentHabits.map((habit) => habit._id),
+            userId,
+          });
         }
 
         Toast.show({

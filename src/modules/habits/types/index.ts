@@ -69,7 +69,15 @@ export type CreateHabitResponse = {
 
 export type CreateHabitRequest = Omit<Habit, "_id">;
 
-export type ReorderHabitsRequest = string[];
+export type DeleteHabitRequest = {
+  _id: string;
+  userId: string;
+};
+
+export type ReorderHabitsRequest = {
+  userId: string;
+  habitIds: string[];
+};
 
 export enum HabitActions {
   ARCHIVE = "archive",

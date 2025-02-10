@@ -14,9 +14,9 @@ import { Routes } from "modules/navigation/types";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { habitsApi } from "../api/habitsApi";
+import { useArchivedHabits } from "../api/habitsSelectors";
 import ArchivedHabitItem from "../components/habitItem/ArchivedHabitItem";
-import { habitsApi } from "../HabitsApi";
-import { getArchivedHabits } from "../HabitsSelectors";
 
 const contentContainerStyle = {
   paddingTop: 20,
@@ -29,10 +29,10 @@ const ArchivedHabitsScreen = (): JSX.Element => {
 
   const navigation = useAppNavigation();
 
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
+  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
   const userId = useAppSelector(getUserId) ?? "";
-  const archivedHabits = useAppSelector(getArchivedHabits);
+  const { archivedHabits } = useArchivedHabits();
 
   const onUnarchive = useCallback(
     (_id: string) => {

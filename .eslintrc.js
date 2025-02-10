@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",

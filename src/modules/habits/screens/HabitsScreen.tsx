@@ -1,6 +1,6 @@
 import { isSameDay } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, RefreshControl } from "react-native";
 import theme from "theme";
@@ -21,13 +21,13 @@ import AddButton, { ContentItem } from "modules/notes/components/AddButton";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { habitsApi } from "../api/habitsApi";
+import { useHabitsBySelectedDate } from "../api/habitsSelectors";
 import HabitItem from "../components/habitItem/HabitItem";
 import HabitsProgressBar from "../components/habitsHeader/HabitsProgressBar";
 import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
 import HabitLogInfoModal from "../components/habitStats/HabitLogInfoModal";
 import { EMPTY_HABIT } from "../data";
-import { habitsApi } from "../HabitsApi";
-import { getHabitsBySelectedDate } from "../HabitsSelectors";
 import { Habit } from "../types";
 
 const contentContainerStyle = {
@@ -40,18 +40,20 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const [fetchHabits, { isLoading, isUninitialized, isFetching }] =
-    habitsApi.useLazyFetchHabitsQuery();
+  const userId = useAppSelector(getUserId);
+
+  const { isLoading, refetch } = habitsApi.useGetHabitsQuery(userId);
+
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
   const [additionalInfoHabit, setAdditionalInfoHabit] = useState<Habit | null>(
     null,
   );
 
-  const userId = useAppSelector(getUserId);
-  const { mandatoryHabits, optionalHabits } = useAppSelector((state) =>
-    getHabitsBySelectedDate(state, selectedDate),
-  );
+  const {
+    habits: { mandatoryHabits, optionalHabits },
+  } = useHabitsBySelectedDate(selectedDate);
 
   const isTodaySelected = useMemo(
     () => isSameDay(selectedDate, new Date()),
@@ -65,15 +67,11 @@ const HabitsScreen = (): JSX.Element => {
     });
   }, [navigation]);
 
-  const fetchInitialData = useCallback(async () => {
-    if (!userId) return;
-
-    await fetchHabits(userId);
-  }, [fetchHabits, userId]);
-
-  useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
+  const handleManualRefresh = async () => {
+    setIsManualRefresh(true);
+    await refetch();
+    setIsManualRefresh(false);
+  };
 
   return (
     <>
@@ -105,7 +103,7 @@ const HabitsScreen = (): JSX.Element => {
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}
       >
-        {isLoading || isUninitialized ? (
+        {isLoading ? (
           <LoaderContainer>
             <ActivityIndicator size="large" color={theme.colors.cyan600} />
           </LoaderContainer>
@@ -119,8 +117,8 @@ const HabitsScreen = (): JSX.Element => {
             refreshControl={
               <RefreshControl
                 colors={[theme.colors.cyan600]}
-                refreshing={isFetching}
-                onRefresh={fetchInitialData}
+                refreshing={isManualRefresh}
+                onRefresh={handleManualRefresh}
               />
             }
           >

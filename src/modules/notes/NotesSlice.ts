@@ -1,5 +1,3 @@
-import createCachedSelector from "re-reselect";
-
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { logout } from "modules/auth/AuthSlice";
 
@@ -64,10 +62,3 @@ export const getCustomTypes = createSelector(getLabels, (labels) =>
 export const getCustomCategories = createSelector(getLabels, (labels) =>
   labels.filter((label) => label.isCategoryLabel),
 );
-
-export const getNoteById = createCachedSelector(
-  // Example
-  getNotes,
-  (_: RootState, noteId: string) => noteId,
-  (notes, noteId) => notes.find((note) => note._id === noteId) as Note,
-)((_: RootState, noteId: string) => noteId);

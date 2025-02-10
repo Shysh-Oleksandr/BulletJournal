@@ -5,7 +5,7 @@ module.exports = (() => {
 
   const { transformer, resolver } = config;
 
-  resolver.assetExts.push("cjs");
+  resolver.sourceExts.push("cjs");
 
   config.transformer = {
     ...transformer,

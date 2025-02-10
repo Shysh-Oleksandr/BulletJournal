@@ -25,12 +25,12 @@ import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
+import { habitsApi } from "../api/habitsApi";
 import HabitFrequencySelector from "../components/habitForm/HabitFrequencySelector";
 import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
 import HabitBody from "../components/habitItem/HabitBody";
 import { EMPTY_HABIT } from "../data";
-import { habitsApi } from "../HabitsApi";
 import {
   CreateHabitRequest,
   Habit,
@@ -46,14 +46,14 @@ const contentContainerStyle = {
 const EditHabitScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_HABIT>;
 }> = ({ route }) => {
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
-  const [createHabit] = habitsApi.useCreateHabitMutation();
-  const [deleteHabit] = habitsApi.useDeleteHabitMutation();
+  const { mutateAsync: createHabit } = habitsApi.useCreateHabitMutation();
+  const { mutateAsync: updateHabit } = habitsApi.useUpdateHabitMutation();
+  const { mutate: deleteHabit } = habitsApi.useDeleteHabitMutation();
 
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId) ?? "";
+  const userId = useAppSelector(getUserId);
 
   const { item: initialHabit, isNewHabit } = route.params;
 
@@ -136,8 +136,10 @@ const EditHabitScreen: FC<{
 
     try {
       if (isNewHabit) {
-        await createHabit(createHabitData).unwrap();
+        await createHabit(createHabitData);
       } else {
+        console.log("updateHabitData:", updateHabitData);
+
         await updateHabit(updateHabitData);
       }
 
@@ -172,7 +174,7 @@ const EditHabitScreen: FC<{
       addCrashlyticsLog(`User tries to delete the habit ${_id}`);
       setIsDeleting(true);
 
-      deleteHabit(_id);
+      deleteHabit({ _id, userId });
 
       navigation.pop(2);
 
@@ -189,7 +191,7 @@ const EditHabitScreen: FC<{
         setIsDeleting(false);
       }, 300);
     }
-  }, [deleteHabit, initialHabit, navigation, t]);
+  }, [deleteHabit, initialHabit, navigation, t, userId]);
 
   return (
     <>
