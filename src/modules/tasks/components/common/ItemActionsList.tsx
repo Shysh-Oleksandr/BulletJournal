@@ -6,7 +6,7 @@ import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
-import { tasksApi } from "modules/tasks/TasksApi";
+import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
@@ -21,10 +21,10 @@ type Props = {
 };
 
 const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
-  const [updateGroup] = tasksApi.useUpdateGroupMutation();
-  const [deleteTask] = tasksApi.useDeleteTaskMutation();
-  const [deleteGroup] = tasksApi.useDeleteGroupMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
+  const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
+  const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
+  const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
   const userId = useAppSelector(getUserId);
 
@@ -50,13 +50,13 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   };
 
   const handleArchive = () => {
-    const relevantUpdateFunction = isTask ? updateTask : updateGroup;
-
-    relevantUpdateFunction({
+    const payload = {
       _id: item._id,
       author: userId,
       isArchived: !item.isArchived,
-    });
+    };
+
+    isTask ? updateTask(payload) : updateGroup(payload);
   };
 
   return (

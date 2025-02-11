@@ -1,9 +1,8 @@
 import React from "react";
 
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { getOrphanedGroups, getOrphanedTasks } from "../TasksSelectors";
+import { useOrphanedGroups, useOrphanedTasks } from "../api/tasksSelectors";
 
 import AddGroup from "./groups/AddGroup";
 import GroupDisplayItem from "./groups/GroupDisplayItem";
@@ -15,8 +14,8 @@ const contentContainerStyle = {
 };
 
 const AllTasksContent = (): JSX.Element => {
-  const orphanedGroups = useAppSelector(getOrphanedGroups);
-  const orphanedTasks = useAppSelector(getOrphanedTasks);
+  const { orphanedGroups } = useOrphanedGroups();
+  const { orphanedTasks } = useOrphanedTasks();
 
   return (
     <Container

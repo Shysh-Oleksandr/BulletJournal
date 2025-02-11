@@ -3,13 +3,13 @@ import theme from "theme";
 
 import Typography from "components/Typography";
 import {
-  getSubGroupsByGroupId,
-  getSubTasksByTaskId,
-  getTasksByGroupId,
-} from "modules/tasks/TasksSelectors";
+  useAllGroups,
+  useAllTasks,
+  useSubGroupsByGroupId,
+  useSubTasksByTaskId,
+  useTasksByGroupId,
+} from "modules/tasks/api/tasksSelectors";
 import { GroupItem, TaskItem } from "modules/tasks/types";
-import { useAppSelector } from "store/helpers/storeHooks";
-import { store } from "store/store";
 import styled from "styled-components/native";
 
 type Props = {
@@ -27,13 +27,11 @@ const TaskSearchItem = ({
   onlyGroups = false,
   handlePress,
 }: Props): JSX.Element | null => {
-  const subGroups = useAppSelector((state) =>
-    getSubGroupsByGroupId(state, item._id),
-  );
-  const tasks = useAppSelector((state) => getTasksByGroupId(state, item._id));
-  const subTasks = useAppSelector((state) =>
-    getSubTasksByTaskId(state, item._id),
-  );
+  const { allGroups } = useAllGroups();
+  const { allTasks } = useAllTasks();
+  const { subGroups } = useSubGroupsByGroupId(item._id);
+  const { tasks } = useTasksByGroupId(item._id);
+  const { subTasks } = useSubTasksByTaskId(item._id);
 
   const allSubItems = useMemo(
     () => (onlyGroups ? subGroups : [...subGroups, ...tasks, ...subTasks]),
@@ -48,16 +46,15 @@ const TaskSearchItem = ({
         .includes(searchValue.toLowerCase());
 
       // Fetch sub-items of this subItem
-      const subItemSubGroups = getSubGroupsByGroupId(
-        store.getState(),
-        subItem._id,
+      const subItemSubGroups = allGroups.filter(
+        (group) => group.parentGroupId === subItem._id,
       );
-      const subItemTasks = getTasksByGroupId(store.getState(), subItem._id);
-      const subItemSubTasks = getSubTasksByTaskId(
-        store.getState(),
-        subItem._id,
+      const subItemTasks = allTasks.filter(
+        (task) => task.groupId === subItem._id,
       );
-
+      const subItemSubTasks = allTasks.filter(
+        (task) => task.parentTaskId === subItem._id,
+      );
       const descendants = [
         ...subItemSubGroups,
         ...subItemTasks,
@@ -69,7 +66,7 @@ const TaskSearchItem = ({
         descendants.some((descendant) => hasMatchingDescendants(descendant))
       );
     },
-    [searchValue],
+    [allGroups, allTasks, searchValue],
   );
 
   const filteredSubItems = useMemo(

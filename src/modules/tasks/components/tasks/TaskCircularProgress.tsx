@@ -11,9 +11,9 @@ import { TextInput } from "react-native-gesture-handler";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import ItemCircularProgress from "components/ItemCircularProgress";
 import { getUserId } from "modules/auth/AuthSlice";
+import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useAppSelector } from "store/helpers/storeHooks";
 
-import { tasksApi } from "../../TasksApi";
 import { TaskItem, TaskTypes } from "../../types";
 
 const CIRCLE_SIZE = 36;
@@ -40,7 +40,7 @@ const TaskCircularProgress = ({
 
   const inputRef = useRef<TextInput | null>(null);
 
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
   const shouldUpdateLocally = currentCompletedAmount !== undefined;
 

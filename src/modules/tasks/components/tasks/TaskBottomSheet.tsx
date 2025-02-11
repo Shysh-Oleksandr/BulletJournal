@@ -11,10 +11,10 @@ import theme from "theme";
 
 import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
-import { getTaskPath } from "modules/tasks/TasksSelectors";
+import { tasksApi } from "modules/tasks/api/tasksApi";
+import { useTaskPath } from "modules/tasks/api/tasksSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
 
-import { tasksApi } from "../../TasksApi";
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
@@ -47,15 +47,11 @@ const TaskBottomSheet = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [createTask] = tasksApi.useCreateTaskMutation();
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
+  const { mutate: createTask } = tasksApi.useCreateTaskMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
   const userId = useAppSelector(getUserId);
-  const taskPath = useAppSelector((state) =>
-    task || parentTaskId
-      ? getTaskPath(state, task?._id ?? parentTaskId!, !task?._id)
-      : null,
-  );
+  const taskPath = useTaskPath(task?._id ?? parentTaskId, !task?._id);
 
   const inputRef = useRef<TextInput | null>(null);
 

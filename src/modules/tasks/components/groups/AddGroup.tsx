@@ -5,10 +5,10 @@ import theme from "theme";
 
 import Typography from "components/Typography";
 import { getUserId } from "modules/auth/AuthSlice";
-import { getGroupPath } from "modules/tasks/TasksSelectors";
+import { tasksApi } from "modules/tasks/api/tasksApi";
+import { useGroupPath } from "modules/tasks/api/tasksSelectors";
 import { useAppSelector } from "store/helpers/storeHooks";
 
-import { tasksApi } from "../../TasksApi";
 import AddItemButton from "../common/AddItemButton";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
 import TaskItemInput from "../common/TaskItemInput";
@@ -21,10 +21,8 @@ type Props = {
 const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [createGroup] = tasksApi.useCreateGroupMutation();
-  const groupPath = useAppSelector((state) =>
-    parentGroupId ? getGroupPath(state, parentGroupId, true) : null,
-  );
+  const { mutate: createGroup } = tasksApi.useCreateGroupMutation();
+  const groupPath = useGroupPath(parentGroupId, true);
 
   const userId = useAppSelector(getUserId);
 

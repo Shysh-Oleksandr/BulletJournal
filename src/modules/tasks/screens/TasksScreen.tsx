@@ -24,7 +24,7 @@ const Tab = createMaterialTopTabNavigator();
 const TasksScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const { isLoading } = useFetchTaskElements();
+  const isLoading = useFetchTaskElements();
 
   return (
     <>

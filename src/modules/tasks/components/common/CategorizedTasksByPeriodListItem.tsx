@@ -1,8 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { getTasksWithinPeriod } from "modules/tasks/TasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useTasksWithinPeriod } from "modules/tasks/api/tasksSelectors";
 
 import { TaskCategoryPeriod } from "../../types";
 
@@ -17,12 +16,9 @@ const CategorizedTasksByPeriodListItem = ({
 }: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
-  const tasks = useAppSelector((state) =>
-    getTasksWithinPeriod(
-      state,
-      taskCategoryPeriod.start,
-      taskCategoryPeriod.end,
-    ),
+  const { tasks } = useTasksWithinPeriod(
+    taskCategoryPeriod.start,
+    taskCategoryPeriod.end,
   );
 
   return (

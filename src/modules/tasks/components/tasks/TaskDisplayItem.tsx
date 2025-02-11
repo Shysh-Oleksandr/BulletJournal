@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useSubTasksByTaskId } from "modules/tasks/api/tasksSelectors";
+import { calculateTasksCountInfo } from "modules/tasks/utils/calculateTasksCountInfo";
 import styled from "styled-components/native";
 
-import { getSubTasksCountInfoByTaskId } from "../../TasksSelectors";
 import { TaskItem, TaskTypes } from "../../types";
 import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import DueDateLabel from "../common/DueDateLabel";
@@ -23,8 +23,11 @@ type Props = {
 };
 
 const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
-  const { completedTasksCount, tasksCount } = useAppSelector((state) =>
-    getSubTasksCountInfoByTaskId(state, task._id),
+  const { subTasks } = useSubTasksByTaskId(task._id);
+
+  const { completedTasksCount, tasksCount } = useMemo(
+    () => calculateTasksCountInfo(subTasks),
+    [subTasks],
   );
 
   const isCheckType = task.type === TaskTypes.CHECK;

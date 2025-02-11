@@ -4,11 +4,10 @@ import { useTranslation } from "react-i18next";
 
 import Input from "components/Input";
 import {
-  getAllOrphanedTasks,
-  getOrphanedGroups,
-} from "modules/tasks/TasksSelectors";
+  useAllOrphanedTasks,
+  useOrphanedGroups,
+} from "modules/tasks/api/tasksSelectors";
 import { GroupItem, TaskItem } from "modules/tasks/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import TaskSearchItem from "./TaskSearchItem";
@@ -30,16 +29,16 @@ const TasksSearchContent = ({
   shouldSearchTasks = true,
   setSelectedItem,
 }: Props): JSX.Element | null => {
-  const orphanedGroups = useAppSelector(getOrphanedGroups);
-  const orphanedTasks = useAppSelector(getAllOrphanedTasks);
+  const { orphanedGroups } = useOrphanedGroups();
+  const { allOrphanedTasks } = useAllOrphanedTasks();
 
   const orphanedItems = useMemo(
     () =>
       (shouldSearchTasks
-        ? [...orphanedGroups, ...orphanedTasks]
+        ? [...orphanedGroups, ...allOrphanedTasks]
         : orphanedGroups
       ).filter((orphanedItem) => orphanedItem._id !== excludedItemId),
-    [shouldSearchTasks, excludedItemId, orphanedGroups, orphanedTasks],
+    [shouldSearchTasks, excludedItemId, orphanedGroups, allOrphanedTasks],
   );
 
   const { t } = useTranslation();
