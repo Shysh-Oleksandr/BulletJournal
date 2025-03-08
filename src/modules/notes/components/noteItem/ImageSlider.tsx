@@ -7,7 +7,7 @@ import styled from "styled-components/native";
 
 const { width: screenWidth } = Dimensions.get("window");
 
-const HORIZONTAL_FORM_PADDING = 20;
+const HORIZONTAL_FORM_PADDING = 16;
 const DEFAULT_IMAGE_HEIGHT_RATIO = 0.75;
 const SINGLE_IMAGE_HEIGHT_RATIO = 1;
 

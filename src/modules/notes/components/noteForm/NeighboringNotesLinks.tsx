@@ -7,10 +7,9 @@ import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Typography from "components/Typography";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
-import { getNotes } from "modules/notes/NotesSlice";
+import { useAllNotes } from "modules/notes/api/notesSelectors";
 import { Note } from "modules/notes/types";
 import { getEmptyNote } from "modules/notes/util/getEmptyNote";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 const LEFT_ICON = (
@@ -37,7 +36,7 @@ const NeighboringNotesLinks = ({ noteId }: Props): JSX.Element | null => {
 
   const navigation = useAppNavigation();
 
-  const allNotes = useAppSelector(getNotes);
+  const { notes: allNotes } = useAllNotes();
 
   const { prevNote, nextNote } = useMemo(() => {
     const index = allNotes.findIndex((note) => note._id === noteId);

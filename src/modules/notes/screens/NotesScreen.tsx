@@ -29,11 +29,10 @@ import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { logUserEvent } from "utils/logUserEvent";
 
+import { notesApi } from "../api/notesApi";
 import AddButton from "../components/AddButton";
 import NotePreview from "../components/noteItem/NotePreview";
 import NoteSeparator from "../components/noteItem/NoteSeparator";
-import { notesApi } from "../NotesApi";
-import { getNotes } from "../NotesSlice";
 import { Note } from "../types";
 import { getEmptyNote } from "../util/getEmptyNote";
 
@@ -50,24 +49,27 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const NotesScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const [fetchNotes, { isLoading: isNotesLoading, isFetching }] =
-    notesApi.useLazyFetchNotesQuery();
-  const [fetchLabels] = notesApi.useLazyFetchLabelsQuery();
+  const userId = useAppSelector(getUserId);
+
+  const {
+    data: allNotes = [],
+    isLoading: isNotesLoading,
+    refetch: refetchNotes,
+  } = notesApi.useNotesQuery(userId);
+
+  const { isLoading: isLabelsLoading, refetch: refetchLabels } =
+    notesApi.useLabelsQuery(userId);
 
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId);
-  const allNotes = useAppSelector(getNotes);
-
   const flashListRef = useRef<FlashList<Note>>(null);
 
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
   const [page, setPage] = useState(0);
 
   const [notes, setNotes] = useState(allNotes.slice(0, ITEMS_PER_PAGE));
 
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const isLoading = isNotesLoading || !isLoaded;
+  const isLoading = isNotesLoading || isLabelsLoading;
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -109,6 +111,7 @@ const NotesScreen = (): JSX.Element => {
     flashListRef?.current?.scrollToOffset({ offset: 0, animated: true });
   }, [flashListRef]);
 
+  // TODO: implement real pagination
   const loadMoreData = useCallback(() => {
     const nextPage = page + 1;
     const startIndex = nextPage * ITEMS_PER_PAGE;
@@ -125,28 +128,17 @@ const NotesScreen = (): JSX.Element => {
     setPage(nextPage);
   }, [allNotes, page]);
 
-  const fetchData = useCallback(async () => {
-    await fetchNotes(userId);
-    await fetchLabels(userId);
-  }, [fetchLabels, fetchNotes, userId]);
+  const handleManualRefresh = async () => {
+    setIsManualRefresh(true);
+    await refetchNotes();
+    await refetchLabels();
+    setIsManualRefresh(false);
+  };
 
-  const fetchInitialData = useCallback(async () => {
-    if (!isLoaded && userId) {
-      await fetchData();
-      setIsLoaded(true);
-    }
-  }, [isLoaded, userId, fetchData]);
-
+  // // When notes are updated we reset the state
   useEffect(() => {
-    if (notes.length === 0 && allNotes.length > 0) {
-      setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
-    }
+    if (allNotes.length === 0) return;
 
-    fetchInitialData();
-  }, [allNotes, notes.length, fetchInitialData]);
-
-  // When notes are updated we reset the state
-  useEffect(() => {
     setPage(0);
     setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
   }, [allNotes]);
@@ -196,8 +188,8 @@ const NotesScreen = (): JSX.Element => {
             refreshControl={
               <RefreshControl
                 colors={[theme.colors.cyan600]}
-                refreshing={isFetching}
-                onRefresh={fetchData}
+                refreshing={isManualRefresh}
+                onRefresh={handleManualRefresh}
               />
             }
           />

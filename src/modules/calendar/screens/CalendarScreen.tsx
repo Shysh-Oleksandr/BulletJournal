@@ -14,12 +14,11 @@ import {
 } from "modules/app/constants";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
+import { useAllNotes } from "modules/notes/api/notesSelectors";
 import NotePreview from "modules/notes/components/noteItem/NotePreview";
 import NoteSeparator from "modules/notes/components/noteItem/NoteSeparator";
-import { getNotes } from "modules/notes/NotesSlice";
 import { Note } from "modules/notes/types";
 import { getEmptyNote } from "modules/notes/util/getEmptyNote";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import Calendar from "../components/Calendar";
@@ -36,7 +35,7 @@ const CalendarScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const allNotes = useAppSelector(getNotes);
+  const { notes: allNotes } = useAllNotes();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
