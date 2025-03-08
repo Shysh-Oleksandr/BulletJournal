@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useArchivedTasksByGroupId } from "modules/tasks/api/tasksSelectors";
 import styled from "styled-components/native";
 
-import { getArchivedTasksByGroupId } from "../../TasksSelectors";
 import TaskDisplayItem from "../tasks/TaskDisplayItem";
 
 type Props = {
@@ -18,11 +17,9 @@ const ArchivedSubtasksListSection = ({
 }: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
-  const archivedGroupTasks = useAppSelector((state) =>
-    getArchivedTasksByGroupId(state, groupId),
-  );
+  const { archivedTasks } = useArchivedTasksByGroupId(groupId);
 
-  if (!archivedGroupTasks.length) return null;
+  if (!archivedTasks.length) return null;
 
   return (
     <ArchivedTasksContainer>
@@ -33,7 +30,7 @@ const ArchivedSubtasksListSection = ({
       >
         {t("habits.theArchive")}:
       </Typography>
-      {archivedGroupTasks.map((task) => (
+      {archivedTasks.map((task) => (
         <TaskDisplayItem key={task._id} task={task} />
       ))}
     </ArchivedTasksContainer>

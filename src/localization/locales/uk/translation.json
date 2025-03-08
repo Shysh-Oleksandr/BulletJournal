@@ -166,20 +166,13 @@
     "groupPlaceholder": "Введіть назву групи...",
     "subgroupPlaceholder": "Введіть назву підгрупи...",
     "subtaskPlaceholder": "Введіть назву підзавдання...",
-    "dueDateOptions": {
-      "today": "Сьогодні",
-      "tomorrow": "Завтра",
-      "this_week": "Цього тижня",
-      "this_month": "Цього місяця",
-      "this_year": "Цього року",
-      "custom": "Власний"
-    },
     "moveOutside": "Перемістити назовні",
     "moveTo": "Перемістити до",
     "noDueDate": "Без дати завершення",
     "categoriesTab": "Категорії",
     "allTasks": "Усі завдання",
     "previouslyCompleted": "Раніше виконано",
+    "noTasksText": "Ви ще не додали жодного завдання",
     "categories": {
       "overdue": "Прострочені",
       "today": "Сьогодні",
@@ -187,7 +180,8 @@
       "this_week": "Цього тижня",
       "next_week": "Наступного тижня",
       "this_month": "Цього місяця",
-      "this_year": "Цього року"
+      "this_year": "Цього року",
+      "custom": "Власний"
     }
   }
 }

@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useSubGroupsByGroupId } from "modules/tasks/api/tasksSelectors";
 import styled from "styled-components/native";
 
-import { getSubGroupsByGroupId } from "../../TasksSelectors";
 import { GroupItem } from "../../types";
 
 import AddGroup from "./AddGroup";
@@ -20,13 +19,11 @@ type Props = {
 const SubgroupsListSection = ({ group, depth }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const subgroups = useAppSelector((state) =>
-    getSubGroupsByGroupId(state, group._id),
-  );
+  const { subGroups } = useSubGroupsByGroupId(group._id);
 
   return (
     <SubGroupsSectionContainer>
-      {subgroups.length > 0 && (
+      {subGroups.length > 0 && (
         <>
           <Typography
             fontWeight="semibold"
@@ -36,9 +33,9 @@ const SubgroupsListSection = ({ group, depth }: Props): JSX.Element => {
             {t("tasks.subgroups")}:
           </Typography>
           <SubGroupsContainer>
-            {subgroups.map((subgroup) => (
-              <SubGroupItemContainer key={subgroup._id}>
-                <GroupHeaderDisplayItem group={subgroup} depth={depth + 1} />
+            {subGroups.map((subGroup) => (
+              <SubGroupItemContainer key={subGroup._id}>
+                <GroupHeaderDisplayItem group={subGroup} depth={depth + 1} />
               </SubGroupItemContainer>
             ))}
           </SubGroupsContainer>

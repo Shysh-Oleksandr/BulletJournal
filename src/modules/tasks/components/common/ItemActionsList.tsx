@@ -5,12 +5,11 @@ import theme from "theme";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
-import { tasksApi } from "modules/tasks/TasksApi";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
+import { tasksApi } from "modules/tasks/api/tasksApi";
 import styled from "styled-components/native";
 
-import { GroupItem, TaskItem } from "../../types";
+import { GroupItem, TaskItem, UpdateTaskRequest } from "../../types";
 
 import ItemInfoBottomSheet from "./ItemInfoBottomSheet";
 import ItemMoveToBottomSheetContent from "./ItemMoveToBottomSheetContent";
@@ -21,12 +20,12 @@ type Props = {
 };
 
 const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
-  const [updateGroup] = tasksApi.useUpdateGroupMutation();
-  const [deleteTask] = tasksApi.useDeleteTaskMutation();
-  const [deleteGroup] = tasksApi.useDeleteGroupMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
+  const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
+  const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
+  const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { t } = useTranslation();
 
@@ -40,21 +39,23 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   );
 
   const handleDelete = () => {
-    const relevantDeleteFunction = isTask ? deleteTask : deleteGroup;
-
-    relevantDeleteFunction(item._id);
+    if (isTask) {
+      deleteTask({ _id: item._id, author: userId });
+    } else {
+      deleteGroup({ _id: item._id, author: userId });
+    }
 
     closeModal();
   };
 
   const handleArchive = () => {
-    const relevantUpdateFunction = isTask ? updateTask : updateGroup;
-
-    relevantUpdateFunction({
+    const payload: UpdateTaskRequest = {
       _id: item._id,
       author: userId,
       isArchived: !item.isArchived,
-    });
+    };
+
+    isTask ? updateTask(payload) : updateGroup(payload);
   };
 
   return (

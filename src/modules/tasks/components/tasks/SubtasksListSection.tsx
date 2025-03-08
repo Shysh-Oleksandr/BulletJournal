@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useSubTasksByTaskId } from "modules/tasks/api/tasksSelectors";
 import styled from "styled-components/native";
 
-import { getSubTasksByTaskId } from "../../TasksSelectors";
 import { TaskItem } from "../../types";
 
 import AddTaskButton from "./AddTaskButton";
@@ -20,13 +19,11 @@ type Props = {
 const SubtasksListSection = ({ task, depth = 0 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const subtasks = useAppSelector((state) =>
-    getSubTasksByTaskId(state, task._id),
-  );
+  const { subTasks } = useSubTasksByTaskId(task._id);
 
   const completedSubtasks = useMemo(
-    () => subtasks.filter((task) => task.isCompleted).length,
-    [subtasks],
+    () => subTasks.filter((task) => task.isCompleted).length,
+    [subTasks],
   );
 
   return (
@@ -38,11 +35,11 @@ const SubtasksListSection = ({ task, depth = 0 }: Props): JSX.Element => {
       >
         {t("tasks.subtasks")}{" "}
         <Typography color={theme.colors.darkGray}>
-          {completedSubtasks}/{subtasks.length}
+          {completedSubtasks}/{subTasks.length}
         </Typography>
       </Typography>
       <SubTasksContainer>
-        {subtasks.map((subtask) => (
+        {subTasks.map((subtask) => (
           <TaskDisplayItem key={subtask._id} task={subtask} depth={depth + 1} />
         ))}
       </SubTasksContainer>

@@ -5,9 +5,8 @@ import RenderHTML from "react-native-render-html";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { getLabelsIds } from "modules/notes/NotesSlice";
+import { useLabelIds } from "modules/notes/api/notesSelectors";
 import { getTimeByDate } from "modules/notes/util/getFormattedDate";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
@@ -43,7 +42,7 @@ const NoteBody = ({
   images,
   onPress,
 }: Props): JSX.Element => {
-  const allLabelsIds = useAppSelector(getLabelsIds);
+  const { labelIds: allLabelsIds } = useLabelIds();
 
   const { width } = useWindowDimensions();
 

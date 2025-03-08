@@ -17,7 +17,7 @@ import {
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 
-import { authApi } from "../AuthApi";
+import { useAuth } from "../AuthContext";
 
 const GOOGLE_ICON = (
   <AntDesign name="google" size={24} color={theme.colors.white} />
@@ -26,13 +26,13 @@ const GOOGLE_ICON = (
 WebBrowser.maybeCompleteAuthSession();
 
 const GoogleAuthButton = (): JSX.Element => {
-  const [login, { isFetching }] = authApi.useLazyLoginQuery();
+  const { login, isLoading: isLoadingAuth } = useAuth();
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isSignedInWithCredential, setIsSignedInWithCredential] =
     useState(false);
 
-  const isLoading = isFetching || isAuthenticating;
+  const isLoading = isAuthenticating || isLoadingAuth;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, response, promptAsync] = useAuthRequest({
@@ -71,7 +71,7 @@ const GoogleAuthButton = (): JSX.Element => {
 
           const fire_token = await user.getIdToken();
 
-          await login({ fire_token, uid });
+          await login(fire_token, uid);
 
           setIsAuthenticating(false);
         } catch (error) {

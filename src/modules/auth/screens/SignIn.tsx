@@ -62,9 +62,13 @@ const SignIn = (): JSX.Element => {
             hitSlop={BUTTON_HIT_SLOP}
             onPress={() => setIsSignUp((prev) => !prev)}
           >
-            <Typography fontWeight="semibold" color={theme.colors.darkGray}>
+            <Typography
+              fontWeight="semibold"
+              align="center"
+              color={theme.colors.darkGray}
+            >
               {t(isSignUp ? "auth.alreadyHaveAccount" : "auth.dontHaveAccount")}{" "}
-              <Typography fontWeight="bold" paddingTop={20}>
+              <Typography fontWeight="bold" align="center" paddingTop={20}>
                 {t(isSignUp ? "auth.signIn" : "auth.signUp")}
               </Typography>
             </Typography>

@@ -1,9 +1,8 @@
 import debounce from "lodash.debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { getNotes } from "modules/notes/NotesSlice";
+import { useAllNotes } from "modules/notes/api/notesSelectors";
 import { Note } from "modules/notes/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 
 export const ALL_TYPE_ID = "ALL_TYPE_ID";
 export const ALL_CATEGORY_ID = "ALL_CATEGORY_ID";
@@ -30,7 +29,7 @@ export const useSearchNotes = ({
   imagesFilter,
   onSearch,
 }: Props) => {
-  const allNotes = useAppSelector(getNotes);
+  const { notes: allNotes } = useAllNotes();
 
   const [activeTypesIds, setActiveTypesIds] = useState<string[]>([ALL_TYPE_ID]);
   const [activeCategoriesIds, setActiveCategoriesIds] = useState<string[]>([

@@ -18,13 +18,12 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { useAllNotes } from "../api/notesSelectors";
 import NotePreview from "../components/noteItem/NotePreview";
 import NoteSeparator from "../components/noteItem/NoteSeparator";
 import Filters from "../components/search/Filters";
-import { getNotes } from "../NotesSlice";
 import { Note } from "../types";
 
 const contentContainerStyle = {
@@ -40,7 +39,7 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const SearchScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const allNotes = useAppSelector(getNotes);
+  const { notes: allNotes } = useAllNotes();
 
   const flashListRef = useRef<FlashList<Note>>(null);
 

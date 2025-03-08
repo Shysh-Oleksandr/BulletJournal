@@ -8,6 +8,7 @@ import AccordionContent from "./AccordionContent";
 export type AccordionProps = {
   headerContent: React.ReactNode;
   content: React.ReactNode;
+  isExpanded?: boolean;
   viewKey: string;
   setIsOpen: (value: boolean) => void;
 };
@@ -15,6 +16,7 @@ export type AccordionProps = {
 const Accordion = ({
   headerContent,
   content,
+  isExpanded,
   viewKey,
   setIsOpen,
 }: AccordionProps) => {
@@ -30,7 +32,7 @@ const Accordion = ({
     <Container>
       <AccordionHeader onPress={onHeaderPress}>{headerContent}</AccordionHeader>
       <AccordionContent isExpanded={open} viewKey={viewKey}>
-        {content}
+        {isExpanded && content}
       </AccordionContent>
     </Container>
   );

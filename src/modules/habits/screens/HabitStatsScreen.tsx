@@ -10,16 +10,15 @@ import {
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { useHabitById } from "../api/habitsSelectors";
 import HabitBestStreaksChart from "../components/habitStats/HabitBestStreaksChart";
 import HabitCalendar from "../components/habitStats/HabitCalendar";
 import HabitInfoCard from "../components/habitStats/HabitInfoCard";
 import HabitInfoSection from "../components/habitStats/HabitInfoSection";
 import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
 import HabitProgressBar from "../components/habitStats/HabitProgressBar";
-import { getHabitById } from "../HabitsSelectors";
 import { calculateHabitBestStreaks } from "../utils/calculateHabitBestStreaks";
 
 const contentContainerStyle = {
@@ -33,7 +32,7 @@ const HabitStatsScreen: FC<{
 
   const { id } = route.params;
 
-  const item = useAppSelector((state) => getHabitById(state, id));
+  const { habit: item } = useHabitById(id);
 
   const bestStreaksData = useMemo(
     () => calculateHabitBestStreaks(item.logs),

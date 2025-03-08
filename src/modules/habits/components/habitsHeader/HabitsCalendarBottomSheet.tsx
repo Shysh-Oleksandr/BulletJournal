@@ -15,10 +15,9 @@ import BottomModal from "components/BottomModal";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { SIMPLE_DATE_FORMAT } from "modules/calendar/data";
+import { useActiveHabits } from "modules/habits/api/habitsSelectors";
 import { EXTREME_PAST_DATE } from "modules/habits/data";
-import { getActiveHabits } from "modules/habits/HabitsSelectors";
 import { getAllHabitsMarkedDates } from "modules/habits/utils/getAllHabitsMarkedDates";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import HabitsCalendarDayItem from "./HabitsCalendarDayItem";
@@ -42,7 +41,7 @@ const HabitsCalendarBottomSheet = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const allHabits = useAppSelector(getActiveHabits);
+  const { activeHabits } = useActiveHabits();
 
   const calendarListRef = useRef<typeof CalendarList>(null);
 
@@ -56,13 +55,13 @@ const HabitsCalendarBottomSheet = ({
 
     const oldestHabitLogDate = Math.min(
       ...[
-        ...allHabits.map((habit) => habit.oldestLogDate ?? now),
+        ...activeHabits.map((habit) => habit.oldestLogDate ?? now),
         EXTREME_PAST_DATE.getTime(),
       ],
     );
 
     return differenceInMonths(now, oldestHabitLogDate);
-  }, [allHabits]);
+  }, [activeHabits]);
 
   const formattedSelectedDate = useMemo(
     () => format(selectedDate, SIMPLE_DATE_FORMAT),
@@ -70,8 +69,8 @@ const HabitsCalendarBottomSheet = ({
   );
 
   const markedDates = useMemo(
-    () => getAllHabitsMarkedDates(allHabits),
-    [allHabits],
+    () => getAllHabitsMarkedDates(activeHabits),
+    [activeHabits],
   );
 
   const onClose = useCallback(() => {

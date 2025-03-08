@@ -1,13 +1,11 @@
 import { format, isSameDay, isToday, startOfToday } from "date-fns";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
-import { getActiveHabits } from "modules/habits/HabitsSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { useHabitsWeekDates } from "../../hooks/useHabitsWeekDates";
@@ -28,11 +26,9 @@ const HabitsWeekCalendar = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const activeHabits = useAppSelector(getActiveHabits);
+  const isTodaySelected = useMemo(() => isToday(selectedDate), [selectedDate]);
 
-  const isTodaySelected = isToday(selectedDate);
-
-  const mappedWeekDates = useHabitsWeekDates(selectedDate, activeHabits);
+  const mappedWeekDates = useHabitsWeekDates(selectedDate);
 
   return (
     <Container>
@@ -116,4 +112,4 @@ const TodayContainer = styled.TouchableOpacity`
   align-items: center;
 `;
 
-export default HabitsWeekCalendar;
+export default React.memo(HabitsWeekCalendar);

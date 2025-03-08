@@ -8,15 +8,14 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
+import { habitsApi } from "../api/habitsApi";
+import { useArchivedHabits } from "../api/habitsSelectors";
 import ArchivedHabitItem from "../components/habitItem/ArchivedHabitItem";
-import { habitsApi } from "../HabitsApi";
-import { getArchivedHabits } from "../HabitsSelectors";
 
 const contentContainerStyle = {
   paddingTop: 20,
@@ -29,10 +28,10 @@ const ArchivedHabitsScreen = (): JSX.Element => {
 
   const navigation = useAppNavigation();
 
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
+  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
-  const userId = useAppSelector(getUserId) ?? "";
-  const archivedHabits = useAppSelector(getArchivedHabits);
+  const userId = useAuth().userId;
+  const { archivedHabits } = useArchivedHabits();
 
   const onUnarchive = useCallback(
     (_id: string) => {
