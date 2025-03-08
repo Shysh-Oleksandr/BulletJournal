@@ -61,7 +61,10 @@ export type HabitsState = {
   allIds: string[];
 };
 
-export type UpdateHabitRequest = Partial<Habit> & Pick<Habit, "_id" | "author">;
+export type UpdateHabitRequest = Partial<Habit> &
+  Pick<Habit, "_id" | "author"> & {
+    withDeepClone?: boolean;
+  };
 
 export type CreateHabitResponse = {
   habit: Habit;

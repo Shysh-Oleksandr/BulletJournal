@@ -138,9 +138,7 @@ const EditHabitScreen: FC<{
       if (isNewHabit) {
         await createHabit(createHabitData);
       } else {
-        console.log("updateHabitData:", updateHabitData);
-
-        await updateHabit(updateHabitData);
+        await updateHabit({ ...updateHabitData, withDeepClone: true });
       }
 
       withAlert && navigation.goBack();

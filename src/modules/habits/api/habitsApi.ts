@@ -44,8 +44,8 @@ export const useUpdateHabitMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateHabitRequest) =>
-      client.patch(`/habits/update/${payload._id}`, payload),
+    mutationFn: ({ _id, ...payload }: UpdateHabitRequest) =>
+      client.patch(`/habits/update/${_id}`, payload),
 
     onMutate: async (updatedHabit) => {
       await queryClient.cancelQueries({
@@ -61,8 +61,9 @@ export const useUpdateHabitMutation = () => {
         (oldData: HabitsState | undefined) => {
           if (!oldData) return oldData;
 
-          // TODO: find a way to avoid deep cloning as it slows down the app
-          const newHabits = JSON.parse(JSON.stringify(oldData));
+          const newHabits = updatedHabit.withDeepClone
+            ? JSON.parse(JSON.stringify(oldData))
+            : oldData;
           const habit = newHabits.byId[updatedHabit._id];
 
           if (habit) {
@@ -92,6 +93,7 @@ export const useUpdateHabitMutation = () => {
     },
 
     onSettled: (_, __, updatedHabit) => {
+      // TODO: check if this is needed
       queryClient.invalidateQueries({
         queryKey: getHabitsQueryKey(updatedHabit.author),
       });
