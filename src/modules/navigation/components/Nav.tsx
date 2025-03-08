@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { IS_ANDROID } from "modules/app/constants";
-import { getIsAuthenticated, getUserData } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import SignIn from "modules/auth/screens/SignIn";
 import ArchivedHabitsScreen from "modules/habits/screens/ArchivedHabitsScreen";
 import EditHabitScreen from "modules/habits/screens/EditHabitScreen";
@@ -17,7 +17,6 @@ import HabitsBulkEditScreen from "modules/habits/screens/HabitsBulkEditScreen";
 import HabitStatsScreen from "modules/habits/screens/HabitStatsScreen";
 import EditNoteScreen from "modules/notes/screens/EditNoteScreen";
 import SearchScreen from "modules/notes/screens/SearchScreen";
-import { useAppSelector } from "store/helpers/storeHooks";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 
 import { RootStackParamList, Routes } from "../types";
@@ -27,8 +26,7 @@ import TabNavigator from "./TabNavigator";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Nav = (): JSX.Element => {
-  const isAuthenticated = useAppSelector(getIsAuthenticated);
-  const userData = useAppSelector(getUserData);
+  const { user: userData } = useAuth();
 
   const routeNameRef = React.useRef<string>();
   const navigationRef = React.useRef() as React.MutableRefObject<
@@ -78,7 +76,7 @@ const Nav = (): JSX.Element => {
           animation: "slide_from_right",
         }}
       >
-        {!isAuthenticated ? (
+        {!userData ? (
           <Stack.Screen name={Routes.SIGN_IN} component={SignIn} />
         ) : (
           <>

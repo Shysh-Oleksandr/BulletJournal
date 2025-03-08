@@ -19,10 +19,9 @@ import {
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
@@ -68,7 +67,7 @@ const EditNoteScreen: FC<{
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId) ?? "";
+  const userId = useAuth().userId;
   const { labels: allLabels } = useAllLabels();
 
   const { item: initialNote, isNewNote, date } = route.params;

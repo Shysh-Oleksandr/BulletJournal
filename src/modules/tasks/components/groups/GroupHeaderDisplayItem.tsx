@@ -4,14 +4,13 @@ import theme from "theme";
 
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import {
   useGroupPath,
   useSubGroupsByGroupId,
   useTasksCountInfoByGroupId,
 } from "modules/tasks/api/tasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { GroupItem } from "../../types";
@@ -35,7 +34,7 @@ const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
 
   const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
   const { subGroups } = useSubGroupsByGroupId(group._id);
 
   const { completedTasksCount, tasksCount } = useTasksCountInfoByGroupId(

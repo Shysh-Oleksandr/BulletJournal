@@ -1,10 +1,9 @@
-import { getUserId } from "modules/auth/AuthSlice";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
 
 import { tasksApi } from "../api/tasksApi";
 
 export const useFetchTaskElements = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
   const { isLoading: isGroupsLoading } = tasksApi.useGroups(userId);
   const { isLoading: isTasksLoading } = tasksApi.useTasks(userId);
 

@@ -12,14 +12,13 @@ import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
 import FormActionButtons from "modules/notes/components/noteForm/FormActionButtons";
 import SavingStatusLabel from "modules/notes/components/noteForm/SavingStatusLabel";
 import TitleInput from "modules/notes/components/noteForm/TitleInput";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
@@ -53,7 +52,7 @@ const EditHabitScreen: FC<{
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { item: initialHabit, isNewHabit } = route.params;
 

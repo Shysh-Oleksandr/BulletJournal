@@ -1,7 +1,6 @@
 import { isWithinInterval } from "date-fns";
 
-import { getUserId } from "modules/auth/AuthSlice";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
 
 import { GroupItem, TaskItem } from "../types";
 import { calculateTasksCountInfo } from "../utils/calculateTasksCountInfo";
@@ -9,7 +8,7 @@ import { calculateTasksCountInfo } from "../utils/calculateTasksCountInfo";
 import { useGroups, useTasks } from "./tasksApi";
 
 export const useAllGroups = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useGroups(userId);
 
@@ -19,7 +18,7 @@ export const useAllGroups = () => {
 };
 
 export const useAllTasks = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useTasks(userId);
 

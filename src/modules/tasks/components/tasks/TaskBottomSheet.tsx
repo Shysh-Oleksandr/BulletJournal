@@ -10,10 +10,9 @@ import { TextInput } from "react-native";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useTaskPath } from "modules/tasks/api/tasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
 
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
@@ -50,7 +49,7 @@ const TaskBottomSheet = ({
   const { mutate: createTask } = tasksApi.useCreateTaskMutation();
   const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
   const taskPath = useTaskPath(task?._id ?? parentTaskId, !task?._id);
 
   const inputRef = useRef<TextInput | null>(null);

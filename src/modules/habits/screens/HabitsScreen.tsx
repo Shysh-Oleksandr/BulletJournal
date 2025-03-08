@@ -14,11 +14,10 @@ import {
   BG_GRADIENT_LOCATIONS,
   SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { habitsApi } from "../api/habitsApi";
@@ -40,7 +39,7 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { isLoading, refetch } = habitsApi.useGetHabitsQuery(userId);
 

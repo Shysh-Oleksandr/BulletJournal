@@ -5,14 +5,13 @@ import theme from "theme";
 import { Entypo } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
-import { logout } from "modules/auth/AuthSlice";
-import { useAppDispatch } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
 import styled from "styled-components/native";
 
 const LogoutBtn = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const dispatch = useAppDispatch();
+  const logout = useAuth().logout;
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
@@ -28,7 +27,7 @@ const LogoutBtn = (): JSX.Element => {
         message={t("auth.logoutConfirmation")}
         isDialogVisible={isDialogVisible}
         setIsDialogVisible={setIsDialogVisible}
-        onConfirm={() => dispatch(logout())}
+        onConfirm={logout}
       />
     </>
   );

@@ -5,9 +5,8 @@ import theme from "theme";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { GroupItem, TaskItem, UpdateTaskRequest } from "../../types";
@@ -26,7 +25,7 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
   const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { t } = useTranslation();
 

@@ -22,10 +22,9 @@ import {
   SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { logUserEvent } from "utils/logUserEvent";
 
@@ -49,7 +48,7 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const NotesScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const {
     data: allNotes = [],

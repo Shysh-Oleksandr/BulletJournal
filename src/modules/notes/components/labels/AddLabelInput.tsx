@@ -8,9 +8,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { notesApi } from "modules/notes/api/notesApi";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { generateRandomColor } from "utils/generateRandomColor";
@@ -36,7 +35,7 @@ const AddLabelInput = ({
 
   const { mutateAsync: createLabel } = notesApi.useCreateLabelMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const [inputValue, setInputValue] = useState("");
   const [currentColor, setCurrentColor] = useState(generateRandomColor());

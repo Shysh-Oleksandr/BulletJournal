@@ -4,10 +4,9 @@ import { TextInput } from "react-native";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useGroupPath } from "modules/tasks/api/tasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
 
 import AddItemButton from "../common/AddItemButton";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
@@ -24,7 +23,7 @@ const AddGroup = ({ isSubgroup, parentGroupId }: Props): JSX.Element => {
   const { mutate: createGroup } = tasksApi.useCreateGroupMutation();
   const groupPath = useGroupPath(parentGroupId, true);
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const inputRef = useRef<TextInput | null>(null);
 

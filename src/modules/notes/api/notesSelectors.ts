@@ -1,10 +1,9 @@
-import { getUserId } from "modules/auth/AuthSlice";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
 
 import { useLabelsQuery, useNotesQuery } from "./notesApi";
 
 export const useAllNotes = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useNotesQuery(userId);
 
@@ -12,7 +11,7 @@ export const useAllNotes = () => {
 };
 
 export const useAllLabels = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useLabelsQuery(userId);
 

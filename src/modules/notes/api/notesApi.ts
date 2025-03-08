@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { client } from "store/api/client";
-import { useAppSelector } from "store/helpers/storeHooks";
 
 import {
   CreateImagesRequest,
@@ -57,7 +56,7 @@ export const useUpdateNoteMutation = () => {
 
 export const useDeleteNoteMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAppSelector(getUserId);
+  const author = useAuth().userId;
 
   return useMutation({
     mutationFn: (noteId: string) => client.delete(`/notes/${noteId}`),
@@ -82,7 +81,7 @@ export const useLabelsQuery = (userId: string) => {
 
 export const useCreateLabelMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAppSelector(getUserId);
+  const author = useAuth().userId;
 
   return useMutation({
     mutationFn: (payload: CreateLabelRequest) =>
@@ -95,7 +94,7 @@ export const useCreateLabelMutation = () => {
 
 export const useUpdateLabelMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAppSelector(getUserId);
+  const author = useAuth().userId;
 
   return useMutation({
     mutationFn: (payload: UpdateLabelRequest) =>
@@ -108,7 +107,7 @@ export const useUpdateLabelMutation = () => {
 
 export const useDeleteLabelMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAppSelector(getUserId);
+  const author = useAuth().userId;
 
   return useMutation({
     mutationFn: (labelId: string) => client.delete(`/customlabels/${labelId}`),

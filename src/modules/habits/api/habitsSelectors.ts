@@ -1,12 +1,11 @@
-import { getUserId } from "modules/auth/AuthSlice";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
 
 import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
 
 import { useGetHabitsQuery } from "./habitsApi";
 
 export const useAllHabits = () => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useGetHabitsQuery(userId);
 
@@ -32,7 +31,7 @@ export const useArchivedHabits = () => {
 };
 
 export const useHabitById = (habitId: string) => {
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const { data, isLoading, isError } = useGetHabitsQuery(userId);
 
