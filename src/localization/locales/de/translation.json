@@ -170,6 +170,7 @@
     "categoriesTab": "Kategorien",
     "allTasks": "Alle Aufgaben",
     "previouslyCompleted": "Zuvor erledigt",
+    "noTasksText": "Sie haben noch keine Aufgaben hinzugefügt",
     "categories": {
       "overdue": "Überfällig",
       "today": "Heute",

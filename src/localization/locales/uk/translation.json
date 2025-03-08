@@ -172,6 +172,7 @@
     "categoriesTab": "Категорії",
     "allTasks": "Усі завдання",
     "previouslyCompleted": "Раніше виконано",
+    "noTasksText": "Ви ще не додали жодного завдання",
     "categories": {
       "overdue": "Прострочені",
       "today": "Сьогодні",

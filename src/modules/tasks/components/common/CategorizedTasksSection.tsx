@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
+import Typography from "components/Typography";
 import { useAllTasks } from "modules/tasks/api/tasksSelectors";
 import { PERIODS_DATA } from "modules/tasks/data";
 import { TaskItem } from "modules/tasks/types";
@@ -55,28 +56,39 @@ const CategorizedTasksSection = (): JSX.Element => {
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
     >
-      <CategoryContainer>
-        {PERIODS_DATA.map((period) => (
-          <CategorizedTasksByPeriodListItem
-            key={period.name}
-            taskCategoryPeriod={period}
+      {allTasks.length > 0 ? (
+        <CategoryContainer>
+          {PERIODS_DATA.map((period) => (
+            <CategorizedTasksByPeriodListItem
+              key={period.name}
+              taskCategoryPeriod={period}
+            />
+          ))}
+          <CategorizedTasksListItem
+            tasks={tasksWithoutDueDate}
+            name={t("tasks.noDueDate")}
           />
-        ))}
-        <CategorizedTasksListItem
-          tasks={tasksWithoutDueDate}
-          name={t("tasks.noDueDate")}
-        />
-        <CategorizedTasksListItem
-          tasks={completedPastTasks}
-          name={t("tasks.previouslyCompleted")}
-          color={theme.colors.green700}
-        />
-        <CategorizedTasksListItem
-          tasks={archivedTasks}
-          name={t("habits.theArchive")}
-          color={theme.colors.darkGray}
-        />
-      </CategoryContainer>
+          <CategorizedTasksListItem
+            tasks={completedPastTasks}
+            name={t("tasks.previouslyCompleted")}
+            color={theme.colors.green700}
+          />
+          <CategorizedTasksListItem
+            tasks={archivedTasks}
+            name={t("habits.theArchive")}
+            color={theme.colors.darkGray}
+          />
+        </CategoryContainer>
+      ) : (
+        <Typography
+          fontWeight="semibold"
+          fontSize="lg"
+          align="center"
+          paddingTop={10}
+        >
+          {t("tasks.noTasksText")}
+        </Typography>
+      )}
     </Container>
   );
 };

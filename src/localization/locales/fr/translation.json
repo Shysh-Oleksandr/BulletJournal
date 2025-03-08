@@ -170,6 +170,7 @@
     "categoriesTab": "Catégories",
     "allTasks": "Toutes les tâches",
     "previouslyCompleted": "Précédemment terminé",
+    "noTasksText": "Vous n'avez pas encore ajouté de tâches",
     "categories": {
       "overdue": "En retard",
       "today": "Aujourd'hui",
