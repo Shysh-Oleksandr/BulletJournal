@@ -19,15 +19,16 @@ import {
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
+import { notesApi } from "../api/notesApi";
+import { useAllLabels } from "../api/notesSelectors";
 import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
@@ -46,8 +47,6 @@ import WordsCountLabel from "../components/noteForm/WordsCountLabel";
 import NoteBody from "../components/noteItem/NoteBody";
 import { useHandleImagesOnSave } from "../hooks/useHandleImagesOnSave";
 import { deleteImagesFromS3 } from "../modules/s3";
-import { notesApi } from "../NotesApi";
-import { getLabels } from "../NotesSlice";
 import { Note, UpdateNoteRequest } from "../types";
 import { cleanHtml } from "../util/cleanHtml";
 import getAllChildrenIds from "../util/getAllChildrenIds";
@@ -61,15 +60,15 @@ const contentContainerStyle = {
 const EditNoteScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_NOTE>;
 }> = ({ route }) => {
-  const [updateNote] = notesApi.useUpdateNoteMutation();
-  const [createNote] = notesApi.useCreateNoteMutation();
-  const [deleteNote] = notesApi.useDeleteNoteMutation();
+  const { mutateAsync: updateNote } = notesApi.useUpdateNoteMutation();
+  const { mutateAsync: createNote } = notesApi.useCreateNoteMutation();
+  const { mutateAsync: deleteNote } = notesApi.useDeleteNoteMutation();
 
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId) ?? "";
-  const allLabels = useAppSelector(getLabels);
+  const userId = useAuth().userId;
+  const { labels: allLabels } = useAllLabels();
 
   const { item: initialNote, isNewNote, date } = route.params;
 
@@ -225,7 +224,7 @@ const EditNoteScreen: FC<{
 
       try {
         if (isNewNote) {
-          const response = await createNote(updateNoteData).unwrap();
+          const response = (await createNote(updateNoteData)).data;
 
           if (response.note) {
             const newNoteId = response.note._id;

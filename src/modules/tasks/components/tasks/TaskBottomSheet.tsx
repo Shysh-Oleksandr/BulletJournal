@@ -10,11 +10,10 @@ import { TextInput } from "react-native";
 import theme from "theme";
 
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
-import { getTaskPath } from "modules/tasks/TasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
+import { tasksApi } from "modules/tasks/api/tasksApi";
+import { useTaskPath } from "modules/tasks/api/tasksSelectors";
 
-import { tasksApi } from "../../TasksApi";
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
@@ -47,15 +46,11 @@ const TaskBottomSheet = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [createTask] = tasksApi.useCreateTaskMutation();
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
+  const { mutate: createTask } = tasksApi.useCreateTaskMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
-  const userId = useAppSelector(getUserId);
-  const taskPath = useAppSelector((state) =>
-    task || parentTaskId
-      ? getTaskPath(state, task?._id ?? parentTaskId!, !task?._id)
-      : null,
-  );
+  const userId = useAuth().userId;
+  const taskPath = useTaskPath(task?._id ?? parentTaskId, !task?._id);
 
   const inputRef = useRef<TextInput | null>(null);
 

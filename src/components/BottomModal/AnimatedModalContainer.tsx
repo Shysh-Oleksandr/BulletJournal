@@ -147,4 +147,4 @@ const STopSpace = styled.View`
   background-color: transparent;
 `;
 
-export default AnimatedModalContainer;
+export default React.memo(AnimatedModalContainer);

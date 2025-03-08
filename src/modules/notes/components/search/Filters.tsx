@@ -6,9 +6,11 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import Typography from "components/Typography";
-import { getCustomCategories, getCustomTypes } from "modules/notes/NotesSlice";
+import {
+  useCustomCategories,
+  useCustomTypes,
+} from "modules/notes/api/notesSelectors";
 import { Note } from "modules/notes/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import NoteSeparator from "../noteItem/NoteSeparator";
@@ -31,8 +33,8 @@ const Filters = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const types = useAppSelector(getCustomTypes);
-  const categories = useAppSelector(getCustomCategories);
+  const { customTypes: types } = useCustomTypes();
+  const { customCategories: categories } = useCustomCategories();
 
   const [searchQuery, setSearchQuery] = useState("");
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();

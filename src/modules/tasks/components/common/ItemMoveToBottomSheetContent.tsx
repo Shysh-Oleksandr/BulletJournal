@@ -5,10 +5,9 @@ import theme from "theme";
 import { Feather } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
-import { tasksApi } from "modules/tasks/TasksApi";
+import { useAuth } from "modules/auth/AuthContext";
+import { tasksApi } from "modules/tasks/api/tasksApi";
 import { GroupItem, TaskItem } from "modules/tasks/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import TasksSearchContent from "./TasksSearchContent";
@@ -24,10 +23,10 @@ const ItemMoveToBottomSheetContent = ({
   canMoveOutside,
   closeModal,
 }: Props): JSX.Element | null => {
-  const [updateTask] = tasksApi.useUpdateTaskMutation();
-  const [updateGroup] = tasksApi.useUpdateGroupMutation();
+  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
+  const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
 
-  const userId = useAppSelector(getUserId);
+  const userId = useAuth().userId;
 
   const isTask = "type" in item;
 

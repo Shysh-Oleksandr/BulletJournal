@@ -1,13 +1,12 @@
 import React from "react";
 
-import { useAppSelector } from "store/helpers/storeHooks";
+import {
+  useArchivedTasksByGroupId,
+  useSubGroupsByGroupId,
+  useTasksCountInfoByGroupId,
+} from "modules/tasks/api/tasksSelectors";
 import styled from "styled-components/native";
 
-import {
-  getSubGroupsByGroupId,
-  getUnarchivedTasksByGroupId,
-  getTasksCountInfoByGroupId,
-} from "../../TasksSelectors";
 import { GroupItem } from "../../types";
 import AddTaskButton from "../tasks/AddTaskButton";
 import TaskDisplayItem from "../tasks/TaskDisplayItem";
@@ -20,16 +19,11 @@ type Props = {
 };
 
 const GroupDisplayItem = ({ group }: Props): JSX.Element => {
-  const subGroups = useAppSelector((state) =>
-    getSubGroupsByGroupId(state, group._id),
-  );
-  const tasks = useAppSelector((state) =>
-    getUnarchivedTasksByGroupId(state, group._id),
-  );
+  const { subGroups } = useSubGroupsByGroupId(group._id);
 
-  const { percentageCompleted } = useAppSelector((state) =>
-    getTasksCountInfoByGroupId(state, group._id),
-  );
+  const { unArchivedTasks: tasks } = useArchivedTasksByGroupId(group._id);
+
+  const { percentageCompleted } = useTasksCountInfoByGroupId(group._id);
 
   return (
     <GroupItemAccordion

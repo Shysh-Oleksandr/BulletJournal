@@ -14,10 +14,9 @@ import theme from "theme";
 import BottomModal from "components/BottomModal";
 import Divider from "components/Divider";
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useCustomCategories } from "modules/notes/api/notesSelectors";
 import styled from "styled-components/native";
 
-import { getCustomCategories } from "../../NotesSlice";
 import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
@@ -44,7 +43,7 @@ const CategoriesSelector = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const initialCategories = useAppSelector(getCustomCategories);
+  const { customCategories: initialCategories } = useCustomCategories();
 
   const [categories, setCategories] = useState(initialCategories);
   const [closeTriggered, setCloseTriggered] = useState(false);

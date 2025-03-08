@@ -8,7 +8,7 @@ import Input from "components/Input";
 import Switcher from "components/Switcher";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
-import { habitsApi } from "modules/habits/HabitsApi";
+import { habitsApi } from "modules/habits/api/habitsApi";
 import { Habit } from "modules/habits/types";
 import styled from "styled-components/native";
 
@@ -38,7 +38,7 @@ const HabitLogInfoModal = ({
   selectedLogTimestamp,
   onClose,
 }: Props): JSX.Element => {
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
+  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
   const { t } = useTranslation();
 

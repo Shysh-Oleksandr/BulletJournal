@@ -1,14 +1,12 @@
-import React from "react";
+import { isPast } from "date-fns";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
+import Typography from "components/Typography";
+import { useAllTasks } from "modules/tasks/api/tasksSelectors";
 import { PERIODS_DATA } from "modules/tasks/data";
-import {
-  getArchivedTasks,
-  getCompletedPastTasks,
-  getTasksWithoutDueDate,
-} from "modules/tasks/TasksSelectors";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { TaskItem } from "modules/tasks/types";
 import styled from "styled-components/native";
 
 import CategorizedTasksByPeriodListItem from "./CategorizedTasksByPeriodListItem";
@@ -22,9 +20,32 @@ const contentContainerStyle = {
 const CategorizedTasksSection = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const archivedTasks = useAppSelector(getArchivedTasks);
-  const tasksWithoutDueDate = useAppSelector(getTasksWithoutDueDate);
-  const completedPastTasks = useAppSelector(getCompletedPastTasks);
+  const { allTasks } = useAllTasks();
+
+  const { archivedTasks, tasksWithoutDueDate, completedPastTasks } =
+    useMemo(() => {
+      const archivedTasks: TaskItem[] = [];
+      const tasksWithoutDueDate: TaskItem[] = [];
+      const completedPastTasks: TaskItem[] = [];
+
+      allTasks.forEach((task) => {
+        if (task.isArchived) {
+          archivedTasks.push(task);
+        }
+        if (!task.dueDate) {
+          tasksWithoutDueDate.push(task);
+        }
+        if (task.isCompleted && task.dueDate && isPast(task.dueDate)) {
+          completedPastTasks.push(task);
+        }
+      });
+
+      return {
+        archivedTasks,
+        tasksWithoutDueDate,
+        completedPastTasks,
+      };
+    }, [allTasks]);
 
   return (
     <Container
@@ -35,28 +56,39 @@ const CategorizedTasksSection = (): JSX.Element => {
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
     >
-      <CategoryContainer>
-        {PERIODS_DATA.map((period) => (
-          <CategorizedTasksByPeriodListItem
-            key={period.name}
-            taskCategoryPeriod={period}
+      {allTasks.length > 0 ? (
+        <CategoryContainer>
+          {PERIODS_DATA.map((period) => (
+            <CategorizedTasksByPeriodListItem
+              key={period.name}
+              taskCategoryPeriod={period}
+            />
+          ))}
+          <CategorizedTasksListItem
+            tasks={tasksWithoutDueDate}
+            name={t("tasks.noDueDate")}
           />
-        ))}
-        <CategorizedTasksListItem
-          tasks={tasksWithoutDueDate}
-          name={t("tasks.noDueDate")}
-        />
-        <CategorizedTasksListItem
-          tasks={completedPastTasks}
-          name={t("tasks.previouslyCompleted")}
-          color={theme.colors.green700}
-        />
-        <CategorizedTasksListItem
-          tasks={archivedTasks}
-          name={t("habits.theArchive")}
-          color={theme.colors.darkGray}
-        />
-      </CategoryContainer>
+          <CategorizedTasksListItem
+            tasks={completedPastTasks}
+            name={t("tasks.previouslyCompleted")}
+            color={theme.colors.green700}
+          />
+          <CategorizedTasksListItem
+            tasks={archivedTasks}
+            name={t("habits.theArchive")}
+            color={theme.colors.darkGray}
+          />
+        </CategoryContainer>
+      ) : (
+        <Typography
+          fontWeight="semibold"
+          fontSize="lg"
+          align="center"
+          paddingTop={10}
+        >
+          {t("tasks.noTasksText")}
+        </Typography>
+      )}
     </Container>
   );
 };

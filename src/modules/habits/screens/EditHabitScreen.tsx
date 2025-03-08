@@ -12,25 +12,24 @@ import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
-import { getUserId } from "modules/auth/AuthSlice";
+import { useAuth } from "modules/auth/AuthContext";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
 import FormActionButtons from "modules/notes/components/noteForm/FormActionButtons";
 import SavingStatusLabel from "modules/notes/components/noteForm/SavingStatusLabel";
 import TitleInput from "modules/notes/components/noteForm/TitleInput";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
+import { habitsApi } from "../api/habitsApi";
 import HabitFrequencySelector from "../components/habitForm/HabitFrequencySelector";
 import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
 import HabitBody from "../components/habitItem/HabitBody";
 import { EMPTY_HABIT } from "../data";
-import { habitsApi } from "../HabitsApi";
 import {
   CreateHabitRequest,
   Habit,
@@ -46,14 +45,14 @@ const contentContainerStyle = {
 const EditHabitScreen: FC<{
   route: RouteProp<RootStackParamList, Routes.EDIT_HABIT>;
 }> = ({ route }) => {
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
-  const [createHabit] = habitsApi.useCreateHabitMutation();
-  const [deleteHabit] = habitsApi.useDeleteHabitMutation();
+  const { mutateAsync: createHabit } = habitsApi.useCreateHabitMutation();
+  const { mutateAsync: updateHabit } = habitsApi.useUpdateHabitMutation();
+  const { mutate: deleteHabit } = habitsApi.useDeleteHabitMutation();
 
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAppSelector(getUserId) ?? "";
+  const userId = useAuth().userId;
 
   const { item: initialHabit, isNewHabit } = route.params;
 
@@ -136,9 +135,9 @@ const EditHabitScreen: FC<{
 
     try {
       if (isNewHabit) {
-        await createHabit(createHabitData).unwrap();
+        await createHabit(createHabitData);
       } else {
-        await updateHabit(updateHabitData);
+        await updateHabit({ ...updateHabitData, withDeepClone: true });
       }
 
       withAlert && navigation.goBack();
@@ -172,7 +171,7 @@ const EditHabitScreen: FC<{
       addCrashlyticsLog(`User tries to delete the habit ${_id}`);
       setIsDeleting(true);
 
-      deleteHabit(_id);
+      deleteHabit({ _id, userId });
 
       navigation.pop(2);
 
@@ -189,7 +188,7 @@ const EditHabitScreen: FC<{
         setIsDeleting(false);
       }, 300);
     }
-  }, [deleteHabit, initialHabit, navigation, t]);
+  }, [deleteHabit, initialHabit, navigation, t, userId]);
 
   return (
     <>

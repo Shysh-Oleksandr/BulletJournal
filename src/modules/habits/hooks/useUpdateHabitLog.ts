@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { habitsApi } from "../HabitsApi";
+import { habitsApi } from "../api/habitsApi";
 import { Habit, HabitLog, HabitTypes } from "../types";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
-  const [updateHabit] = habitsApi.useUpdateHabitMutation();
+  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 

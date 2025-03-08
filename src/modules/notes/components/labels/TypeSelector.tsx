@@ -14,10 +14,9 @@ import theme from "theme";
 import BottomModal from "components/BottomModal";
 import Divider from "components/Divider";
 import Typography from "components/Typography";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useCustomTypes } from "modules/notes/api/notesSelectors";
 import styled from "styled-components/native";
 
-import { getCustomTypes } from "../../NotesSlice";
 import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
@@ -44,7 +43,7 @@ const TypeSelector = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const initialTypes = useAppSelector(getCustomTypes);
+  const { customTypes: initialTypes } = useCustomTypes();
 
   const [types, setTypes] = useState(initialTypes);
   const [closeTriggered, setCloseTriggered] = useState(false);

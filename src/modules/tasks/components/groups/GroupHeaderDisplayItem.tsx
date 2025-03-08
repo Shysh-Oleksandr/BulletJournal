@@ -4,17 +4,15 @@ import theme from "theme";
 
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { getUserId } from "modules/auth/AuthSlice";
-import { useAppSelector } from "store/helpers/storeHooks";
+import { useAuth } from "modules/auth/AuthContext";
+import { tasksApi } from "modules/tasks/api/tasksApi";
+import {
+  useGroupPath,
+  useSubGroupsByGroupId,
+  useTasksCountInfoByGroupId,
+} from "modules/tasks/api/tasksSelectors";
 import styled from "styled-components/native";
 
-import { tasksApi } from "../../TasksApi";
-import {
-  getArchivedTasksCountInfoByGroupId,
-  getGroupPath,
-  getSubGroupsByGroupId,
-  getTasksCountInfoByGroupId,
-} from "../../TasksSelectors";
 import { GroupItem } from "../../types";
 import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import ItemActionsList from "../common/ItemActionsList";
@@ -34,23 +32,20 @@ type Props = {
 const GroupHeaderDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [updateGroup] = tasksApi.useUpdateGroupMutation();
+  const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
 
-  const userId = useAppSelector(getUserId);
-  const subGroups = useAppSelector((state) =>
-    getSubGroupsByGroupId(state, group._id),
-  );
+  const userId = useAuth().userId;
+  const { subGroups } = useSubGroupsByGroupId(group._id);
 
-  const { completedTasksCount, tasksCount } = useAppSelector((state) =>
-    getTasksCountInfoByGroupId(state, group._id),
+  const { completedTasksCount, tasksCount } = useTasksCountInfoByGroupId(
+    group._id,
   );
   const {
     completedTasksCount: completedArchivedTasksCount,
     tasksCount: archivedTasksCount,
-  } = useAppSelector((state) =>
-    getArchivedTasksCountInfoByGroupId(state, group._id),
-  );
-  const groupPath = useAppSelector((state) => getGroupPath(state, group._id));
+  } = useTasksCountInfoByGroupId(group._id, true);
+
+  const groupPath = useGroupPath(group._id);
 
   const [name, setName] = useState(group.name);
   const [color, setColor] = useState(group.color);

@@ -15,7 +15,7 @@ import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 
-import { authApi } from "../AuthApi";
+import { useAuth } from "../AuthContext";
 
 const EMAIL_REGEX =
   // eslint-disable-next-line no-useless-escape
@@ -37,7 +37,7 @@ type Props = {
 const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const [login, { isFetching }] = authApi.useLazyLoginQuery();
+  const { login, isLoading: isLoadingAuth } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +46,7 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const isLoading = isFetching || isAuthenticating;
+  const isLoading = isAuthenticating || isLoadingAuth;
 
   const isValidEmail = useMemo(() => EMAIL_REGEX.test(email), [email]);
 
@@ -61,7 +61,7 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
 
     const fire_token = await user.getIdToken();
 
-    await login({ fire_token, uid });
+    login(fire_token, uid);
   };
 
   const onPress = async () => {

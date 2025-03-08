@@ -1,18 +1,19 @@
-import "react-native-devsettings/withAsyncStorage"; // Allows to use React Native Debugger with hermes enabled
 import { loadAsync } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { StatusBar } from "react-native";
+import "react-native-devsettings/withAsyncStorage"; // Allows to use React Native Debugger with hermes enabled
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { Provider } from "react-redux";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { QueryClientProvider } from "@tanstack/react-query";
 import logging from "config/logging";
-import { store } from "store/store";
+import { AuthProvider } from "modules/auth/AuthContext";
+import { queryClient } from "store/api/queryClient";
 import styled, { ThemeProvider } from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { filterErrorLogs } from "utils/filterErrorLogs";
@@ -73,21 +74,23 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <I18nextProvider i18n={i18n}>
-        <Provider store={store}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaProvider>
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor="transparent"
-                translucent
-              />
-              <Container onLayout={onLayoutRootView}>
-                <Nav />
-              </Container>
-              <Toast topOffset={105} visibilityTime={2000} />
-            </SafeAreaProvider>
-          </GestureHandlerRootView>
-        </Provider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <SafeAreaProvider>
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="transparent"
+                  translucent
+                />
+                <Container onLayout={onLayoutRootView}>
+                  <Nav />
+                </Container>
+                <Toast topOffset={105} visibilityTime={2000} />
+              </SafeAreaProvider>
+            </AuthProvider>
+          </QueryClientProvider>
+        </GestureHandlerRootView>
       </I18nextProvider>
     </ThemeProvider>
   );

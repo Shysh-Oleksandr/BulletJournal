@@ -5,9 +5,8 @@ import { Calendar as RNCalendar } from "react-native-calendars";
 import theme from "theme";
 
 import { FontAwesome5 } from "@expo/vector-icons";
-import { getNotes } from "modules/notes/NotesSlice";
+import { useAllNotes } from "modules/notes/api/notesSelectors";
 import { Direction } from "react-native-calendars/src/types";
-import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
 import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "../data";
@@ -42,9 +41,9 @@ type Props = {
 };
 
 const Calendar = ({ selectedDate, setSelectedDate }: Props): JSX.Element => {
-  const allNotes = useAppSelector(getNotes);
+  const { notes } = useAllNotes();
 
-  const markedDates = useMemo(() => getMarkedDates(allNotes), [allNotes]);
+  const markedDates = useMemo(() => getMarkedDates(notes), [notes]);
 
   const formattedSelectedDate = useMemo(
     () => format(selectedDate, SIMPLE_DATE_FORMAT),
