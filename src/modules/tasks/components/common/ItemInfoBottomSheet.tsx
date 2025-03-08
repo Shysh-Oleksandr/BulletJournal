@@ -24,7 +24,6 @@ const ItemInfoBottomSheet = ({
   const [isVisible, setIsVisible] = useState(openByDefault);
   const [closeTriggered, setCloseTriggered] = useState(false);
 
-  openByDefault && console.log("isVisible:", isVisible);
   const handleClose = () => {
     onClose?.();
 
@@ -61,7 +60,7 @@ const ItemInfoBottomSheet = ({
           overScrollMode="never"
           contentContainerStyle={{ paddingVertical: 16 }}
         >
-          {content(() => setIsVisible(false))}
+          {isVisible && content(() => setIsVisible(false))}
         </ContentContainer>
       </BottomModal>
     </>

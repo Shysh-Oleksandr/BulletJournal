@@ -119,17 +119,14 @@ export const useUpdateGroupMutation = () => {
         getGroupsQueryKey(updatedGroup.author),
         (oldData?: GroupsState) => {
           if (!oldData) return oldData;
+          const newGroups = JSON.parse(JSON.stringify(oldData));
+          const group = newGroups.byId[updatedGroup._id];
 
-          return {
-            ...oldData,
-            byId: {
-              ...oldData.byId,
-              [updatedGroup._id]: {
-                ...oldData.byId[updatedGroup._id],
-                ...updatedGroup,
-              },
-            },
-          };
+          if (group) {
+            Object.assign(group, updatedGroup);
+          }
+
+          return newGroups;
         },
       );
 
@@ -200,17 +197,15 @@ export const useTasks = (userId: string) => {
     queryFn: async () => {
       const { data } = await client.get<TaskItem[]>(`/tasks/${userId}`);
 
-      return data
-        .sort((a, b) => (a.dueDate && b.dueDate ? a.dueDate - b.dueDate : 0))
-        .reduce<TasksState>(
-          (acc, task) => {
-            acc.byId[task._id] = task;
-            acc.allIds.push(task._id);
+      return data.reduce<TasksState>(
+        (acc, task) => {
+          acc.byId[task._id] = task;
+          acc.allIds.push(task._id);
 
-            return acc;
-          },
-          { byId: {}, allIds: [] },
-        );
+          return acc;
+        },
+        { byId: {}, allIds: [] },
+      );
     },
   });
 };
@@ -254,6 +249,11 @@ export const useCreateTaskMutation = () => {
         );
       }
     },
+    onSettled: (_, __, updatedTask) => {
+      queryClient.invalidateQueries({
+        queryKey: getTasksQueryKey(updatedTask.author),
+      });
+    },
   });
 };
 
@@ -277,16 +277,14 @@ export const useUpdateTaskMutation = () => {
         (oldData?: TasksState) => {
           if (!oldData) return oldData;
 
-          return {
-            ...oldData,
-            byId: {
-              ...oldData.byId,
-              [updatedTask._id]: {
-                ...oldData.byId[updatedTask._id],
-                ...updatedTask,
-              },
-            },
-          };
+          const newTasks = JSON.parse(JSON.stringify(oldData));
+          const task = newTasks.byId[updatedTask._id];
+
+          if (task) {
+            Object.assign(task, updatedTask);
+          }
+
+          return newTasks;
         },
       );
 

@@ -172,7 +172,6 @@ const DueDatePicker = ({
           });
         }}
         onCancel={() => setIsDatePickerVisible(false)}
-        minimumDate={today}
       />
     </>
   );

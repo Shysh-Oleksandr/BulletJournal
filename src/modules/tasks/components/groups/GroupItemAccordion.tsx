@@ -27,6 +27,7 @@ const GroupItemAccordion = ({
     <Container>
       <BgContainer colors={gradientColors}>
         <Accordion
+          isExpanded={isExpanded}
           headerContent={
             <HeaderContainer>
               {headerContent}

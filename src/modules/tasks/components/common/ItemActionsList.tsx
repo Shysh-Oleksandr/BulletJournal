@@ -10,7 +10,7 @@ import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useAppSelector } from "store/helpers/storeHooks";
 import styled from "styled-components/native";
 
-import { GroupItem, TaskItem } from "../../types";
+import { GroupItem, TaskItem, UpdateTaskRequest } from "../../types";
 
 import ItemInfoBottomSheet from "./ItemInfoBottomSheet";
 import ItemMoveToBottomSheetContent from "./ItemMoveToBottomSheetContent";
@@ -50,7 +50,7 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
   };
 
   const handleArchive = () => {
-    const payload = {
+    const payload: UpdateTaskRequest = {
       _id: item._id,
       author: userId,
       isArchived: !item.isArchived,
