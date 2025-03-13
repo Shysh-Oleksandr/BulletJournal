@@ -9,10 +9,13 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import theme from "theme";
 
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Input from "components/Input";
 import Typography from "components/Typography";
 import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useTaskPath } from "modules/tasks/api/tasksSelectors";
+import styled from "styled-components/native";
 
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
@@ -64,6 +67,7 @@ const TaskBottomSheet = ({
       currentUnits: task?.units ?? "%",
       currentCompletedAmount: task?.completedAmount ?? 0,
       currentCompletedAt: task?.completedAt ?? null,
+      description: task?.description ?? "",
     }),
     [task, defaultDueDate],
   );
@@ -96,6 +100,7 @@ const TaskBottomSheet = ({
       dueDate: formValues.dueDate,
       color: formValues.color,
       name: normalizedName,
+      description: formValues.description.trim(),
       type: formValues.selectedType,
       units: isCheckType ? null : formValues.currentUnits,
       target: isCheckType ? null : formValues.currentTarget,
@@ -167,12 +172,35 @@ const TaskBottomSheet = ({
                 ? "tasks.subtaskPlaceholder"
                 : "tasks.taskPlaceholder",
             )}
-            onSubmitEditing={() => {
-              handleUpdateTask();
-              closeModal();
-            }}
             onReset={hasChanges ? handleReset : undefined}
           />
+
+          <Input
+            style={{ paddingRight: 8 }}
+            value={formValues.description}
+            paddingHorizontal={28}
+            placeholder="Enter description..."
+            maxLength={1000}
+            bgColor="transparent"
+            fontSize="md"
+            fontWeight="medium"
+            multiline
+            numberOfLines={formValues.description ? 3 : 1}
+            onChange={(description) =>
+              setFormValues((prev) => ({ ...prev, description }))
+            }
+            LeftContent={
+              <DescriptionIconContainer>
+                <MaterialCommunityIcons
+                  name="text-long"
+                  color={formValues.color}
+                  size={theme.fontSizes.xl}
+                />
+              </DescriptionIconContainer>
+            }
+            labelColor={formValues.color}
+          />
+
           <DueDatePicker
             dueDate={formValues.dueDate}
             setDueDate={(dueDate) =>
@@ -222,5 +250,13 @@ const TaskBottomSheet = ({
     </ItemInfoBottomSheet>
   );
 };
+
+const DescriptionIconContainer = styled.View`
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -${theme.fontSizes.xl / 2}px;
+  z-index: 10;
+`;
 
 export default React.memo(TaskBottomSheet);

@@ -9,12 +9,12 @@ import Input from "components/Input";
 import SwipeableItem from "components/SwipeableItem";
 import { BUTTON_HIT_SLOP } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { notesApi } from "modules/notes/api/notesApi";
+import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
+import { CustomLabel } from "modules/customLabels/types";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { logUserEvent } from "utils/logUserEvent";
 
-import { CustomLabel } from "../../types";
 import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
@@ -40,8 +40,8 @@ const LabelItem = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { mutate: updateLabel } = notesApi.useUpdateLabelMutation();
-  const { mutate: deleteLabel } = notesApi.useDeleteLabelMutation();
+  const { mutate: updateLabel } = customLabelsApi.useUpdateLabelMutation();
+  const { mutate: deleteLabel } = customLabelsApi.useDeleteLabelMutation();
 
   const { width: screenWidth } = useWindowDimensions();
   const [name, setName] = useState(label.labelName);

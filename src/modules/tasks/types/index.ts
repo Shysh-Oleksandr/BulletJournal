@@ -1,3 +1,5 @@
+import { CustomLabel } from "modules/customLabels/types";
+
 export type CommonTaskItem = {
   _id: string;
   author: string;
@@ -11,6 +13,8 @@ export type GroupItem = CommonTaskItem & {
 };
 
 export type TaskItem = CommonTaskItem & {
+  description?: string;
+  customLabels?: CustomLabel[];
   groupId?: string | null;
   parentTaskId?: string | null;
   dueDate?: number | null;

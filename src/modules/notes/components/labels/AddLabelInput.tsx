@@ -9,13 +9,13 @@ import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import { CustomUserEvents } from "modules/app/types";
 import { useAuth } from "modules/auth/AuthContext";
-import { notesApi } from "modules/notes/api/notesApi";
+import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
+import { CustomLabel, LabelFor } from "modules/customLabels/types";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { generateRandomColor } from "utils/generateRandomColor";
 import { logUserEvent } from "utils/logUserEvent";
 
-import { CustomLabel } from "../../types";
 import ColorPicker from "../noteForm/ColorPicker";
 
 type Props = {
@@ -33,7 +33,7 @@ const AddLabelInput = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { mutateAsync: createLabel } = notesApi.useCreateLabelMutation();
+  const { mutateAsync: createLabel } = customLabelsApi.useCreateLabelMutation();
 
   const userId = useAuth().userId;
 
@@ -78,6 +78,7 @@ const AddLabelInput = ({
       isCategoryLabel,
       user: userId,
       color: currentColor,
+      labelFor: "Note" as LabelFor,
     };
 
     logUserEvent(CustomUserEvents.CREATE_LABEL);

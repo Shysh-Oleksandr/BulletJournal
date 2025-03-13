@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import theme from "theme";
 
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { useSubTasksByTaskId } from "modules/tasks/api/tasksSelectors";
 import { calculateTasksCountInfo } from "modules/tasks/utils/calculateTasksCountInfo";
@@ -75,6 +75,18 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   />
                   <Typography fontSize="xs" color={task.color}>
                     {completedTasksCount}/{tasksCount}
+                  </Typography>
+                </TaskLabelContainer>
+              )}
+              {task.description && (
+                <TaskLabelContainer>
+                  <MaterialCommunityIcons
+                    name="text-long"
+                    color={task.color}
+                    size={theme.fontSizes.sm}
+                  />
+                  <Typography fontSize="xs" color={task.color}>
+                    {task.description.slice(0, 20)}...
                   </Typography>
                 </TaskLabelContainer>
               )}

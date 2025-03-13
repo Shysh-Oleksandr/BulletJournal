@@ -5,19 +5,14 @@ import { client } from "store/api/client";
 import {
   CreateImagesRequest,
   CreateImagesResponse,
-  CreateLabelRequest,
-  CreateLabelResponse,
   CreateNoteRequest,
   CreateNoteResponse,
   DeleteImagesRequest,
-  FetchLabelsResponse,
   FetchNotesResponse,
-  UpdateLabelRequest,
   UpdateNoteRequest,
 } from "../types";
 
 export const getNotesQueryKey = (userId: string) => ["notes", userId];
-export const getLabelsQueryKey = (userId: string) => ["labels", userId];
 
 export const useNotesQuery = (userId: string) => {
   return useQuery({
@@ -66,57 +61,6 @@ export const useDeleteNoteMutation = () => {
   });
 };
 
-export const useLabelsQuery = (userId: string) => {
-  return useQuery({
-    queryKey: getLabelsQueryKey(userId),
-    queryFn: async () => {
-      const { data } = await client.get<FetchLabelsResponse>(
-        `/customlabels/${userId}`,
-      );
-
-      return data.customLabels;
-    },
-  });
-};
-
-export const useCreateLabelMutation = () => {
-  const queryClient = useQueryClient();
-  const author = useAuth().userId;
-
-  return useMutation({
-    mutationFn: (payload: CreateLabelRequest) =>
-      client.post<CreateLabelResponse>("/customlabels/create", payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
-    },
-  });
-};
-
-export const useUpdateLabelMutation = () => {
-  const queryClient = useQueryClient();
-  const author = useAuth().userId;
-
-  return useMutation({
-    mutationFn: (payload: UpdateLabelRequest) =>
-      client.patch(`/customlabels/update/${payload._id}`, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
-    },
-  });
-};
-
-export const useDeleteLabelMutation = () => {
-  const queryClient = useQueryClient();
-  const author = useAuth().userId;
-
-  return useMutation({
-    mutationFn: (labelId: string) => client.delete(`/customlabels/${labelId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
-    },
-  });
-};
-
 export const useCreateImagesMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateImagesRequest) =>
@@ -136,10 +80,6 @@ export const notesApi = {
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
-  useLabelsQuery,
-  useCreateLabelMutation,
-  useUpdateLabelMutation,
-  useDeleteLabelMutation,
   useCreateImagesMutation,
   useDeleteImagesMutation,
 };

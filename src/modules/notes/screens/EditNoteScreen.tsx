@@ -20,6 +20,7 @@ import {
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { useAuth } from "modules/auth/AuthContext";
+import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -28,7 +29,6 @@ import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
 import { notesApi } from "../api/notesApi";
-import { useAllLabels } from "../api/notesSelectors";
 import CategoriesSelector from "../components/labels/CategoriesSelector";
 import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
@@ -68,7 +68,7 @@ const EditNoteScreen: FC<{
   const navigation = useAppNavigation();
 
   const userId = useAuth().userId;
-  const { labels: allLabels } = useAllLabels();
+  const { labels: allLabels } = useNoteLabels();
 
   const { item: initialNote, isNewNote, date } = route.params;
 

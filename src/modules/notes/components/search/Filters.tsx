@@ -6,10 +6,8 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import Typography from "components/Typography";
-import {
-  useCustomCategories,
-  useCustomTypes,
-} from "modules/notes/api/notesSelectors";
+import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
+import { CustomLabel } from "modules/customLabels/types";
 import { Note } from "modules/notes/types";
 import styled from "styled-components/native";
 
@@ -33,8 +31,25 @@ const Filters = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { customTypes: types } = useCustomTypes();
-  const { customCategories: categories } = useCustomCategories();
+  const { labels } = useNoteLabels();
+
+  const { types, categories } = useMemo(() => {
+    const types: CustomLabel[] = [];
+    const categories: CustomLabel[] = [];
+
+    labels.forEach((label) => {
+      if (label.isCategoryLabel) {
+        categories.push(label);
+      } else {
+        types.push(label);
+      }
+    });
+
+    return {
+      types,
+      categories,
+    };
+  }, [labels]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();
