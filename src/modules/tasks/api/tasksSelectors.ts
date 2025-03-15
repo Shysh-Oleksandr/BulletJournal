@@ -1,4 +1,5 @@
 import { isWithinInterval } from "date-fns";
+import { useCallback, useMemo } from "react";
 
 import { useAuth } from "modules/auth/AuthContext";
 
@@ -12,7 +13,10 @@ export const useAllGroups = () => {
 
   const { data, isLoading, isError } = useGroups(userId);
 
-  const allGroups = data?.allIds.map((id) => data.byId[id]) || [];
+  const allGroups = useMemo(
+    () => data?.allIds.map((id) => data.byId[id]) || [],
+    [data],
+  );
 
   return { allGroups, isLoading, isError };
 };
@@ -22,7 +26,10 @@ export const useAllTasks = () => {
 
   const { data, isLoading, isError } = useTasks(userId);
 
-  const allTasks = data?.allIds.map((id) => data.byId[id]) || [];
+  const allTasks = useMemo(
+    () => data?.allIds.map((id) => data.byId[id]) || [],
+    [data],
+  );
 
   return { allTasks, isLoading, isError };
 };
@@ -30,8 +37,9 @@ export const useAllTasks = () => {
 export const useSubGroupsByGroupId = (groupId: string) => {
   const { allGroups, isLoading, isError } = useAllGroups();
 
-  const subGroups = allGroups.filter(
-    (group) => group.parentGroupId === groupId,
+  const subGroups = useMemo(
+    () => allGroups.filter((group) => group.parentGroupId === groupId),
+    [allGroups, groupId],
   );
 
   return { subGroups, isLoading, isError };
@@ -40,7 +48,10 @@ export const useSubGroupsByGroupId = (groupId: string) => {
 export const useOrphanedGroups = () => {
   const { allGroups, isLoading, isError } = useAllGroups();
 
-  const orphanedGroups = allGroups.filter((group) => !group.parentGroupId);
+  const orphanedGroups = useMemo(
+    () => allGroups.filter((group) => !group.parentGroupId),
+    [allGroups],
+  );
 
   return { orphanedGroups, isLoading, isError };
 };
@@ -48,8 +59,9 @@ export const useOrphanedGroups = () => {
 export const useAllOrphanedTasks = () => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const allOrphanedTasks = allTasks.filter(
-    (task) => !task.groupId && !task.parentTaskId,
+  const allOrphanedTasks = useMemo(
+    () => allTasks.filter((task) => !task.groupId && !task.parentTaskId),
+    [allTasks],
   );
 
   return { allOrphanedTasks, isLoading, isError };
@@ -58,8 +70,12 @@ export const useAllOrphanedTasks = () => {
 export const useOrphanedTasks = () => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const orphanedTasks = allTasks.filter(
-    (task) => !task.groupId && !task.parentTaskId && !task.isArchived,
+  const orphanedTasks = useMemo(
+    () =>
+      allTasks.filter(
+        (task) => !task.groupId && !task.parentTaskId && !task.isArchived,
+      ),
+    [allTasks],
   );
 
   return { orphanedTasks, isLoading, isError };
@@ -68,7 +84,10 @@ export const useOrphanedTasks = () => {
 export const useSubTasksByTaskId = (taskId: string) => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const subTasks = allTasks.filter((task) => task.parentTaskId === taskId);
+  const subTasks = useMemo(
+    () => allTasks.filter((task) => task.parentTaskId === taskId),
+    [allTasks, taskId],
+  );
 
   return { subTasks, isLoading, isError };
 };
@@ -76,7 +95,10 @@ export const useSubTasksByTaskId = (taskId: string) => {
 export const useTasksByGroupId = (groupId: string) => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const tasks = allTasks.filter((task) => task.groupId === groupId);
+  const tasks = useMemo(
+    () => allTasks.filter((task) => task.groupId === groupId),
+    [allTasks, groupId],
+  );
 
   return { tasks, isLoading, isError };
 };
@@ -84,105 +106,120 @@ export const useTasksByGroupId = (groupId: string) => {
 export const useArchivedTasksByGroupId = (groupId: string) => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const archivedTasks: TaskItem[] = [];
-  const unArchivedTasks: TaskItem[] = [];
+  const { archivedTasks, unArchivedTasks } = useMemo(() => {
+    const archivedTasks: TaskItem[] = [];
+    const unArchivedTasks: TaskItem[] = [];
 
-  allTasks.forEach((task) => {
-    if (task.groupId === groupId) {
-      if (task.isArchived) {
-        archivedTasks.push(task);
-      } else {
-        unArchivedTasks.push(task);
+    allTasks.forEach((task) => {
+      if (task.groupId === groupId) {
+        if (task.isArchived) {
+          archivedTasks.push(task);
+        } else {
+          unArchivedTasks.push(task);
+        }
       }
-    }
-  });
+    });
+
+    return { archivedTasks, unArchivedTasks };
+  }, [allTasks, groupId]);
 
   return { archivedTasks, unArchivedTasks, isLoading, isError };
 };
 
-export const useTaskPath = (taskId?: string, includeCurrentTask?: boolean) => {
+export const useTaskPath = (
+  taskId?: string,
+  includeCurrentTask?: boolean,
+  tempParentId?: string | null,
+) => {
   const { allTasks } = useAllTasks();
   const { allGroups } = useAllGroups();
 
-  if (!taskId) return "";
+  const taskMap = useMemo(
+    () => new Map(allTasks.map((task) => [task._id, task])),
+    [allTasks],
+  );
 
-  const taskMap = new Map(allTasks.map((task) => [task._id, task]));
-  const groupMap = new Map(allGroups.map((group) => [group._id, group]));
+  const groupMap = useMemo(
+    () => new Map(allGroups.map((group) => [group._id, group])),
+    [allGroups],
+  );
 
-  const buildPath = (
-    itemId: string | null | undefined,
-    isTask = true,
-    includeCurrent = false,
-  ): string[] => {
-    if (!itemId) return [];
-    const map = isTask ? taskMap : groupMap;
-    const item = map.get(itemId);
+  const buildPath = useCallback(
+    (itemId: string | null | undefined, isTask = true): string[] => {
+      if (!itemId) return [];
+      const map = isTask ? taskMap : groupMap;
+      const item = map.get(itemId);
 
-    if (!item) return [];
-    const parentId = isTask
-      ? (item as TaskItem).parentTaskId || (item as TaskItem).groupId
-      : (item as GroupItem).parentGroupId;
+      if (!item) return [];
 
-    const currentName = includeCurrent ? [item.name] : [];
+      const parentId = isTask
+        ? (item as TaskItem).parentTaskId || (item as TaskItem).groupId
+        : (item as GroupItem).parentGroupId;
 
-    return [...buildPath(parentId, !isTask && !parentId, true), ...currentName];
-  };
+      return [
+        ...buildPath(parentId, Boolean(parentId && taskMap.has(parentId))),
+        item.name,
+      ];
+    },
+    [taskMap, groupMap],
+  );
 
-  const task = taskMap.get(taskId);
+  const task = taskId ? taskMap.get(taskId) : null;
 
-  if (!task) return "";
+  const isTaskParent = tempParentId ? taskMap.has(tempParentId) : false;
 
-  // Determine the starting point for the path
-  const parentId = task.parentTaskId || task.groupId;
+  const path = useMemo(
+    () => (tempParentId ? buildPath(tempParentId, isTaskParent) : []),
+    [tempParentId, isTaskParent, buildPath],
+  );
 
-  // Build path excluding or including the current task's name based on `includeCurrentTask`
-  const path = parentId
-    ? buildPath(parentId, !!task.parentTaskId, true)
-    : includeCurrentTask
-      ? [task.name]
-      : [];
+  if (!tempParentId) return [];
 
-  // Add the current task's name if needed
-  if (includeCurrentTask && task.name) {
+  if (includeCurrentTask && task && task.name) {
     path.push(task.name);
   }
 
-  return path.length > 0 ? `${path.join(" > ")} >` : "";
+  return path;
 };
 
 export const useGroupPath = (
   groupId?: string,
   includeCurrentGroup?: boolean,
+  tempParentGroupId?: string | null,
 ) => {
   const { allGroups } = useAllGroups();
 
-  if (!groupId) return "";
+  const groupMap = useMemo(
+    () => new Map(allGroups.map((group) => [group._id, group])),
+    [allGroups],
+  );
 
-  const groupMap = new Map(allGroups.map((group) => [group._id, group]));
+  const buildPath = useCallback(
+    (groupId: string | null | undefined): string[] => {
+      if (!groupId) return [];
+      const group = groupMap.get(groupId);
 
-  const buildPath = (
-    groupId: string | null | undefined,
-    includeCurrent = false,
-  ): string[] => {
-    if (!groupId) return [];
-    const group = groupMap.get(groupId);
+      if (!group) return [];
 
-    if (!group) return [];
-    const parentGroupId = group.parentGroupId;
+      return [...buildPath(group.parentGroupId), group.name];
+    },
+    [groupMap],
+  );
 
-    const currentName = includeCurrent ? [group.name] : [];
+  const group = groupId ? groupMap.get(groupId) : null;
 
-    return [...buildPath(parentGroupId, true), ...currentName];
-  };
+  const path = useMemo(
+    () => buildPath(tempParentGroupId),
+    [buildPath, tempParentGroupId],
+  );
 
-  const group = groupMap.get(groupId);
+  if (!tempParentGroupId) return [];
 
-  if (!group) return "";
+  if (includeCurrentGroup && group && group.name) {
+    path.push(group.name);
+  }
 
-  // Build path excluding or including the current group's name based on `includeCurrentGroup`
-  const path = buildPath(groupId, includeCurrentGroup).join(" > ");
-
-  return path ? `${path} >` : "";
+  return path;
 };
 
 export const useTasksCountInfoByGroupId = (
@@ -191,20 +228,26 @@ export const useTasksCountInfoByGroupId = (
 ) => {
   const { archivedTasks, unArchivedTasks } = useArchivedTasksByGroupId(groupId);
 
-  return calculateTasksCountInfo(
-    onlyArchived ? archivedTasks : unArchivedTasks,
+  return useMemo(
+    () =>
+      calculateTasksCountInfo(onlyArchived ? archivedTasks : unArchivedTasks),
+    [archivedTasks, onlyArchived, unArchivedTasks],
   );
 };
 
 export const useTasksWithinPeriod = (startDate: number, endDate: number) => {
   const { allTasks, isLoading, isError } = useAllTasks();
 
-  const tasks = allTasks.filter(
-    (task) =>
-      !task.isArchived &&
-      task.dueDate &&
-      (!task.isCompleted || startDate > 0) &&
-      isWithinInterval(task.dueDate, { start: startDate, end: endDate }),
+  const tasks = useMemo(
+    () =>
+      allTasks.filter(
+        (task) =>
+          !task.isArchived &&
+          task.dueDate &&
+          (!task.isCompleted || startDate > 0) &&
+          isWithinInterval(task.dueDate, { start: startDate, end: endDate }),
+      ),
+    [allTasks, endDate, startDate],
   );
 
   return { tasks, isLoading, isError };

@@ -23,6 +23,7 @@ import {
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { useAuth } from "modules/auth/AuthContext";
+import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -57,7 +58,7 @@ const NotesScreen = (): JSX.Element => {
   } = notesApi.useNotesQuery(userId);
 
   const { isLoading: isLabelsLoading, refetch: refetchLabels } =
-    notesApi.useLabelsQuery(userId);
+    customLabelsApi.useLabelsQuery(userId);
 
   const navigation = useAppNavigation();
 
@@ -68,7 +69,9 @@ const NotesScreen = (): JSX.Element => {
 
   const [notes, setNotes] = useState(allNotes.slice(0, ITEMS_PER_PAGE));
 
-  const isLoading = isNotesLoading || isLabelsLoading;
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const isLoading = isNotesLoading || isLabelsLoading || isInitialLoading;
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -140,6 +143,7 @@ const NotesScreen = (): JSX.Element => {
 
     setPage(0);
     setNotes(allNotes.slice(0, ITEMS_PER_PAGE));
+    setIsInitialLoading(false);
   }, [allNotes]);
 
   return (

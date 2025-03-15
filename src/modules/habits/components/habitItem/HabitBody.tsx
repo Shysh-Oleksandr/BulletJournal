@@ -9,11 +9,12 @@ import ItemCircularProgress from "components/ItemCircularProgress";
 import Typography from "components/Typography";
 import { BIG_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useHabitColors } from "modules/habits/hooks/useHabitColors";
+import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 
-import { Habit, HabitTypes } from "../../types";
+import { Habit, HabitLog, HabitTypes } from "../../types";
 
 import HabitTags from "./HabitTags";
 
@@ -21,8 +22,7 @@ type Props = {
   habit: Habit;
   inputValue: string;
   isCompleted: boolean;
-  amountTarget?: number;
-  percentageCompleted?: number;
+  currentLog?: HabitLog;
   isActiveOnSelectedDate?: boolean;
   updateLog?: () => void;
   onChange?: (text: string) => void;
@@ -33,8 +33,7 @@ const HabitBody = ({
   habit,
   inputValue,
   isCompleted,
-  amountTarget,
-  percentageCompleted,
+  currentLog,
   isActiveOnSelectedDate = true,
   updateLog,
   onChange,
@@ -52,6 +51,18 @@ const HabitBody = ({
     isCompleted,
     habit.color,
   );
+
+  const { bgColor: completedBgColor, optionalBgColor } = useHabitStatColors(
+    habit.color,
+  );
+
+  const hasAdditionalInfo = currentLog?.isManuallyOptional || currentLog?.note;
+
+  const indicatorBgColor = isCompleted
+    ? optionalBgColor
+    : currentLog?.isOptional
+      ? completedBgColor
+      : theme.colors.cyan500;
 
   const onCardPress = useCallback(() => {
     if (isCheckHabitType) {
@@ -89,11 +100,18 @@ const HabitBody = ({
               color={habit.color}
               isCheckType={isCheckHabitType}
               isCompleted={isCompleted}
-              percentageCompleted={percentageCompleted}
+              percentageCompleted={currentLog?.percentageCompleted}
               handleUpdate={updateLog}
               onChange={onChange}
               inputRef={inputRef}
             />
+            {hasAdditionalInfo && (
+              <AdditionalInfoIndicator
+                borderColor={indicatorBgColor}
+                bgColor={gradientColors[0]}
+                isFull={!!currentLog?.note}
+              />
+            )}
             <LabelContainer>
               <Typography
                 color={textColor}
@@ -122,7 +140,7 @@ const HabitBody = ({
         </RowContainer>
         <HabitTags
           habit={habit}
-          amountTarget={amountTarget}
+          amountTarget={currentLog?.amountTarget}
           labelBgColor={labelBgColor}
           textColor={textColor}
         />
@@ -174,6 +192,23 @@ const HabitTopTagContainer = styled.View<{ bgColor: string }>`
   background-color: ${theme.colors.cyan400};
   padding: 3px 8px;
   border-radius: 5px;
+  z-index: 10;
+`;
+
+const AdditionalInfoIndicator = styled.View<{
+  bgColor: string;
+  borderColor: string;
+  isFull: boolean;
+}>`
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  top: 0px;
+  left: 29px;
+  background-color: ${({ bgColor, borderColor, isFull }) =>
+    isFull ? borderColor : bgColor};
+  border: 3px solid ${({ borderColor }) => borderColor};
+  border-radius: 999px;
   z-index: 10;
 `;
 

@@ -171,6 +171,8 @@
     "allTasks": "Tutte le attività",
     "previouslyCompleted": "Precedentemente completato",
     "noTasksText": "Non hai ancora aggiunto alcuna attività",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Inserisci una descrizione...",
     "categories": {
       "overdue": "In ritardo",
       "today": "Oggi",

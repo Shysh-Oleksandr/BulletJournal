@@ -173,6 +173,8 @@
     "allTasks": "Усі завдання",
     "previouslyCompleted": "Раніше виконано",
     "noTasksText": "Ви ще не додали жодного завдання",
+    "description": "Опис",
+    "descriptionPlaceholder": "Введіть опис...",
     "categories": {
       "overdue": "Прострочені",
       "today": "Сьогодні",

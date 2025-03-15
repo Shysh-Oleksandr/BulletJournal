@@ -1,3 +1,5 @@
+import { CustomLabel } from "modules/customLabels/types";
+
 export type Note = {
   _id: string;
   author: string;
@@ -14,14 +16,6 @@ export type Note = {
   category: CustomLabel[];
 };
 
-export interface CustomLabel {
-  labelName: string;
-  color: string;
-  isCategoryLabel: boolean;
-  user: string; // userId
-  _id: string;
-}
-
 export interface Image {
   url: string;
   author: string; // userId
@@ -33,24 +27,15 @@ export type FetchNotesResponse = {
   count: number;
   notes: Note[];
 };
-export type FetchLabelsResponse = {
-  count: number;
-  customLabels: CustomLabel[];
-};
 
 export type UpdateNoteRequest = Omit<Note, "type" | "category" | "images"> & {
   type: string | null;
   category: string[];
   images: string[];
 };
-export type UpdateLabelRequest = CustomLabel;
 
 export type CreateNoteResponse = {
   note: Note;
-};
-
-export type CreateLabelResponse = {
-  customLabel: CustomLabel;
 };
 
 export type CreateImagesResponse = {
@@ -65,7 +50,6 @@ export type CreateNoteRequest = Omit<
   category: string[];
   images: string[];
 };
-export type CreateLabelRequest = Omit<CustomLabel, "_id">;
 
 export type CreateImagesRequest = Pick<Image, "author" | "noteId"> & {
   urls: string[];

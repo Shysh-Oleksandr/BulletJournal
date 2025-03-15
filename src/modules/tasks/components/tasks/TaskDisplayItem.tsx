@@ -9,8 +9,8 @@ import styled from "styled-components/native";
 
 import { TaskItem, TaskTypes } from "../../types";
 import ArchivedItemLabel from "../common/ArchivedItemLabel";
+import DescriptionLabel from "../common/DescriptionLabel";
 import DueDateLabel from "../common/DueDateLabel";
-import ItemActionsList from "../common/ItemActionsList";
 import { TaskLabelContainer } from "../common/TaskLabelContainer";
 
 import SubtasksListSection from "./SubtasksListSection";
@@ -39,12 +39,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
       <TaskBottomSheet
         task={task}
         depth={depth}
-        content={(closeModal) => (
-          <>
-            <ItemActionsList item={task} closeModal={closeModal} />
-            <SubtasksListSection task={task} depth={depth} />
-          </>
-        )}
+        content={() => <SubtasksListSection task={task} depth={depth} />}
       >
         {(openModal) => (
           <InfoContainer onPress={openModal}>
@@ -78,6 +73,10 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                   </Typography>
                 </TaskLabelContainer>
               )}
+              <DescriptionLabel
+                description={task.description}
+                color={task.color}
+              />
               <ArchivedItemLabel
                 isArchived={task.isArchived}
                 color={task.color}

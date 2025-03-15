@@ -9,19 +9,34 @@ import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import styled from "styled-components/native";
 
-import { GroupItem, TaskItem, UpdateTaskRequest } from "../../types";
-
 import ItemInfoBottomSheet from "./ItemInfoBottomSheet";
 import ItemMoveToBottomSheetContent from "./ItemMoveToBottomSheetContent";
 
 type Props = {
-  item: GroupItem | TaskItem;
+  itemId?: string;
+  isTask: boolean;
+  canMoveOutside?: boolean;
+  currentIsArchived: boolean;
+  onDescriptionPress?: () => void;
+  onMoveItem: (value: {
+    groupId: string | null;
+    parentTaskId: string | null;
+    parentGroupId: string | null;
+  }) => void;
+  onArchive: (value: boolean) => void;
   closeModal: () => void;
 };
 
-const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
-  const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
-  const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
+const ItemActionsList = ({
+  itemId,
+  isTask,
+  canMoveOutside,
+  currentIsArchived,
+  onDescriptionPress,
+  onArchive,
+  onMoveItem,
+  closeModal,
+}: Props): JSX.Element | null => {
   const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
   const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
@@ -29,33 +44,22 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
 
   const { t } = useTranslation();
 
-  const [isArchiveAlertVisible, setIsArchiveAlertVisible] = useState(false);
   const [isDeletionAlertVisible, setIsDeletionAlertVisible] = useState(false);
 
-  const isTask = "type" in item;
-
-  const canMoveOutside = Boolean(
-    isTask ? item.groupId || item.parentTaskId : item.parentGroupId,
-  );
-
   const handleDelete = () => {
+    if (!itemId) return;
+
     if (isTask) {
-      deleteTask({ _id: item._id, author: userId });
+      deleteTask({ _id: itemId, author: userId });
     } else {
-      deleteGroup({ _id: item._id, author: userId });
+      deleteGroup({ _id: itemId, author: userId });
     }
 
     closeModal();
   };
 
   const handleArchive = () => {
-    const payload: UpdateTaskRequest = {
-      _id: item._id,
-      author: userId,
-      isArchived: !item.isArchived,
-    };
-
-    isTask ? updateTask(payload) : updateGroup(payload);
+    onArchive(!currentIsArchived);
   };
 
   return (
@@ -69,9 +73,9 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
         keyboardShouldPersistTaps="handled"
       >
         <ActionItemContainer
-          onPress={() => setIsArchiveAlertVisible(true)}
+          onPress={handleArchive}
           bgColor={
-            item.isArchived ? theme.colors.cyan500 : theme.colors.cyan600
+            currentIsArchived ? theme.colors.cyan500 : theme.colors.cyan600
           }
         >
           <Entypo
@@ -84,9 +88,28 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
             fontWeight="semibold"
             color={theme.colors.white}
           >
-            {t(item.isArchived ? "habits.unarchive" : "habits.archive")}
+            {t(currentIsArchived ? "habits.unarchive" : "habits.archive")}
           </Typography>
         </ActionItemContainer>
+        {onDescriptionPress && (
+          <ActionItemContainer
+            onPress={onDescriptionPress}
+            bgColor={theme.colors.cyan600}
+          >
+            <Entypo
+              name="text"
+              color={theme.colors.white}
+              size={theme.fontSizes.lg}
+            />
+            <Typography
+              fontSize="sm"
+              fontWeight="semibold"
+              color={theme.colors.white}
+            >
+              {t("tasks.description")}
+            </Typography>
+          </ActionItemContainer>
+        )}
         <ItemInfoBottomSheet
           bottomModalProps={{
             minHeight: "49%",
@@ -95,8 +118,10 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
           }}
           content={(closeModal) => (
             <ItemMoveToBottomSheetContent
-              item={item}
+              itemId={itemId}
+              isTask={isTask}
               canMoveOutside={canMoveOutside}
+              onMoveItem={onMoveItem}
               closeModal={closeModal}
             />
           )}
@@ -119,31 +144,27 @@ const ItemActionsList = ({ item, closeModal }: Props): JSX.Element | null => {
           )}
         </ItemInfoBottomSheet>
 
-        <ActionItemContainer
-          onPress={() => setIsDeletionAlertVisible(true)}
-          bgColor={theme.colors.red600}
-        >
-          <MaterialIcons
-            name="delete"
-            size={theme.fontSizes.lg}
-            color={theme.colors.white}
-          />
-          <Typography
-            fontSize="sm"
-            fontWeight="semibold"
-            color={theme.colors.white}
+        {itemId && (
+          <ActionItemContainer
+            onPress={() => setIsDeletionAlertVisible(true)}
+            bgColor={theme.colors.red600}
           >
-            {t("note.delete")}
-          </Typography>
-        </ActionItemContainer>
+            <MaterialIcons
+              name="delete"
+              size={theme.fontSizes.lg}
+              color={theme.colors.white}
+            />
+            <Typography
+              fontSize="sm"
+              fontWeight="semibold"
+              color={theme.colors.white}
+            >
+              {t("note.delete")}
+            </Typography>
+          </ActionItemContainer>
+        )}
       </Container>
 
-      <ConfirmAlert
-        message={t("general.confirmation")}
-        isDialogVisible={isArchiveAlertVisible}
-        setIsDialogVisible={setIsArchiveAlertVisible}
-        onConfirm={handleArchive}
-      />
       <ConfirmAlert
         isDeletion
         message={t("general.deleteConfirmation")}
