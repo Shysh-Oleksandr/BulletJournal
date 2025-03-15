@@ -18,27 +18,24 @@ type Props = {
   excludedItemId?: string;
   extraContent?: JSX.Element | null;
   shouldSearchTasks?: boolean;
-  setSelectedItem: React.Dispatch<
-    React.SetStateAction<GroupItem | TaskItem | null>
-  >;
+  onItemSelect: (item: GroupItem | TaskItem | null) => void;
 };
 
 const TasksSearchContent = ({
   excludedItemId,
   extraContent,
   shouldSearchTasks = true,
-  setSelectedItem,
+  onItemSelect,
 }: Props): JSX.Element | null => {
   const { orphanedGroups } = useOrphanedGroups();
   const { allOrphanedTasks } = useAllOrphanedTasks();
 
   const orphanedItems = useMemo(
     () =>
-      (shouldSearchTasks
+      shouldSearchTasks
         ? [...orphanedGroups, ...allOrphanedTasks]
-        : orphanedGroups
-      ).filter((orphanedItem) => orphanedItem._id !== excludedItemId),
-    [shouldSearchTasks, excludedItemId, orphanedGroups, allOrphanedTasks],
+        : orphanedGroups,
+    [shouldSearchTasks, orphanedGroups, allOrphanedTasks],
   );
 
   const { t } = useTranslation();
@@ -72,8 +69,9 @@ const TasksSearchContent = ({
             key={orphanedItem._id}
             item={orphanedItem}
             searchValue={debouncedSearchValue}
-            handlePress={setSelectedItem}
+            handlePress={onItemSelect}
             onlyGroups={!shouldSearchTasks}
+            excludedItemId={excludedItemId}
           />
         ))}
       </ItemsListContainer>

@@ -171,6 +171,8 @@
     "allTasks": "Todas las tareas",
     "previouslyCompleted": "Anteriormente completadas",
     "noTasksText": "No has agregado ninguna tarea",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Introduce una descripción...",
     "categories": {
       "overdue": "Atrasadas",
       "today": "Hoy",

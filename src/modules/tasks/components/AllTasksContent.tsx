@@ -4,8 +4,8 @@ import styled from "styled-components/native";
 
 import { useOrphanedGroups, useOrphanedTasks } from "../api/tasksSelectors";
 
-import AddGroup from "./groups/AddGroup";
-import GroupDisplayItem from "./groups/GroupDisplayItem";
+import AddGroupButton from "./groups/AddGroupButton";
+import GroupAccordionDisplayItem from "./groups/GroupAccordionDisplayItem";
 import TaskDisplayItem from "./tasks/TaskDisplayItem";
 
 const contentContainerStyle = {
@@ -29,11 +29,11 @@ const AllTasksContent = (): JSX.Element => {
       <TaskGroupsContainer>
         <ItemListContainer>
           {orphanedGroups.map((group) => (
-            <GroupDisplayItem key={group._id} group={group} />
+            <GroupAccordionDisplayItem key={group._id} group={group} />
           ))}
         </ItemListContainer>
 
-        <AddGroup />
+        <AddGroupButton />
 
         <ItemListContainer>
           {orphanedTasks.map((task) => (

@@ -4,6 +4,7 @@ export type CommonTaskItem = {
   _id: string;
   author: string;
   name: string;
+  description?: string;
   color: string;
   isArchived?: boolean;
 };
@@ -13,7 +14,6 @@ export type GroupItem = CommonTaskItem & {
 };
 
 export type TaskItem = CommonTaskItem & {
-  description?: string;
   customLabels?: CustomLabel[];
   groupId?: string | null;
   parentTaskId?: string | null;

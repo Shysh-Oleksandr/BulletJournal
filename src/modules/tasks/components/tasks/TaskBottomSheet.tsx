@@ -9,17 +9,16 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import theme from "theme";
 
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Input from "components/Input";
-import Typography from "components/Typography";
 import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useTaskPath } from "modules/tasks/api/tasksSelectors";
-import styled from "styled-components/native";
 
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
+import ItemActionsList from "../common/ItemActionsList";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
+import ItemPathLabel from "../common/ItemPathLabel";
+import TaskDescriptionInput from "../common/TaskDescriptionInput";
 import TaskItemInput from "../common/TaskItemInput";
 
 import TaskTypeSelector from "./TaskTypeSelector";
@@ -53,9 +52,9 @@ const TaskBottomSheet = ({
   const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
   const userId = useAuth().userId;
-  const taskPath = useTaskPath(task?._id ?? parentTaskId, !task?._id);
 
   const inputRef = useRef<TextInput | null>(null);
+  const descriptionInputRef = useRef<TextInput | null>(null);
 
   const defaultValues = useMemo(
     () => ({
@@ -68,11 +67,26 @@ const TaskBottomSheet = ({
       currentCompletedAmount: task?.completedAmount ?? 0,
       currentCompletedAt: task?.completedAt ?? null,
       description: task?.description ?? "",
+      currentIsArchived: !!task?.isArchived,
+      currentParentItems: {
+        groupId: task?.groupId ?? groupId ?? null,
+        parentTaskId: task?.parentTaskId ?? parentTaskId ?? null,
+      },
     }),
-    [task, defaultDueDate],
+    [task, defaultDueDate, groupId, parentTaskId],
   );
 
   const [formValues, setFormValues] = useState(defaultValues);
+  const [showDescriptionField, setShowDescriptionField] = useState(
+    !!defaultValues.description,
+  );
+
+  const taskPath = useTaskPath(
+    task?._id,
+    !task,
+    formValues.currentParentItems.parentTaskId ??
+      formValues.currentParentItems.groupId,
+  );
 
   const hasChanges = useMemo(
     () => JSON.stringify(defaultValues) !== JSON.stringify(formValues),
@@ -81,6 +95,7 @@ const TaskBottomSheet = ({
 
   const handleReset = useCallback(() => {
     setFormValues(defaultValues);
+    setShowDescriptionField(!!defaultValues.description);
   }, [defaultValues]);
 
   const handleUpdateTask = () => {
@@ -109,6 +124,9 @@ const TaskBottomSheet = ({
       completedAt: isCompleted
         ? (formValues.currentCompletedAt ?? Date.now())
         : null,
+      isArchived: formValues.currentIsArchived,
+      groupId: formValues.currentParentItems.groupId,
+      parentTaskId: formValues.currentParentItems.parentTaskId,
     };
 
     if (task) {
@@ -119,11 +137,7 @@ const TaskBottomSheet = ({
         });
       }
     } else {
-      createTask({
-        groupId,
-        parentTaskId,
-        ...commonFields,
-      });
+      createTask(commonFields);
 
       handleReset();
     }
@@ -152,14 +166,7 @@ const TaskBottomSheet = ({
       openByDefault={openByDefault}
       content={(closeModal) => (
         <>
-          {taskPath && (
-            <Typography
-              color={task?.color ?? theme.colors.darkBlueText}
-              fontWeight="semibold"
-            >
-              {taskPath}
-            </Typography>
-          )}
+          <ItemPathLabel itemPath={taskPath} color={formValues.color} />
 
           <TaskItemInput
             inputRef={inputRef}
@@ -175,31 +182,21 @@ const TaskBottomSheet = ({
             onReset={hasChanges ? handleReset : undefined}
           />
 
-          <Input
-            style={{ paddingRight: 8 }}
-            value={formValues.description}
-            paddingHorizontal={28}
-            placeholder="Enter description..."
-            maxLength={1000}
-            bgColor="transparent"
-            fontSize="md"
-            fontWeight="medium"
-            multiline
-            numberOfLines={formValues.description ? 3 : 1}
-            onChange={(description) =>
-              setFormValues((prev) => ({ ...prev, description }))
-            }
-            LeftContent={
-              <DescriptionIconContainer>
-                <MaterialCommunityIcons
-                  name="text-long"
-                  color={formValues.color}
-                  size={theme.fontSizes.xl}
-                />
-              </DescriptionIconContainer>
-            }
-            labelColor={formValues.color}
-          />
+          {showDescriptionField && (
+            <TaskDescriptionInput
+              description={formValues.description}
+              color={formValues.color}
+              setDescription={(description) =>
+                setFormValues((prev) => ({ ...prev, description }))
+              }
+              inputRef={descriptionInputRef}
+              onBlur={() => {
+                if (formValues.description.trim().length === 0) {
+                  setShowDescriptionField(false);
+                }
+              }}
+            />
+          )}
 
           <DueDatePicker
             dueDate={formValues.dueDate}
@@ -242,6 +239,40 @@ const TaskBottomSheet = ({
               }))
             }
           />
+
+          <ItemActionsList
+            isTask
+            canMoveOutside={Boolean(
+              formValues.currentParentItems.parentTaskId ||
+                formValues.currentParentItems.groupId,
+            )}
+            itemId={task?._id}
+            onDescriptionPress={
+              showDescriptionField
+                ? undefined
+                : () => {
+                    setShowDescriptionField(true);
+                    requestAnimationFrame(() => {
+                      descriptionInputRef.current?.focus();
+                    });
+                  }
+            }
+            onMoveItem={(parentItems) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentParentItems: parentItems,
+              }))
+            }
+            currentIsArchived={formValues.currentIsArchived}
+            onArchive={(isArchived) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentIsArchived: isArchived,
+              }))
+            }
+            closeModal={closeModal}
+          />
+
           {content?.(closeModal)}
         </>
       )}
@@ -250,13 +281,5 @@ const TaskBottomSheet = ({
     </ItemInfoBottomSheet>
   );
 };
-
-const DescriptionIconContainer = styled.View`
-  position: absolute;
-  left: 0;
-  top: 50%;
-  margin-top: -${theme.fontSizes.xl / 2}px;
-  z-index: 10;
-`;
 
 export default React.memo(TaskBottomSheet);

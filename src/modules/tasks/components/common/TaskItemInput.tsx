@@ -1,6 +1,5 @@
 import React from "react";
 import { TextInput } from "react-native";
-import theme from "theme";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import Input from "components/Input";
@@ -52,11 +51,7 @@ const TaskItemInput = ({
                 hitSlop={SMALL_BUTTON_HIT_SLOP}
                 onPress={onReset}
               >
-                <MaterialIcons
-                  name="restore"
-                  size={28}
-                  color={theme.colors.cyan600}
-                />
+                <MaterialIcons name="restore" size={28} color={color} />
               </IconContainer>
             ) : undefined
           }
@@ -77,7 +72,6 @@ const TaskItemInput = ({
 
 const InputSection = styled.View`
   width: 100%;
-  background-color: white;
 `;
 
 const IconContainer = styled.TouchableOpacity<{

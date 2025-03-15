@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useAuth } from "modules/auth/AuthContext";
 
 import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
@@ -9,7 +11,10 @@ export const useAllHabits = () => {
 
   const { data, isLoading, isError } = useGetHabitsQuery(userId);
 
-  const allHabits = data?.allIds.map((id) => data.byId[id]) || [];
+  const allHabits = useMemo(
+    () => data?.allIds.map((id) => data.byId[id]) || [],
+    [data],
+  );
 
   return { allHabits, isLoading, isError };
 };
@@ -17,7 +22,10 @@ export const useAllHabits = () => {
 export const useActiveHabits = () => {
   const { allHabits, isLoading, isError } = useAllHabits();
 
-  const activeHabits = allHabits.filter((habit) => !habit.isArchived);
+  const activeHabits = useMemo(
+    () => allHabits.filter((habit) => !habit.isArchived),
+    [allHabits],
+  );
 
   return { activeHabits, isLoading, isError };
 };
@@ -25,7 +33,10 @@ export const useActiveHabits = () => {
 export const useArchivedHabits = () => {
   const { allHabits, isLoading, isError } = useAllHabits();
 
-  const archivedHabits = allHabits.filter((habit) => habit.isArchived);
+  const archivedHabits = useMemo(
+    () => allHabits.filter((habit) => habit.isArchived),
+    [allHabits],
+  );
 
   return { archivedHabits, isLoading, isError };
 };
@@ -45,8 +56,13 @@ export const useHabitById = (habitId: string) => {
 export const useHabitsBySelectedDate = (selectedDate: number) => {
   const { activeHabits, isLoading, isError } = useActiveHabits();
 
+  const habits = useMemo(
+    () => calculateMandatoryHabitsByDate(activeHabits, selectedDate),
+    [activeHabits, selectedDate],
+  );
+
   return {
-    habits: calculateMandatoryHabitsByDate(activeHabits, selectedDate),
+    habits,
     isLoading,
     isError,
   };
