@@ -14,6 +14,7 @@ import styled from "styled-components/native";
 
 type Props = {
   item: GroupItem | TaskItem;
+  excludedItemId?: string;
   depth?: number;
   searchValue?: string;
   onlyGroups?: boolean;
@@ -22,6 +23,7 @@ type Props = {
 
 const TaskSearchItem = ({
   item,
+  excludedItemId,
   searchValue = "",
   depth = 0,
   onlyGroups = false,
@@ -85,8 +87,9 @@ const TaskSearchItem = ({
 
   // Exclude item if it doesn't match and has no matching descendants
   if (
-    !item.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-    filteredSubItems.length === 0
+    (!item.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+      filteredSubItems.length === 0) ||
+    excludedItemId === item._id
   ) {
     return null;
   }
@@ -110,6 +113,7 @@ const TaskSearchItem = ({
             depth={depth + 1}
             handlePress={handlePress}
             onlyGroups={onlyGroups}
+            excludedItemId={excludedItemId}
           />
         ))}
       </SubItemsContainer>

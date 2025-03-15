@@ -9,14 +9,16 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native";
 import theme from "theme";
 
-import Typography from "components/Typography";
 import { useAuth } from "modules/auth/AuthContext";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useTaskPath } from "modules/tasks/api/tasksSelectors";
 
 import { TaskItem, TaskTypes } from "../../types";
 import DueDatePicker from "../common/DueDatePicker";
+import ItemActionsList from "../common/ItemActionsList";
 import ItemInfoBottomSheet from "../common/ItemInfoBottomSheet";
+import ItemPathLabel from "../common/ItemPathLabel";
+import TaskDescriptionInput from "../common/TaskDescriptionInput";
 import TaskItemInput from "../common/TaskItemInput";
 
 import TaskTypeSelector from "./TaskTypeSelector";
@@ -50,9 +52,9 @@ const TaskBottomSheet = ({
   const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
 
   const userId = useAuth().userId;
-  const taskPath = useTaskPath(task?._id ?? parentTaskId, !task?._id);
 
   const inputRef = useRef<TextInput | null>(null);
+  const descriptionInputRef = useRef<TextInput | null>(null);
 
   const defaultValues = useMemo(
     () => ({
@@ -64,11 +66,27 @@ const TaskBottomSheet = ({
       currentUnits: task?.units ?? "%",
       currentCompletedAmount: task?.completedAmount ?? 0,
       currentCompletedAt: task?.completedAt ?? null,
+      description: task?.description ?? "",
+      currentIsArchived: !!task?.isArchived,
+      currentParentItems: {
+        groupId: task?.groupId ?? groupId ?? null,
+        parentTaskId: task?.parentTaskId ?? parentTaskId ?? null,
+      },
     }),
-    [task, defaultDueDate],
+    [task, defaultDueDate, groupId, parentTaskId],
   );
 
   const [formValues, setFormValues] = useState(defaultValues);
+  const [showDescriptionField, setShowDescriptionField] = useState(
+    !!defaultValues.description,
+  );
+
+  const taskPath = useTaskPath(
+    task?._id,
+    !task,
+    formValues.currentParentItems.parentTaskId ??
+      formValues.currentParentItems.groupId,
+  );
 
   const hasChanges = useMemo(
     () => JSON.stringify(defaultValues) !== JSON.stringify(formValues),
@@ -77,6 +95,7 @@ const TaskBottomSheet = ({
 
   const handleReset = useCallback(() => {
     setFormValues(defaultValues);
+    setShowDescriptionField(!!defaultValues.description);
   }, [defaultValues]);
 
   const handleUpdateTask = () => {
@@ -96,6 +115,7 @@ const TaskBottomSheet = ({
       dueDate: formValues.dueDate,
       color: formValues.color,
       name: normalizedName,
+      description: formValues.description.trim(),
       type: formValues.selectedType,
       units: isCheckType ? null : formValues.currentUnits,
       target: isCheckType ? null : formValues.currentTarget,
@@ -104,6 +124,9 @@ const TaskBottomSheet = ({
       completedAt: isCompleted
         ? (formValues.currentCompletedAt ?? Date.now())
         : null,
+      isArchived: formValues.currentIsArchived,
+      groupId: formValues.currentParentItems.groupId,
+      parentTaskId: formValues.currentParentItems.parentTaskId,
     };
 
     if (task) {
@@ -114,11 +137,7 @@ const TaskBottomSheet = ({
         });
       }
     } else {
-      createTask({
-        groupId,
-        parentTaskId,
-        ...commonFields,
-      });
+      createTask(commonFields);
 
       handleReset();
     }
@@ -147,14 +166,7 @@ const TaskBottomSheet = ({
       openByDefault={openByDefault}
       content={(closeModal) => (
         <>
-          {taskPath && (
-            <Typography
-              color={task?.color ?? theme.colors.darkBlueText}
-              fontWeight="semibold"
-            >
-              {taskPath}
-            </Typography>
-          )}
+          <ItemPathLabel itemPath={taskPath} color={formValues.color} />
 
           <TaskItemInput
             inputRef={inputRef}
@@ -167,12 +179,25 @@ const TaskBottomSheet = ({
                 ? "tasks.subtaskPlaceholder"
                 : "tasks.taskPlaceholder",
             )}
-            onSubmitEditing={() => {
-              handleUpdateTask();
-              closeModal();
-            }}
             onReset={hasChanges ? handleReset : undefined}
           />
+
+          {showDescriptionField && (
+            <TaskDescriptionInput
+              description={formValues.description}
+              color={formValues.color}
+              setDescription={(description) =>
+                setFormValues((prev) => ({ ...prev, description }))
+              }
+              inputRef={descriptionInputRef}
+              onBlur={() => {
+                if (formValues.description.trim().length === 0) {
+                  setShowDescriptionField(false);
+                }
+              }}
+            />
+          )}
+
           <DueDatePicker
             dueDate={formValues.dueDate}
             setDueDate={(dueDate) =>
@@ -214,6 +239,40 @@ const TaskBottomSheet = ({
               }))
             }
           />
+
+          <ItemActionsList
+            isTask
+            canMoveOutside={Boolean(
+              formValues.currentParentItems.parentTaskId ||
+                formValues.currentParentItems.groupId,
+            )}
+            itemId={task?._id}
+            onDescriptionPress={
+              showDescriptionField
+                ? undefined
+                : () => {
+                    setShowDescriptionField(true);
+                    requestAnimationFrame(() => {
+                      descriptionInputRef.current?.focus();
+                    });
+                  }
+            }
+            onMoveItem={(parentItems) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentParentItems: parentItems,
+              }))
+            }
+            currentIsArchived={formValues.currentIsArchived}
+            onArchive={(isArchived) =>
+              setFormValues((prev) => ({
+                ...prev,
+                currentIsArchived: isArchived,
+              }))
+            }
+            closeModal={closeModal}
+          />
+
           {content?.(closeModal)}
         </>
       )}

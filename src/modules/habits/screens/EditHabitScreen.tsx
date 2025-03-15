@@ -33,9 +33,15 @@ import { EMPTY_HABIT } from "../data";
 import {
   CreateHabitRequest,
   Habit,
+  HabitLog,
   HabitTypes,
   UpdateHabitRequest,
 } from "../types";
+
+const MOCK_LOG: HabitLog = {
+  date: new Date().getTime(),
+  percentageCompleted: 100,
+};
 
 const contentContainerStyle = {
   paddingHorizontal: 16,
@@ -281,7 +287,7 @@ const EditHabitScreen: FC<{
           habit={currentHabit}
           inputValue={currentHabit.amountTarget?.toString() ?? "0"}
           isCompleted
-          percentageCompleted={100}
+          currentLog={MOCK_LOG}
         />
       </SScrollView>
       <ConfirmAlert

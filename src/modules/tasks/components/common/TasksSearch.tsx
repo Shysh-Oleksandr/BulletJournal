@@ -7,10 +7,13 @@ import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import styled from "styled-components/native";
 
 import { GroupItem, TaskItem } from "../../types";
+import AddGroupButton from "../groups/AddGroupButton";
+import ArchivedSubtasksListSection from "../groups/ArchivedSubtasksListSection";
+import GroupBottomSheet from "../groups/GroupBottomSheet";
+import SubgroupsListSection from "../groups/SubgroupsListSection";
 import SubtasksListSection from "../tasks/SubtasksListSection";
 import TaskBottomSheet from "../tasks/TaskBottomSheet";
 
-import ItemActionsList from "./ItemActionsList";
 import ItemInfoBottomSheet from "./ItemInfoBottomSheet";
 import TasksSearchContent from "./TasksSearchContent";
 
@@ -32,28 +35,32 @@ const TasksSearch = (): JSX.Element | null => {
       }}
       content={() => (
         <>
-          <TasksSearchContent setSelectedItem={setSelectedItem} />
+          <TasksSearchContent onItemSelect={setSelectedItem} />
           {selectedItem &&
             (isTask ? (
               <TaskBottomSheet
                 task={selectedItem}
                 openByDefault
                 onClose={() => setSelectedItem(null)}
-                content={(closeModal) => (
-                  <>
-                    <ItemActionsList
-                      item={selectedItem}
-                      closeModal={closeModal}
-                    />
-                    <SubtasksListSection task={selectedItem} />
-                  </>
-                )}
+                content={() => <SubtasksListSection task={selectedItem} />}
               >
                 {() => <></>}
               </TaskBottomSheet>
             ) : (
-              // TODO: Add group item
-              <></>
+              <GroupBottomSheet
+                group={selectedItem}
+                openByDefault
+                onClose={() => setSelectedItem(null)}
+                content={() => (
+                  <ContentContainer>
+                    <SubgroupsListSection group={selectedItem} />
+                    <AddGroupButton parentGroupId={selectedItem._id} />
+                    <ArchivedSubtasksListSection groupId={selectedItem._id} />
+                  </ContentContainer>
+                )}
+              >
+                {() => <></>}
+              </GroupBottomSheet>
             ))}
         </>
       )}
@@ -73,6 +80,11 @@ const TasksSearch = (): JSX.Element | null => {
 const SearchButtonContainer = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
+`;
+
+const ContentContainer = styled.View`
+  margin-top: 12px;
+  gap: 12px;
 `;
 
 export default React.memo(TasksSearch);

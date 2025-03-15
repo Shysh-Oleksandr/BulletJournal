@@ -5,12 +5,13 @@ import RenderHTML from "react-native-render-html";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Typography from "components/Typography";
-import { useLabelIds } from "modules/notes/api/notesSelectors";
+import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
+import { CustomLabel } from "modules/customLabels/types";
 import { getTimeByDate } from "modules/notes/util/getFormattedDate";
 import styled from "styled-components/native";
 import { getDifferentColor } from "utils/getDifferentColor";
 
-import { CustomLabel, Image } from "../../types";
+import { Image } from "../../types";
 
 import ImageSlider from "./ImageSlider";
 import NoteLabel from "./NoteLabel";
@@ -42,7 +43,7 @@ const NoteBody = ({
   images,
   onPress,
 }: Props): JSX.Element => {
-  const { labelIds: allLabelsIds } = useLabelIds();
+  const { labels } = useNoteLabels();
 
   const { width } = useWindowDimensions();
 
@@ -56,9 +57,9 @@ const NoteBody = ({
   const relevantCategories = useMemo(
     () =>
       (type && category ? [type, ...category] : category).filter((label) =>
-        allLabelsIds.includes(label._id),
+        labels.some((item) => item._id === label._id),
       ),
-    [category, type, allLabelsIds],
+    [category, type, labels],
   );
 
   const source = useMemo(

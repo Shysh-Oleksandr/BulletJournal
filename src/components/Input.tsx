@@ -39,6 +39,7 @@ type Props = {
   paddingHorizontal?: number;
   paddingVertical?: number;
   borderRadius?: number;
+  style?: any;
   onChange: (text: string) => void;
   onSubmitEditing?: (
     text: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
@@ -74,6 +75,7 @@ const Input = ({
   paddingHorizontal = 20,
   paddingVertical = 8,
   borderRadius = 0,
+  style,
   onChange,
   onSubmitEditing,
   onBlur,
@@ -143,6 +145,7 @@ const Input = ({
         onFocus={handleInputFocus}
         autoCapitalize={autoCapitalize}
         secureTextEntry={secureTextEntry}
+        style={style}
       />
       {RightContent}
     </InputWrapper>

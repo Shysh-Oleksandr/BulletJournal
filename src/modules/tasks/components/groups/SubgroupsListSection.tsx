@@ -8,48 +8,47 @@ import styled from "styled-components/native";
 
 import { GroupItem } from "../../types";
 
-import AddGroup from "./AddGroup";
-import GroupHeaderDisplayItem from "./GroupHeaderDisplayItem";
+import GroupDisplayItem from "./GroupDisplayItem";
 
 type Props = {
   group: GroupItem;
-  depth: number;
+  depth?: number;
 };
 
-const SubgroupsListSection = ({ group, depth }: Props): JSX.Element => {
+const SubgroupsListSection = ({
+  group,
+  depth = 0,
+}: Props): JSX.Element | null => {
   const { t } = useTranslation();
 
-  const { subGroups } = useSubGroupsByGroupId(group._id);
+  const subGroups = useSubGroupsByGroupId(group._id).subGroups;
+
+  if (subGroups.length === 0) return null;
 
   return (
     <SubGroupsSectionContainer>
-      {subGroups.length > 0 && (
-        <>
-          <Typography
-            fontWeight="semibold"
-            fontSize="xl"
-            color={theme.colors.darkBlueText}
-          >
-            {t("tasks.subgroups")}:
-          </Typography>
-          <SubGroupsContainer>
-            {subGroups.map((subGroup) => (
-              <SubGroupItemContainer key={subGroup._id}>
-                <GroupHeaderDisplayItem group={subGroup} depth={depth + 1} />
-              </SubGroupItemContainer>
-            ))}
-          </SubGroupsContainer>
-        </>
-      )}
-      <AddGroup parentGroupId={group._id} isSubgroup />
+      <Typography
+        fontWeight="semibold"
+        fontSize="xl"
+        color={theme.colors.darkBlueText}
+      >
+        {t("tasks.subgroups")}:
+      </Typography>
+      <SubGroupsContainer>
+        {subGroups.map((subGroup) => (
+          <SubGroupItemContainer key={subGroup._id}>
+            <GroupDisplayItem group={subGroup} depth={depth + 1} />
+          </SubGroupItemContainer>
+        ))}
+      </SubGroupsContainer>
     </SubGroupsSectionContainer>
   );
 };
 
 const SubGroupsSectionContainer = styled.View`
-  margin-vertical: 12px;
   gap: 10px;
 `;
+
 const SubGroupsContainer = styled.View`
   gap: 8px;
 `;

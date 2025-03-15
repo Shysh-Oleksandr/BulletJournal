@@ -172,6 +172,8 @@
     "allTasks": "All tasks",
     "previouslyCompleted": "Previously completed",
     "noTasksText": "You haven't added any tasks yet",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description...",
     "categories": {
       "overdue": "Overdue",
       "today": "Today",

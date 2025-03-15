@@ -14,10 +14,10 @@ import theme from "theme";
 import BottomModal from "components/BottomModal";
 import Divider from "components/Divider";
 import Typography from "components/Typography";
-import { useCustomCategories } from "modules/notes/api/notesSelectors";
+import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
+import { CustomLabel } from "modules/customLabels/types";
 import styled from "styled-components/native";
 
-import { CustomLabel } from "../../types";
 import FormLabel from "../noteForm/FormLabel";
 
 import AddLabelInput from "./AddLabelInput";
@@ -43,9 +43,11 @@ const CategoriesSelector = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { customCategories: initialCategories } = useCustomCategories();
+  const { labels } = useNoteLabels();
 
-  const [categories, setCategories] = useState(initialCategories);
+  const [categories, setCategories] = useState(
+    labels.filter((label) => label.isCategoryLabel),
+  );
   const [closeTriggered, setCloseTriggered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
