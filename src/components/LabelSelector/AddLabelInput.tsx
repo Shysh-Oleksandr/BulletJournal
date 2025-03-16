@@ -11,25 +11,29 @@ import { CustomUserEvents } from "modules/app/types";
 import { useAuth } from "modules/auth/AuthContext";
 import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
 import { CustomLabel, LabelFor } from "modules/customLabels/types";
+import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { generateRandomColor } from "utils/generateRandomColor";
 import { logUserEvent } from "utils/logUserEvent";
 
-import ColorPicker from "../noteForm/ColorPicker";
-
 type Props = {
   allLabels: CustomLabel[];
-  isCategoryLabel?: boolean;
+  createdLabelKey: string;
+  inputPlaceholderKey: string;
+  labelFor: LabelFor;
   onCreate: (newLabel: CustomLabel) => void;
-  setSearchQuery?: (query: string) => void;
+  setSearchQuery: (query: string) => void;
+  checkLabelExists: (labelName: string) => boolean;
 };
 
 const AddLabelInput = ({
-  allLabels,
-  isCategoryLabel = false,
+  createdLabelKey,
+  inputPlaceholderKey,
+  labelFor,
   onCreate,
   setSearchQuery,
+  checkLabelExists,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
@@ -46,7 +50,7 @@ const AddLabelInput = ({
 
   const onChange = (text: string) => {
     setInputValue(text);
-    setSearchQuery?.(text);
+    setSearchQuery(text);
   };
 
   const saveChanges = useCallback(async () => {
@@ -58,27 +62,13 @@ const AddLabelInput = ({
       return;
     }
 
-    if (allLabels.some((item) => item.labelName === label)) {
-      Toast.show({
-        type: "error",
-        text1: t("general.failure"),
-        text2: t(
-          isCategoryLabel
-            ? "note.categoryAlreadyExists"
-            : "note.typeAlreadyExists",
-          { label },
-        ),
-      });
-
-      return;
-    }
+    if (checkLabelExists(label)) return;
 
     const createLabelData = {
       labelName: label,
-      isCategoryLabel,
       user: userId,
       color: currentColor,
-      labelFor: "Note" as LabelFor,
+      labelFor,
     };
 
     logUserEvent(CustomUserEvents.CREATE_LABEL);
@@ -92,24 +82,25 @@ const AddLabelInput = ({
       Toast.show({
         type: "success",
         text1: t("general.success"),
-        text2: t(isCategoryLabel ? "note.categoryCreated" : "note.typeCreated"),
+        text2: t(createdLabelKey),
       });
     }
 
     onCreate({ ...createLabelData, _id: newLabelId });
     setInputValue("");
-    setSearchQuery?.("");
+    setSearchQuery("");
     setCurrentColor(generateRandomColor());
   }, [
     inputValue,
+    checkLabelExists,
     userId,
-    allLabels,
-    isCategoryLabel,
     currentColor,
+    labelFor,
     createLabel,
     onCreate,
     setSearchQuery,
     t,
+    createdLabelKey,
   ]);
 
   return (
@@ -125,9 +116,7 @@ const AddLabelInput = ({
       )}
       <Input
         value={inputValue}
-        placeholder={t(
-          isCategoryLabel ? "note.enterNewCategory" : "note.enterNewType",
-        )}
+        placeholder={t(inputPlaceholderKey)}
         isCentered
         inputRef={inputRef}
         onChange={onChange}

@@ -8,6 +8,7 @@ type Props = {
   onClose?: () => void;
   onOpen?: () => void;
   openByDefault?: boolean;
+  withContentContainer?: boolean;
   bottomModalProps?: Partial<BottomModalProps>;
   content: (closeModal: () => void) => JSX.Element;
   children: (openModal: () => void) => JSX.Element;
@@ -18,11 +19,14 @@ const ItemInfoBottomSheet = ({
   onOpen,
   content,
   openByDefault = false,
+  withContentContainer = true,
   bottomModalProps,
   children,
 }: Props): JSX.Element => {
   const [isVisible, setIsVisible] = useState(openByDefault);
   const [closeTriggered, setCloseTriggered] = useState(false);
+
+  const isOpen = isVisible || !!bottomModalProps?.isVisible;
 
   const handleClose = () => {
     onClose?.();
@@ -44,7 +48,6 @@ const ItemInfoBottomSheet = ({
       <BottomModal
         paddingHorizontal={16}
         withHeader={false}
-        isVisible={isVisible}
         setIsVisible={setIsVisible}
         onClose={handleClose}
         closeTriggered={closeTriggered}
@@ -52,16 +55,22 @@ const ItemInfoBottomSheet = ({
         bgOpacity={0.4}
         modalAnimationTime={200}
         {...bottomModalProps}
+        isVisible={isOpen}
       >
-        <ContentContainer
-          bounces
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          overScrollMode="never"
-          contentContainerStyle={{ paddingVertical: 16 }}
-        >
-          {isVisible && content(() => setIsVisible(false))}
-        </ContentContainer>
+        {isOpen &&
+          (withContentContainer ? (
+            <ContentContainer
+              bounces
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              overScrollMode="never"
+              contentContainerStyle={{ paddingVertical: 16 }}
+            >
+              {content(() => setIsVisible(false))}
+            </ContentContainer>
+          ) : (
+            content(() => setIsVisible(false))
+          ))}
       </BottomModal>
     </>
   );

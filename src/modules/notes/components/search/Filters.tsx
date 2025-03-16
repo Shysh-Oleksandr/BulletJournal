@@ -7,7 +7,6 @@ import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import Typography from "components/Typography";
 import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
-import { CustomLabel } from "modules/customLabels/types";
 import { Note } from "modules/notes/types";
 import styled from "styled-components/native";
 
@@ -31,25 +30,7 @@ const Filters = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { labels } = useNoteLabels();
-
-  const { types, categories } = useMemo(() => {
-    const types: CustomLabel[] = [];
-    const categories: CustomLabel[] = [];
-
-    labels.forEach((label) => {
-      if (label.isCategoryLabel) {
-        categories.push(label);
-      } else {
-        types.push(label);
-      }
-    });
-
-    return {
-      types,
-      categories,
-    };
-  }, [labels]);
+  const { typeLabels, categoryLabels } = useNoteLabels();
 
   const [searchQuery, setSearchQuery] = useState("");
   const trimmedSearchQuery = searchQuery.trim().toLowerCase();
@@ -126,7 +107,7 @@ const Filters = ({
         >
           <Typography color={theme.colors.white}>{t("search.all")}</Typography>
         </LabelItemContainer>
-        {types.map(({ _id, labelName }) => (
+        {typeLabels.map(({ _id, labelName }) => (
           <LabelItemContainer
             key={_id}
             active={activeTypesIds.includes(_id)}
@@ -160,7 +141,7 @@ const Filters = ({
           <FontAwesome name="image" size={18} color={theme.colors.white} />
         </LabelItemContainer>
 
-        {categories.map(({ _id, labelName }) => (
+        {categoryLabels.map(({ _id, labelName }) => (
           <LabelItemContainer
             key={_id}
             active={activeCategoriesIds.includes(_id)}

@@ -9,6 +9,7 @@ import styled from "styled-components/native";
 
 import { TaskItem, TaskTypes } from "../../types";
 import ArchivedItemLabel from "../common/ArchivedItemLabel";
+import CustomLabelsLabel from "../common/CustomLabelsLabel";
 import DescriptionLabel from "../common/DescriptionLabel";
 import DueDateLabel from "../common/DueDateLabel";
 import { TaskLabelContainer } from "../common/TaskLabelContainer";
@@ -77,6 +78,7 @@ const TaskDisplayItem = ({ task, depth = 0 }: Props): JSX.Element => {
                 description={task.description}
                 color={task.color}
               />
+              <CustomLabelsLabel labels={task.customLabels} />
               <ArchivedItemLabel
                 isArchived={task.isArchived}
                 color={task.color}
@@ -103,6 +105,8 @@ const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
+  row-gap: 2px;
+  column-gap: 4px;
 `;
 
 const InfoContainer = styled.TouchableOpacity`
