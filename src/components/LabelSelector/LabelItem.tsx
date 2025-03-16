@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 import Toast from "react-native-toast-message";
@@ -10,21 +10,24 @@ import SwipeableItem from "components/SwipeableItem";
 import { BUTTON_HIT_SLOP } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
-import { CustomLabel } from "modules/customLabels/types";
+import { CustomLabel, LabelFor } from "modules/customLabels/types";
+import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { logUserEvent } from "utils/logUserEvent";
 
-import ColorPicker from "../noteForm/ColorPicker";
-
-type Props = {
+export type LabelItemProps = {
   label: CustomLabel;
   isActive: boolean;
   isEditing: boolean;
-  currentNoteColor: string;
-  onChoose: (typeId: string | null, shouldCloseModal?: boolean) => void;
-  onEditBtnPress: (typeId: string | null) => void;
-  setTypes: React.Dispatch<React.SetStateAction<CustomLabel[]>>;
+  currentItemColor: string;
+  updatedLabelKey: string;
+  deletedLabelKey: string;
+  inputPlaceholderKey: string;
+  labelFor: LabelFor;
+  onChoose: (labelId: string | null, shouldCloseModal?: boolean) => void;
+  onEditBtnPress: (labelId: string | null) => void;
+  setItems: React.Dispatch<React.SetStateAction<CustomLabel[]>>;
   onSelectColor: (color: string) => void;
 };
 
@@ -32,35 +35,45 @@ const LabelItem = ({
   label,
   isActive,
   isEditing,
-  currentNoteColor,
+  currentItemColor,
+  updatedLabelKey,
+  deletedLabelKey,
+  inputPlaceholderKey,
+  labelFor,
   onChoose,
   onEditBtnPress,
-  setTypes,
+  setItems,
   onSelectColor,
-}: Props): JSX.Element => {
+}: LabelItemProps): JSX.Element => {
   const { t } = useTranslation();
 
   const { mutate: updateLabel } = customLabelsApi.useUpdateLabelMutation();
-  const { mutate: deleteLabel } = customLabelsApi.useDeleteLabelMutation();
+  const { mutate: deleteLabel } =
+    customLabelsApi.useDeleteLabelMutation(labelFor);
 
   const { width: screenWidth } = useWindowDimensions();
   const [name, setName] = useState(label.labelName);
   const [currentColor, setCurrentColor] = useState(label.color);
 
   const saveChanges = useCallback(async () => {
-    onEditBtnPress(null);
+    const normalizedName = name.trim();
 
-    if (name.trim() === "") {
+    if (normalizedName === "") {
       setName(label.labelName);
+      onEditBtnPress(null);
 
       return;
     }
 
-    if (label.color === currentColor && label.labelName === name) return;
+    if (label.color === currentColor && label.labelName === normalizedName) {
+      onEditBtnPress(null);
+
+      return;
+    }
 
     const updatedType: CustomLabel = {
       ...label,
-      labelName: name,
+      labelName: normalizedName,
       color: currentColor,
     };
 
@@ -72,15 +85,24 @@ const LabelItem = ({
     Toast.show({
       type: "success",
       text1: t("general.success"),
-      text2: t(
-        label.isCategoryLabel ? "note.categoryUpdated" : "note.typeUpdated",
-      ),
+      text2: t(updatedLabelKey),
     });
 
-    setTypes((prev) =>
+    setItems((prev) =>
       prev.map((item) => (item._id !== label._id ? item : updatedType)),
     );
-  }, [onEditBtnPress, label, currentColor, name, updateLabel, setTypes, t]);
+
+    onEditBtnPress(null);
+  }, [
+    onEditBtnPress,
+    name,
+    label,
+    currentColor,
+    updateLabel,
+    t,
+    updatedLabelKey,
+    setItems,
+  ]);
 
   const onDelete = useCallback(() => {
     if (isActive) {
@@ -95,19 +117,17 @@ const LabelItem = ({
     Toast.show({
       type: "success",
       text1: t("general.success"),
-      text2: t(
-        label.isCategoryLabel ? "note.categoryDeleted" : "note.typeDeleted",
-      ),
+      text2: t(deletedLabelKey),
     });
 
-    setTypes((prev) => prev.filter((item) => item._id !== label._id));
+    setItems((prev) => prev.filter((item) => item._id !== label._id));
     deleteLabel(label._id);
   }, [
     isActive,
     label._id,
-    label.isCategoryLabel,
     t,
-    setTypes,
+    deletedLabelKey,
+    setItems,
     deleteLabel,
     onChoose,
     onEditBtnPress,
@@ -116,6 +136,16 @@ const LabelItem = ({
   const onPress = useCallback(() => {
     onChoose(label._id);
   }, [onChoose, label._id]);
+
+  useEffect(() => {
+    if (
+      !isEditing &&
+      (label.labelName !== name || label.color !== currentColor)
+    ) {
+      setName(label.labelName);
+      setCurrentColor(label.color);
+    }
+  }, [currentColor, isEditing, label.color, label.labelName, name]);
 
   return (
     <SwipeableItem
@@ -132,17 +162,13 @@ const LabelItem = ({
             setCurrentColor={setCurrentColor}
             isEditing={isEditing}
             isFormItem={false}
-            isSelected={currentNoteColor === currentColor}
+            isSelected={currentItemColor === currentColor}
             onPress={isEditing ? undefined : () => onSelectColor(currentColor)}
           />
         </ColorPickerContainer>
         <Input
           value={name}
-          placeholder={t(
-            label.isCategoryLabel
-              ? "note.enterCategoryName"
-              : "note.enterTypeName",
-          )}
+          placeholder={t(inputPlaceholderKey)}
           bgColor="transparent"
           paddingHorizontal={0}
           maxWidth={screenWidth - 75 * 2}
@@ -190,7 +216,6 @@ const TypeItemContainer = styled.View<{
   ${({ isEditing, isActive }) =>
     isEditing &&
     `
-     
       background-color: ${
         isActive ? theme.colors.cyan300 : theme.colors.cyan300
       };

@@ -44,7 +44,8 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
         }
         onPress={() => navigateToTab(Routes.NOTES)}
       />
-      <TabBarItem
+      {/* Temporarily hidden */}
+      {/* <TabBarItem
         label={t("calendar.calendar")}
         color={getActiveRouteIconColor(TabBarRouteNumber.calendar)}
         Icon={
@@ -55,7 +56,7 @@ const TabBar: FC<TabBarProps> = ({ currentScreen }) => {
           />
         }
         onPress={() => navigateToTab(Routes.CALENDAR)}
-      />
+      /> */}
       <TabBarItem
         label={t("tasks.tasks")}
         color={getActiveRouteIconColor(TabBarRouteNumber.tasks)}

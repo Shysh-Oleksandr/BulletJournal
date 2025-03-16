@@ -113,6 +113,8 @@ const GroupDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
 const LabelsContainer = styled.View`
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
 `;
 
 const ContentContainer = styled.View`

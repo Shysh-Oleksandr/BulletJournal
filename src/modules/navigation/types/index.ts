@@ -44,7 +44,7 @@ export type RootStackParamList = {
 
 export enum TabBarRouteNumber {
   notes = 0,
-  calendar = 1,
-  tasks = 2,
-  habits = 3,
+  // calendar = 1,
+  tasks = 1,
+  habits = 2,
 }

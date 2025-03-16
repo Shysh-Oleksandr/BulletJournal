@@ -23,7 +23,7 @@ import {
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
 import { useAuth } from "modules/auth/AuthContext";
-import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
+import { useCustomLabels } from "modules/customLabels/api/customLabelsSelectors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -57,8 +57,10 @@ const NotesScreen = (): JSX.Element => {
     refetch: refetchNotes,
   } = notesApi.useNotesQuery(userId);
 
-  const { isLoading: isLabelsLoading, refetch: refetchLabels } =
-    customLabelsApi.useLabelsQuery(userId);
+  const { isLoading: isTypeLabelsLoading, refetch: refetchTypes } =
+    useCustomLabels("Type");
+  const { isLoading: isCategoryLabelsLoading, refetch: refetchCategories } =
+    useCustomLabels("Category");
 
   const navigation = useAppNavigation();
 
@@ -71,7 +73,11 @@ const NotesScreen = (): JSX.Element => {
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const isLoading = isNotesLoading || isLabelsLoading || isInitialLoading;
+  const isLoading =
+    isNotesLoading ||
+    isTypeLabelsLoading ||
+    isCategoryLabelsLoading ||
+    isInitialLoading;
 
   const ListEmptyComponent = useMemo(
     () => (
@@ -133,7 +139,8 @@ const NotesScreen = (): JSX.Element => {
   const handleManualRefresh = async () => {
     setIsManualRefresh(true);
     await refetchNotes();
-    await refetchLabels();
+    await refetchTypes();
+    await refetchCategories();
     setIsManualRefresh(false);
   };
 
