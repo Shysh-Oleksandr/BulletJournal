@@ -10,12 +10,13 @@ import {
   UpdateLabelRequest,
 } from "../types";
 
-export const getLabelsQueryKey = (
-  userId: string,
-  labelFor: LabelFor = "Note",
-) => ["labels", userId, labelFor];
+export const getLabelsQueryKey = (userId: string, labelFor: LabelFor) => [
+  "labels",
+  userId,
+  labelFor,
+];
 
-export const useLabelsQuery = (userId: string, labelFor: LabelFor = "Note") => {
+export const useLabelsQuery = (userId: string, labelFor: LabelFor) => {
   return useQuery({
     queryKey: getLabelsQueryKey(userId, labelFor),
     queryFn: async () => {
@@ -35,8 +36,10 @@ export const useCreateLabelMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateLabelRequest) =>
       client.post<CreateLabelResponse>("/customlabels/create", payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
+    onSuccess: (_, { labelFor }) => {
+      queryClient.invalidateQueries({
+        queryKey: getLabelsQueryKey(author, labelFor),
+      });
     },
   });
 };
@@ -48,20 +51,24 @@ export const useUpdateLabelMutation = () => {
   return useMutation({
     mutationFn: (payload: UpdateLabelRequest) =>
       client.patch(`/customlabels/update/${payload._id}`, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
+    onSuccess: (_, { labelFor }) => {
+      queryClient.invalidateQueries({
+        queryKey: getLabelsQueryKey(author, labelFor),
+      });
     },
   });
 };
 
-export const useDeleteLabelMutation = () => {
+export const useDeleteLabelMutation = (labelFor: LabelFor) => {
   const queryClient = useQueryClient();
   const author = useAuth().userId;
 
   return useMutation({
     mutationFn: (labelId: string) => client.delete(`/customlabels/${labelId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getLabelsQueryKey(author) });
+      queryClient.invalidateQueries({
+        queryKey: getLabelsQueryKey(author, labelFor),
+      });
     },
   });
 };

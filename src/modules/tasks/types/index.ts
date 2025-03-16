@@ -7,6 +7,7 @@ export type CommonTaskItem = {
   description?: string;
   color: string;
   isArchived?: boolean;
+  customLabels?: CustomLabel[];
 };
 
 export type GroupItem = CommonTaskItem & {
@@ -14,7 +15,6 @@ export type GroupItem = CommonTaskItem & {
 };
 
 export type TaskItem = CommonTaskItem & {
-  customLabels?: CustomLabel[];
   groupId?: string | null;
   parentTaskId?: string | null;
   dueDate?: number | null;

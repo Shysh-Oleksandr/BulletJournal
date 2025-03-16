@@ -1,7 +1,7 @@
 export interface CustomLabel {
   labelName: string;
   color: string;
-  isCategoryLabel: boolean;
+  isCategoryLabel?: boolean;
   user: string; // userId
   labelFor: LabelFor;
   refId?: string;
@@ -21,4 +21,4 @@ export type CreateLabelResponse = {
 
 export type CreateLabelRequest = Omit<CustomLabel, "_id">;
 
-export type LabelFor = "Note" | "Task";
+export type LabelFor = "Note" | "Type" | "Category" | "Task";

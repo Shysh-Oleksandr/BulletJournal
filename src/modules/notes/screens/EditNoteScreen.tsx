@@ -11,6 +11,7 @@ import { RouteProp } from "@react-navigation/native";
 import ConfirmAlert from "components/ConfirmAlert";
 import HeaderBar from "components/HeaderBar";
 import AddItemButton from "components/HeaderBar/components/AddItemButton";
+import { LabelSelector } from "components/LabelSelector";
 import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
@@ -29,11 +30,10 @@ import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
 import { notesApi } from "../api/notesApi";
-import CategoriesSelector from "../components/labels/CategoriesSelector";
-import TypeSelector from "../components/labels/TypeSelector";
 import ColorPicker from "../components/noteForm/ColorPicker";
 import DatePicker from "../components/noteForm/DatePicker";
 import FormActionButtons from "../components/noteForm/FormActionButtons";
+import FormLabel from "../components/noteForm/FormLabel";
 import ImagePicker from "../components/noteForm/ImagePicker";
 import ImagesSection from "../components/noteForm/ImagesSection";
 import ImportanceInput from "../components/noteForm/ImportanceInput";
@@ -68,7 +68,7 @@ const EditNoteScreen: FC<{
   const navigation = useAppNavigation();
 
   const userId = useAuth().userId;
-  const { labels: allLabels } = useNoteLabels();
+  const { typeLabels, categoryLabels } = useNoteLabels();
 
   const { item: initialNote, isNewNote, date } = route.params;
 
@@ -89,12 +89,10 @@ const EditNoteScreen: FC<{
 
   const defaultNoteType = useMemo(
     () =>
-      allLabels.find(
-        (label) =>
-          !label.isCategoryLabel &&
-          (isNewNote ? label.labelName === "Note" : label._id === type?._id),
+      typeLabels.find((label) =>
+        isNewNote ? label.labelName === "Note" : label._id === type?._id,
       )?._id ?? null,
-    [allLabels, isNewNote, type?._id],
+    [typeLabels, isNewNote, type?._id],
   );
 
   const [currentTitle, setCurrentTitle] = useState(title);
@@ -126,20 +124,16 @@ const EditNoteScreen: FC<{
   const cleanedHtml = useMemo(() => cleanHtml(contentHTML), [contentHTML]);
 
   const currentType = useMemo(
-    () =>
-      allLabels.find(
-        (label) => !label.isCategoryLabel && label._id === currentTypeId,
-      ) ?? null,
-    [currentTypeId, allLabels],
+    () => typeLabels.find((label) => label._id === currentTypeId) ?? null,
+    [currentTypeId, typeLabels],
   );
 
   const currentCategories = useMemo(
     () =>
-      allLabels.filter(
-        (label) =>
-          label.isCategoryLabel && currentCategoriesIds.includes(label._id),
+      categoryLabels.filter((label) =>
+        currentCategoriesIds.includes(label._id),
       ),
-    [allLabels, currentCategoriesIds],
+    [categoryLabels, currentCategoriesIds],
   );
 
   const currentNote: Note = useMemo(
@@ -411,18 +405,65 @@ const EditNoteScreen: FC<{
                   setCurrentColor={setCurrentColor}
                 />
               </Section>
-              <TypeSelector
-                currentTypeId={currentTypeId}
+              <LabelSelector
+                labels={typeLabels}
+                selectedIds={currentTypeId ? [currentTypeId] : []}
+                setSelectedIds={(ids) =>
+                  setCurrentTypeId(ids.length > 0 ? ids[0] : null)
+                }
                 currentColor={currentColor}
-                setCurrentTypeId={setCurrentTypeId}
-                setCurrentColor={setCurrentColor}
-              />
-              <CategoriesSelector
-                currentCategoriesIds={currentCategoriesIds}
+                onSelectColor={setCurrentColor}
+                isMultiSelect={false}
+                labelKey="note.chooseType"
+                labelFor="Type"
+                inputPlaceholderKey="note.enterNewType"
+                labelItemProps={{
+                  updatedLabelKey: "note.typeUpdated",
+                  deletedLabelKey: "note.typeDeleted",
+                }}
+                createdLabelKey="note.typeCreated"
+                existsLabelKey="note.typeAlreadyExists"
+              >
+                {(openModal, selectedLabels) => (
+                  <LabelSelectorContainer>
+                    <SelectedTypeContainer onPress={openModal}>
+                      <Typography align="center">{selectedLabels}</Typography>
+                    </SelectedTypeContainer>
+                    <FormLabel
+                      label={t("note.chooseType")}
+                      bottomOffset={-13}
+                    />
+                  </LabelSelectorContainer>
+                )}
+              </LabelSelector>
+              <LabelSelector
+                labels={categoryLabels}
+                selectedIds={currentCategoriesIds}
+                setSelectedIds={setCurrentCategoriesIds}
                 currentColor={currentColor}
-                setCurrentCategoriesIds={setCurrentCategoriesIds}
-                setCurrentColor={setCurrentColor}
-              />
+                onSelectColor={setCurrentColor}
+                labelKey="note.chooseCategories"
+                inputPlaceholderKey="note.enterNewCategory"
+                labelFor="Category"
+                createdLabelKey="note.categoryCreated"
+                existsLabelKey="note.categoryAlreadyExists"
+                labelItemProps={{
+                  updatedLabelKey: "note.categoryUpdated",
+                  deletedLabelKey: "note.categoryDeleted",
+                }}
+              >
+                {(openModal, selectedLabels) => (
+                  <LabelSelectorContainer>
+                    <SelectedTypeContainer onPress={openModal}>
+                      <Typography align="center">{selectedLabels}</Typography>
+                    </SelectedTypeContainer>
+                    <FormLabel
+                      label={t("note.chooseCategories")}
+                      bottomOffset={-13}
+                    />
+                  </LabelSelectorContainer>
+                )}
+              </LabelSelector>
               <TextEditor
                 initialContentHtml={content}
                 richTextRef={richTextRef}
@@ -536,6 +577,26 @@ const HeaderSection = styled.View`
 const ButtonGroup = styled.View`
   flex-direction: row;
   align-center: center;
+`;
+
+const LabelSelectorContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  z-index: 100000;
+`;
+
+const SelectedTypeContainer = styled.TouchableOpacity`
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding-horizontal: 20px;
+  background-color: ${theme.colors.cyan300};
+  border-bottom-width: 2px;
+  border-color: ${theme.colors.cyan200};
 `;
 
 export default EditNoteScreen;

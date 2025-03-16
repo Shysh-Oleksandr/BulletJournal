@@ -18,6 +18,7 @@ type Props = {
   canMoveOutside?: boolean;
   currentIsArchived: boolean;
   onDescriptionPress?: () => void;
+  onLabelsPress?: () => void;
   onMoveItem: (value: {
     groupId: string | null;
     parentTaskId: string | null;
@@ -33,6 +34,7 @@ const ItemActionsList = ({
   canMoveOutside,
   currentIsArchived,
   onDescriptionPress,
+  onLabelsPress,
   onArchive,
   onMoveItem,
   closeModal,
@@ -110,6 +112,24 @@ const ItemActionsList = ({
             </Typography>
           </ActionItemContainer>
         )}
+
+        {onLabelsPress && (
+          <ActionItemContainer onPress={onLabelsPress}>
+            <MaterialIcons
+              name="label"
+              size={theme.fontSizes.lg}
+              color={theme.colors.white}
+            />
+            <Typography
+              fontSize="sm"
+              fontWeight="semibold"
+              color={theme.colors.white}
+            >
+              {t("tasks.labels")}
+            </Typography>
+          </ActionItemContainer>
+        )}
+
         <ItemInfoBottomSheet
           bottomModalProps={{
             minHeight: "49%",
