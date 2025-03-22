@@ -50,6 +50,7 @@ const NeighboringNotesLinks = ({ noteId }: Props): JSX.Element | null => {
   const navigateToNote = useCallback(
     (item: Note | null) => {
       if (!item) {
+        // TODO: Add noteId to the query params
         navigation.replace(Routes.EDIT_NOTE, {
           item: getEmptyNote(),
           isNewNote: true,

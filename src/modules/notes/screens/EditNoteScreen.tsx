@@ -47,7 +47,7 @@ import WordsCountLabel from "../components/noteForm/WordsCountLabel";
 import NoteBody from "../components/noteItem/NoteBody";
 import { useHandleImagesOnSave } from "../hooks/useHandleImagesOnSave";
 import { deleteImagesFromS3 } from "../modules/s3";
-import { Note, UpdateNoteRequest } from "../types";
+import { Note, UpdateNoteRequest, CreateNoteRequest } from "../types";
 import { cleanHtml } from "../util/cleanHtml";
 import getAllChildrenIds from "../util/getAllChildrenIds";
 
@@ -207,27 +207,46 @@ const EditNoteScreen: FC<{
 
       setSavedNote(newNote);
 
-      const updateNoteData: UpdateNoteRequest = {
-        ...currentNote,
-        title: currentNote.title || t("note.Note"),
-        type: currentTypeId,
-        category: currentCategoriesIds,
-        isLocked: shouldLock ?? currentNote.isLocked,
-        images: newImages.map((image) => image._id),
-      };
-
       try {
         if (isNewNote) {
-          const response = (await createNote(updateNoteData)).data;
+          // Only include fields defined in CreateNoteRequest
+          const createNoteData: CreateNoteRequest = {
+            title: currentNote.title || t("note.Note"),
+            content: currentNote.content,
+            color: currentNote.color,
+            startDate: currentNote.startDate,
+            rating: currentNote.rating,
+            isStarred: currentNote.isStarred,
+            type: currentTypeId,
+            category: currentCategoriesIds,
+            images: newImages.map((image) => image._id),
+          };
 
-          if (response.note) {
-            const newNoteId = response.note._id;
+          const note = (await createNote(createNoteData)).data;
+
+          if (note) {
+            const newNoteId = note._id;
 
             navigation.replace(Routes.EDIT_NOTE, {
               item: { ...newNote, _id: newNoteId },
             });
           }
         } else {
+          // Only include fields defined in UpdateNoteRequest
+          const updateNoteData: UpdateNoteRequest = {
+            _id: currentNote._id,
+            title: currentNote.title || t("note.Note"),
+            content: currentNote.content,
+            color: currentNote.color,
+            startDate: currentNote.startDate,
+            rating: currentNote.rating,
+            isStarred: currentNote.isStarred,
+            isLocked: shouldLock ?? currentNote.isLocked,
+            type: currentTypeId,
+            category: currentCategoriesIds,
+            images: newImages.map((image) => image._id),
+          };
+
           await updateNote(updateNoteData);
 
           if (uploadedNewImages) {

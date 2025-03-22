@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
-import { client } from "store/api/client";
+import { newClient } from "store/api/client";
 
 import {
   CreateImagesRequest,
@@ -8,31 +7,33 @@ import {
   CreateNoteRequest,
   CreateNoteResponse,
   DeleteImagesRequest,
-  FetchNotesResponse,
+  Note,
   UpdateNoteRequest,
 } from "../types";
 
-export const getNotesQueryKey = (userId: string) => ["notes", userId];
+export const notesQueryKey = ["notes"];
 
-export const useNotesQuery = (userId: string) => {
+export const useNotesQuery = () => {
   return useQuery({
-    queryKey: getNotesQueryKey(userId),
+    queryKey: notesQueryKey,
     queryFn: async () => {
-      const { data } = await client.get<FetchNotesResponse>(`/notes/${userId}`);
+      const { data } = await newClient.get<Note[]>(`/notes/user`);
 
-      return data.notes.sort((a, b) => b.startDate - a.startDate);
+      return data;
     },
   });
 };
+
+// TODO: Add useFetchPaginatedNotesQuery
 
 export const useCreateNoteMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: CreateNoteRequest) =>
-      client.post<CreateNoteResponse>("/notes/create", payload),
-    onSuccess: (_, { author }) => {
-      queryClient.invalidateQueries({ queryKey: getNotesQueryKey(author) });
+      newClient.post<CreateNoteResponse>("/notes", payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
   });
 };
@@ -41,22 +42,21 @@ export const useUpdateNoteMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateNoteRequest) =>
-      client.patch(`/notes/update/${payload._id}`, payload),
-    onSuccess: (_, { author }) => {
-      queryClient.invalidateQueries({ queryKey: getNotesQueryKey(author) });
+    mutationFn: ({ _id, ...data }: UpdateNoteRequest) =>
+      newClient.put(`/notes/${_id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
   });
 };
 
 export const useDeleteNoteMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAuthStore((state) => state.userId);
 
   return useMutation({
-    mutationFn: (noteId: string) => client.delete(`/notes/${noteId}`),
+    mutationFn: (noteId: string) => newClient.delete(`/notes/${noteId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getNotesQueryKey(author) });
+      queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
   });
 };
@@ -64,14 +64,14 @@ export const useDeleteNoteMutation = () => {
 export const useCreateImagesMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateImagesRequest) =>
-      client.post<CreateImagesResponse>("/images/create", payload),
+      newClient.post<CreateImagesResponse>("/images/bulk", payload),
   });
 };
 
 export const useDeleteImagesMutation = () => {
   return useMutation({
     mutationFn: (payload: DeleteImagesRequest) =>
-      client.delete("/images", { data: payload }),
+      newClient.delete("/images/bulk", { data: payload }),
   });
 };
 

@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
-import { client } from "store/api/client";
+import { newClient } from "store/api/client";
 
 import {
   CreateLabelRequest,
@@ -10,35 +9,30 @@ import {
   UpdateLabelRequest,
 } from "../types";
 
-export const getLabelsQueryKey = (userId: string, labelFor: LabelFor) => [
-  "labels",
-  userId,
-  labelFor,
-];
+export const getLabelsQueryKey = (labelFor: LabelFor) => ["labels", labelFor];
 
-export const useLabelsQuery = (userId: string, labelFor: LabelFor) => {
+export const useLabelsQuery = (labelFor: LabelFor) => {
   return useQuery({
-    queryKey: getLabelsQueryKey(userId, labelFor),
+    queryKey: getLabelsQueryKey(labelFor),
     queryFn: async () => {
-      const { data } = await client.get<FetchLabelsResponse>(
-        `/customlabels/${userId}?labelFor=${labelFor}`,
+      const { data } = await newClient.get<FetchLabelsResponse>(
+        `/custom-labels/user?labelFor=${labelFor}`,
       );
 
-      return data.customLabels;
+      return data;
     },
   });
 };
 
 export const useCreateLabelMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAuthStore((state) => state.userId);
 
   return useMutation({
     mutationFn: (payload: CreateLabelRequest) =>
-      client.post<CreateLabelResponse>("/customlabels/create", payload),
+      newClient.post<CreateLabelResponse>("/custom-labels", payload),
     onSuccess: (_, { labelFor }) => {
       queryClient.invalidateQueries({
-        queryKey: getLabelsQueryKey(author, labelFor),
+        queryKey: getLabelsQueryKey(labelFor),
       });
     },
   });
@@ -46,14 +40,13 @@ export const useCreateLabelMutation = () => {
 
 export const useUpdateLabelMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAuthStore((state) => state.userId);
 
   return useMutation({
-    mutationFn: (payload: UpdateLabelRequest) =>
-      client.patch(`/customlabels/update/${payload._id}`, payload),
+    mutationFn: ({ _id, ...data }: UpdateLabelRequest) =>
+      newClient.put(`/custom-labels/${_id}`, data),
     onSuccess: (_, { labelFor }) => {
       queryClient.invalidateQueries({
-        queryKey: getLabelsQueryKey(author, labelFor),
+        queryKey: getLabelsQueryKey(labelFor),
       });
     },
   });
@@ -61,13 +54,13 @@ export const useUpdateLabelMutation = () => {
 
 export const useDeleteLabelMutation = (labelFor: LabelFor) => {
   const queryClient = useQueryClient();
-  const author = useAuthStore((state) => state.userId);
 
   return useMutation({
-    mutationFn: (labelId: string) => client.delete(`/customlabels/${labelId}`),
+    mutationFn: (labelId: string) =>
+      newClient.delete(`/custom-labels/${labelId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getLabelsQueryKey(author, labelFor),
+        queryKey: getLabelsQueryKey(labelFor),
       });
     },
   });

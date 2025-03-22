@@ -22,7 +22,6 @@ import {
   SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useCustomLabels } from "modules/customLabels/api/customLabelsSelectors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
@@ -49,13 +48,11 @@ const keyExtractor = (item: Note, i: number) => `${i}-${item._id}`;
 const NotesScreen = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const userId = useAuthStore((state) => state.userId);
-
   const {
     data: allNotes = [],
     isLoading: isNotesLoading,
     refetch: refetchNotes,
-  } = notesApi.useNotesQuery(userId);
+  } = notesApi.useNotesQuery();
 
   const { isLoading: isTypeLabelsLoading, refetch: refetchTypes } =
     useCustomLabels("Type");
