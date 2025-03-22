@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 
 import { notesApi } from "../api/notesApi";
 import { deleteImagesFromS3, uploadLocalImagesToS3 } from "../modules/s3";
@@ -12,7 +12,7 @@ export const useHandleImagesOnSave = () => {
   const { mutateAsync: deleteImagesEntriesFromServer } =
     notesApi.useDeleteImagesMutation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const handleImages = useCallback(
     async (currentImages: Image[], savedNote: Note) => {

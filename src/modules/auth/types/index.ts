@@ -4,6 +4,14 @@ export default interface User {
   name: string;
   createdAt: string;
   updatedAt: string;
+  access_token: string;
+}
+
+export interface ShortUser {
+  _id: string;
+  uid: string;
+  name: string;
+  access_token: string;
 }
 
 export const DEFAULT_USER: User = {
@@ -12,14 +20,30 @@ export const DEFAULT_USER: User = {
   name: "",
   createdAt: "",
   updatedAt: "",
+  access_token: "",
 };
 export const DEFAULT_FIRE_TOKEN = "";
 
 export type LoginResponse = {
   user: User;
+  access_token: string;
 };
 
 export type LoginRequest = {
-  uid: string;
   fire_token: string;
 };
+
+export type RefreshTokenRequest = {
+  access_token: string;
+};
+
+export type RefreshTokenResponse = {
+  access_token: string;
+};
+
+export enum ApiStatusCodes {
+  Unauthorized = 401,
+  AccessDenied = 403,
+  InternalServerError = 500,
+  BadRequest = 400,
+}

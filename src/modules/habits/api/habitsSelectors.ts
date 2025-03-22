@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 
 import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
 
 import { useGetHabitsQuery } from "./habitsApi";
 
 export const useAllHabits = () => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { data, isLoading, isError } = useGetHabitsQuery(userId);
 
@@ -42,7 +42,7 @@ export const useArchivedHabits = () => {
 };
 
 export const useHabitById = (habitId: string) => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { data, isLoading, isError } = useGetHabitsQuery(userId);
 

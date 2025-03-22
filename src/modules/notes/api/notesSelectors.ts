@@ -1,9 +1,9 @@
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 
 import { useNotesQuery } from "./notesApi";
 
 export const useAllNotes = () => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { data, isLoading, isError } = useNotesQuery(userId);
 

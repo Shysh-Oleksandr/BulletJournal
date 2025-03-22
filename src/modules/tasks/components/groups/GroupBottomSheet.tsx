@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native-gesture-handler";
 import theme from "theme";
 
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useGroupPath } from "modules/tasks/api/tasksSelectors";
 
@@ -44,7 +44,7 @@ const GroupBottomSheet = ({
   const { mutate: createGroup } = tasksApi.useCreateGroupMutation();
   const { mutate: updateGroup } = tasksApi.useUpdateGroupMutation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const inputRef = useRef<TextInput | null>(null);
   const descriptionInputRef = useRef<TextInput | null>(null);

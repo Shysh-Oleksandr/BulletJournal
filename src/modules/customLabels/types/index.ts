@@ -21,4 +21,4 @@ export type CreateLabelResponse = {
 
 export type CreateLabelRequest = Omit<CustomLabel, "_id">;
 
-export type LabelFor = "Note" | "Type" | "Category" | "Task";
+export type LabelFor = "Type" | "Category" | "Task";

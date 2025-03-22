@@ -5,7 +5,7 @@ import theme from "theme";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import styled from "styled-components/native";
 
@@ -42,7 +42,7 @@ const ItemActionsList = ({
   const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
   const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { t } = useTranslation();
 

@@ -1,11 +1,11 @@
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 
 import { LabelFor } from "../types";
 
 import { useLabelsQuery } from "./customLabelsApi";
 
 export const useNoteLabels = () => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const {
     data: typeLabels = [],
@@ -26,7 +26,7 @@ export const useNoteLabels = () => {
 };
 
 export const useCustomLabels = (labelFor: LabelFor) => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { data = [], isLoading, refetch } = useLabelsQuery(userId, labelFor);
 

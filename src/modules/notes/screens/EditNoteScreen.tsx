@@ -20,7 +20,7 @@ import {
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useNoteLabels } from "modules/customLabels/api/customLabelsSelectors";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
@@ -67,7 +67,7 @@ const EditNoteScreen: FC<{
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
   const { typeLabels, categoryLabels } = useNoteLabels();
 
   const { item: initialNote, isNewNote, date } = route.params;

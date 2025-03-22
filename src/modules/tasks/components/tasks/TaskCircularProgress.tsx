@@ -10,7 +10,7 @@ import { TextInput } from "react-native-gesture-handler";
 
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import ItemCircularProgress from "components/ItemCircularProgress";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 
 import { TaskItem, TaskTypes } from "../../types";
@@ -35,7 +35,7 @@ const TaskCircularProgress = ({
   setCurrentCompletedAmount,
   setCurrentCompletedAt,
 }: Props): JSX.Element => {
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const inputRef = useRef<TextInput | null>(null);
 

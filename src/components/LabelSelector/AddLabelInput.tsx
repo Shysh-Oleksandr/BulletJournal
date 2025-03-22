@@ -8,7 +8,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import Input from "components/Input";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { customLabelsApi } from "modules/customLabels/api/customLabelsApi";
 import { CustomLabel, LabelFor } from "modules/customLabels/types";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
@@ -39,7 +39,7 @@ const AddLabelInput = ({
 
   const { mutateAsync: createLabel } = customLabelsApi.useCreateLabelMutation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const [inputValue, setInputValue] = useState("");
   const [currentColor, setCurrentColor] = useState(generateRandomColor());

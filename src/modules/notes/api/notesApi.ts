@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { client } from "store/api/client";
 
 import {
@@ -51,7 +51,7 @@ export const useUpdateNoteMutation = () => {
 
 export const useDeleteNoteMutation = () => {
   const queryClient = useQueryClient();
-  const author = useAuth().userId;
+  const author = useAuthStore((state) => state.userId);
 
   return useMutation({
     mutationFn: (noteId: string) => client.delete(`/notes/${noteId}`),
