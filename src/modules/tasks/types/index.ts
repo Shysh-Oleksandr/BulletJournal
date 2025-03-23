@@ -2,7 +2,6 @@ import { CustomLabel } from "modules/customLabels/types";
 
 export type CommonTaskItem = {
   _id: string;
-  author: string;
   name: string;
   description?: string;
   color: string;
@@ -55,7 +54,7 @@ export type CreateGroupResponse = {
 export type CreateGroupRequest = Omit<GroupItem, "_id">;
 
 export type UpdateGroupRequest = Partial<CreateGroupRequest> &
-  Pick<GroupItem, "_id" | "author">;
+  Pick<GroupItem, "_id">;
 
 export type CreateTaskResponse = {
   task: TaskItem;
@@ -64,6 +63,6 @@ export type CreateTaskResponse = {
 export type CreateTaskRequest = Omit<TaskItem, "_id">;
 
 export type UpdateTaskRequest = Partial<CreateTaskRequest> &
-  Pick<TaskItem, "_id" | "author">;
+  Pick<TaskItem, "_id">;
 
-export type DeleteTaskRequest = Pick<TaskItem, "_id" | "author">;
+export type DeleteTaskRequest = Pick<TaskItem, "_id">;

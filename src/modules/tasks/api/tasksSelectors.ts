@@ -1,17 +1,13 @@
 import { isWithinInterval } from "date-fns";
 import { useCallback, useMemo } from "react";
 
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
-
 import { GroupItem, TaskItem } from "../types";
 import { calculateTasksCountInfo } from "../utils/calculateTasksCountInfo";
 
 import { useGroups, useTasks } from "./tasksApi";
 
 export const useAllGroups = () => {
-  const userId = useAuthStore((state) => state.userId);
-
-  const { data, isLoading, isError } = useGroups(userId);
+  const { data, isLoading, isError } = useGroups();
 
   const allGroups = useMemo(
     () => data?.allIds.map((id) => data.byId[id]) || [],
@@ -22,9 +18,7 @@ export const useAllGroups = () => {
 };
 
 export const useAllTasks = () => {
-  const userId = useAuthStore((state) => state.userId);
-
-  const { data, isLoading, isError } = useTasks(userId);
+  const { data, isLoading, isError } = useTasks();
 
   const allTasks = useMemo(
     () => data?.allIds.map((id) => data.byId[id]) || [],

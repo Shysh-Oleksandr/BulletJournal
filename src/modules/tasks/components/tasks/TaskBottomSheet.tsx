@@ -12,7 +12,6 @@ import theme from "theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LabelSelector } from "components/LabelSelector";
 import Typography from "components/Typography";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useCustomLabels } from "modules/customLabels/api/customLabelsSelectors";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import { useTaskPath } from "modules/tasks/api/tasksSelectors";
@@ -55,8 +54,6 @@ const TaskBottomSheet = ({
 
   const { mutate: createTask } = tasksApi.useCreateTaskMutation();
   const { mutate: updateTask } = tasksApi.useUpdateTaskMutation();
-
-  const userId = useAuthStore((state) => state.userId);
 
   const { labels } = useCustomLabels("Task");
 
@@ -127,7 +124,6 @@ const TaskBottomSheet = ({
       ? !!formValues.currentCompletedAmount
       : formValues.currentCompletedAmount >= formValues.currentTarget;
     const commonFields = {
-      author: userId,
       dueDate: formValues.dueDate,
       color: formValues.color,
       name: normalizedName,

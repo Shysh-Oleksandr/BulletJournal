@@ -5,7 +5,6 @@ import theme from "theme";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import Typography from "components/Typography";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { tasksApi } from "modules/tasks/api/tasksApi";
 import styled from "styled-components/native";
 
@@ -42,8 +41,6 @@ const ItemActionsList = ({
   const { mutate: deleteTask } = tasksApi.useDeleteTaskMutation();
   const { mutate: deleteGroup } = tasksApi.useDeleteGroupMutation();
 
-  const userId = useAuthStore((state) => state.userId);
-
   const { t } = useTranslation();
 
   const [isDeletionAlertVisible, setIsDeletionAlertVisible] = useState(false);
@@ -52,9 +49,9 @@ const ItemActionsList = ({
     if (!itemId) return;
 
     if (isTask) {
-      deleteTask({ _id: itemId, author: userId });
+      deleteTask({ _id: itemId });
     } else {
-      deleteGroup({ _id: itemId, author: userId });
+      deleteGroup({ _id: itemId });
     }
 
     closeModal();
