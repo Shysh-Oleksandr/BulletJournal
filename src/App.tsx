@@ -12,7 +12,8 @@ import Toast from "react-native-toast-message";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { QueryClientProvider } from "@tanstack/react-query";
 import logging from "config/logging";
-import { AuthProvider } from "modules/auth/AuthContext";
+import UnauthorizedInterceptor from "modules/auth/components/UnauthorizedInterceptor/UnauthorizedInterceptor";
+import { initializeAuth } from "modules/auth/hooks/useAuthStore";
 import { queryClient } from "store/api/queryClient";
 import styled, { ThemeProvider } from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
@@ -32,6 +33,8 @@ NavigationBar.setButtonStyleAsync("dark");
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+
+  initializeAuth();
 
   useEffect(() => {
     async function prepare() {
@@ -76,7 +79,7 @@ export default function App() {
       <I18nextProvider i18n={i18n}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
+            <UnauthorizedInterceptor>
               <SafeAreaProvider>
                 <StatusBar
                   barStyle="light-content"
@@ -88,7 +91,7 @@ export default function App() {
                 </Container>
                 <Toast topOffset={105} visibilityTime={2000} />
               </SafeAreaProvider>
-            </AuthProvider>
+            </UnauthorizedInterceptor>
           </QueryClientProvider>
         </GestureHandlerRootView>
       </I18nextProvider>

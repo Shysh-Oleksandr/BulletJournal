@@ -5,13 +5,13 @@ import theme from "theme";
 import { Entypo } from "@expo/vector-icons";
 import ConfirmAlert from "components/ConfirmAlert";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import styled from "styled-components/native";
 
 const LogoutBtn = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const logout = useAuth().logout;
+  const logout = useAuthStore((state) => state.logout);
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 

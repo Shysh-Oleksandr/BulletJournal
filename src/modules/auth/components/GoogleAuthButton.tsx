@@ -1,5 +1,5 @@
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import theme from "theme";
 
 import { AntDesign } from "@expo/vector-icons";
@@ -17,7 +17,7 @@ import {
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 
-import { useAuth } from "../AuthContext";
+import { useLogin } from "../hooks/useLogin";
 
 const GOOGLE_ICON = (
   <AntDesign name="google" size={24} color={theme.colors.white} />
@@ -26,7 +26,8 @@ const GOOGLE_ICON = (
 WebBrowser.maybeCompleteAuthSession();
 
 const GoogleAuthButton = (): JSX.Element => {
-  const { login, isLoading: isLoadingAuth } = useAuth();
+  const { login, isLoading: isLoadingAuth } = useLogin();
+  const loginCalledRef = useRef(false);
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isSignedInWithCredential, setIsSignedInWithCredential] =
@@ -61,20 +62,25 @@ const GoogleAuthButton = (): JSX.Element => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!isAuthenticating || !isSignedInWithCredential) return;
+      if (
+        !isAuthenticating ||
+        !isSignedInWithCredential ||
+        loginCalledRef.current
+      )
+        return;
 
       addCrashlyticsLog("User got a fire token. Signing in...");
 
       if (user) {
         try {
-          const { uid } = user;
-
           const fire_token = await user.getIdToken();
 
-          await login(fire_token, uid);
+          loginCalledRef.current = true;
+          await login(fire_token);
 
           setIsAuthenticating(false);
         } catch (error) {
+          loginCalledRef.current = false;
           logging.error(error, "");
           alertError();
         }

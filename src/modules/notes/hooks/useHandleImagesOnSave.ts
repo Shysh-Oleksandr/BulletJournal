@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 
 import { notesApi } from "../api/notesApi";
 import { deleteImagesFromS3, uploadLocalImagesToS3 } from "../modules/s3";
@@ -12,7 +12,7 @@ export const useHandleImagesOnSave = () => {
   const { mutateAsync: deleteImagesEntriesFromServer } =
     notesApi.useDeleteImagesMutation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const handleImages = useCallback(
     async (currentImages: Image[], savedNote: Note) => {
@@ -28,7 +28,7 @@ export const useHandleImagesOnSave = () => {
       if (imagesToDelete.length) {
         await deleteImagesFromS3(imagesToDelete.map((image) => image.url));
         await deleteImagesEntriesFromServer({
-          imageIdsToDelete: imagesToDelete.map((image) => image._id),
+          imageIds: imagesToDelete.map((image) => image._id),
         });
       }
 
@@ -44,11 +44,10 @@ export const useHandleImagesOnSave = () => {
       const uploadedImagesData: Image[] = imageUrlsToUploadToServer.length
         ? (
             await createImagesEntries({
-              author: userId,
               noteId: savedNote._id || undefined, // If a note is not created yet, we still send undefined noteId which will be replaced with a real one during note creation on BE
               urls: imageUrlsToUploadToServer,
             })
-          ).data.createdImages
+          ).data.images
         : [];
 
       // Map currentImages to preserve order

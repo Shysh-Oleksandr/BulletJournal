@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { IS_ANDROID } from "modules/app/constants";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import SignIn from "modules/auth/screens/SignIn";
 import ArchivedHabitsScreen from "modules/habits/screens/ArchivedHabitsScreen";
 import EditHabitScreen from "modules/habits/screens/EditHabitScreen";
@@ -26,7 +26,7 @@ import TabNavigator from "./TabNavigator";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Nav = (): JSX.Element => {
-  const { user: userData } = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   const routeNameRef = React.useRef<string>();
   const navigationRef = React.useRef() as React.MutableRefObject<
@@ -47,17 +47,17 @@ const Nav = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (!userData) {
+    if (!user) {
       addCrashlyticsLog("User is on the sign in screen. Not authenticated");
 
       return;
     }
 
-    analytics().setUserId(userData.uid);
-    crashlytics().setUserId(userData.uid);
-    crashlytics().setAttribute("_id", userData._id);
+    analytics().setUserId(user.uid);
+    crashlytics().setUserId(user.uid);
+    crashlytics().setAttribute("_id", user._id);
     addCrashlyticsLog("User is on Homepage. Authenticated");
-  }, [userData]);
+  }, [user]);
 
   return (
     <NavigationContainer
@@ -76,7 +76,7 @@ const Nav = (): JSX.Element => {
           animation: "slide_from_right",
         }}
       >
-        {!userData ? (
+        {!user ? (
           <Stack.Screen name={Routes.SIGN_IN} component={SignIn} />
         ) : (
           <>

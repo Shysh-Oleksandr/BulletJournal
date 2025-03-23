@@ -15,7 +15,7 @@ import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 
-import { useAuth } from "../AuthContext";
+import { useLogin } from "../hooks/useLogin";
 
 const EMAIL_REGEX =
   // eslint-disable-next-line no-useless-escape
@@ -37,7 +37,7 @@ type Props = {
 const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { login, isLoading: isLoadingAuth } = useAuth();
+  const { login, isLoading: isLoadingAuth } = useLogin();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,11 +57,9 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
       ? createUserWithEmailAndPassword(auth, email, password)
       : signInWithEmailAndPassword(auth, email, password));
 
-    const { uid } = user;
-
     const fire_token = await user.getIdToken();
 
-    login(fire_token, uid);
+    login(fire_token);
   };
 
   const onPress = async () => {
@@ -153,7 +151,6 @@ const EmailAuthForm = ({ isSignUp }: Props): JSX.Element => {
 
 const Section = styled.View`
   margin-top: 30px;
-  align-center: center;
   justify-content: center;
   width: 100%;
   row-gap: 20px;

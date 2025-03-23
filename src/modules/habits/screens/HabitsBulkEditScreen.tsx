@@ -17,7 +17,7 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import styled from "styled-components/native";
 import { alertError } from "utils/alertMessages";
@@ -39,7 +39,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
   const { allHabits } = useAllHabits();
 
   const initialHabits = useMemo(

@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BUTTON_HIT_SLOP } from "components/HeaderBar";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { Image } from "modules/notes/types";
 import styled from "styled-components/native";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
@@ -24,7 +24,7 @@ type Props = {
 const ImagePicker = ({ noteId, setCurrentImages }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const onPress = async (isCamera = false) => {
     logUserEvent(
