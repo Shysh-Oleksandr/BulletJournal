@@ -8,7 +8,7 @@ export const client = axios.create({
 });
 
 export const newClient = axios.create({
-  baseURL: AppConfig.newApiUrl,
+  baseURL: `${AppConfig.newApiUrl}/api`,
 });
 
 const applyAuthorizationInterceptor = (instance: AxiosInstance) => {
