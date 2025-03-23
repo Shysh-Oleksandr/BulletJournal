@@ -12,7 +12,7 @@ import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuth } from "modules/auth/AuthContext";
+import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
@@ -58,7 +58,7 @@ const EditHabitScreen: FC<{
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAuth().userId;
+  const userId = useAuthStore((state) => state.userId);
 
   const { item: initialHabit, isNewHabit } = route.params;
 

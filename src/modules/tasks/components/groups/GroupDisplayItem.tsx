@@ -13,6 +13,7 @@ import { GroupItem } from "../../types";
 import ArchivedItemLabel from "../common/ArchivedItemLabel";
 import DescriptionLabel from "../common/DescriptionLabel";
 import { TaskLabelContainer } from "../common/TaskLabelContainer";
+import AddTaskButton from "../tasks/AddTaskButton";
 
 import AddGroupButton from "./AddGroupButton";
 import ArchivedSubtasksListSection from "./ArchivedSubtasksListSection";
@@ -44,6 +45,7 @@ const GroupDisplayItem = ({ group, depth = 0 }: Props): JSX.Element => {
           <SubgroupsListSection group={group} depth={depth} />
           <AddGroupButton parentGroupId={group._id} />
           <ArchivedSubtasksListSection groupId={group._id} />
+          <AddTaskButton groupId={group._id} />
         </ContentContainer>
       )}
     >

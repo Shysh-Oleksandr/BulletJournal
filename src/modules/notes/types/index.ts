@@ -7,7 +7,6 @@ export type Note = {
   content: string;
   color: string;
   startDate: number;
-  endDate: number;
   rating: number;
   isLocked: boolean;
   isStarred: boolean;
@@ -23,38 +22,47 @@ export interface Image {
   _id: string;
 }
 
-export type FetchNotesResponse = {
-  count: number;
-  notes: Note[];
-};
-
-export type UpdateNoteRequest = Omit<Note, "type" | "category" | "images"> & {
-  type: string | null;
-  category: string[];
-  images: string[];
-};
-
-export type CreateNoteResponse = {
-  note: Note;
-};
-
-export type CreateImagesResponse = {
-  createdImages: Image[];
-};
-
-export type CreateNoteRequest = Omit<
+export type UpdateNoteRequest = Omit<
   Note,
-  "_id" | "type" | "category" | "images"
+  "type" | "category" | "images" | "author"
 > & {
   type: string | null;
   category: string[];
   images: string[];
 };
 
-export type CreateImagesRequest = Pick<Image, "author" | "noteId"> & {
+export type CreateNoteResponse = Note;
+
+export type CreateImagesResponse = {
+  images: Image[];
+};
+
+export type FetchPaginatedNotesResponse = {
+  data: Note[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type FetchPaginatedNotesRequest = {
+  page?: number;
+  limit?: number;
+};
+
+export type CreateNoteRequest = Omit<
+  Note,
+  "_id" | "type" | "category" | "images" | "author" | "isLocked"
+> & {
+  type: string | null;
+  category: string[];
+  images: string[];
+};
+
+export type CreateImagesRequest = Pick<Image, "noteId"> & {
   urls: string[];
 };
 
 export type DeleteImagesRequest = {
-  imageIdsToDelete: string[];
+  imageIds: string[];
 };

@@ -13,7 +13,6 @@ export const EMPTY_NOTE: Note = {
   content: "",
   color: theme.colors.cyan600,
   startDate: new Date().getTime(),
-  endDate: new Date().getTime(),
   rating: 1,
   isLocked: false,
   isStarred: false,
