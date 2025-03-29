@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "config/firebase";
 import { signOut } from "firebase/auth";
 import { CustomUserEvents } from "modules/app/types";
+import { queryClient } from "store/api/queryClient";
 import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { logUserEvent } from "utils/logUserEvent";
 
@@ -24,13 +25,20 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const storedUser = await AsyncStorage.getItem("user");
 
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
+      if (user && user.access_token) {
         set({
           user,
           userId: user?._id ?? "",
         });
+      } else {
+        await signOut(auth);
+        set({
+          user: null,
+          userId: "",
+        });
+        queryClient.removeQueries();
       }
     } catch (error) {
       console.error("Failed to load user from AsyncStorage", error);
@@ -63,6 +71,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         user: null,
         userId: "",
       });
+
+      queryClient.removeQueries();
     } catch (error) {
       console.error("Logout failed", error);
     }
