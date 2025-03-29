@@ -19,7 +19,7 @@ import { getDaysByHabitPeriod } from "./getDaysByHabitPeriod";
 export const calculateHabitLogsStatus = (
   habit: Habit,
 ): { oldestLogDate: number; processedLogs: HabitLog[] } => {
-  const { logs: habitLogs, frequency } = habit;
+  const { logs: habitLogs = [], frequency } = habit;
   const { days, period } = frequency;
 
   const filteredHabitLogs = habitLogs.filter(
@@ -228,6 +228,8 @@ function fillMissingDays(
         percentageCompleted: 0,
         amount: 0,
         isArtificial: true,
+        _id: "",
+        habitId: "",
       }
     );
   });

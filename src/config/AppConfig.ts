@@ -10,7 +10,6 @@ const firebaseConfig = {
 
 export default {
   apiUrl: process.env.EXPO_PUBLIC_API_URL, // For testing on local machine: get local ip from `ipconfig getifaddr en0`. E.g., "http://192.168.0.103:8001"
-  newApiUrl: process.env.EXPO_PUBLIC_NEW_API_URL || "http://192.168.0.107:8001",
   androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
   s3Bucket: process.env.EXPO_PUBLIC_BUCKET,
   s3BucketImageUrl: process.env.EXPO_PUBLIC_AWS_IMAGE_URL,

@@ -9,7 +9,6 @@ export const WEEKDAYS_DATES = getWeekDatesByDate(FIXED_DATE);
 
 export const EMPTY_HABIT: Habit = {
   _id: "",
-  author: "",
   label: "",
   color: theme.colors.cyan600,
   habitType: HabitTypes.CHECK,

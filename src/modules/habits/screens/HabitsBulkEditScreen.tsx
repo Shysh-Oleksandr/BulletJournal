@@ -17,7 +17,6 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import styled from "styled-components/native";
 import { alertError } from "utils/alertMessages";
@@ -39,7 +38,6 @@ const HabitsBulkEditScreen = (): JSX.Element => {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const userId = useAuthStore((state) => state.userId);
   const { allHabits } = useAllHabits();
 
   const initialHabits = useMemo(
@@ -141,7 +139,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
           await Promise.all(
             changedHabits.map((habit) => {
               if (habit.action === HabitActions.DELETE) {
-                return deleteHabit({ _id: habit._id, userId });
+                return deleteHabit({ _id: habit._id });
               }
               if (
                 habit.action === HabitActions.ARCHIVE ||
@@ -149,7 +147,6 @@ const HabitsBulkEditScreen = (): JSX.Element => {
               ) {
                 return updateHabit({
                   _id: habit._id,
-                  author: userId,
                   isArchived: habit.action === HabitActions.ARCHIVE,
                 });
               }
@@ -162,7 +159,6 @@ const HabitsBulkEditScreen = (): JSX.Element => {
         if (isOrderChanged) {
           await reorderHabits({
             habitIds: currentHabits.map((habit) => habit._id),
-            userId,
           });
         }
 
@@ -190,7 +186,6 @@ const HabitsBulkEditScreen = (): JSX.Element => {
       reorderHabits,
       t,
       updateHabit,
-      userId,
     ],
   );
 

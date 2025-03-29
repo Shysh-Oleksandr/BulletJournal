@@ -4,11 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConfig from "config/AppConfig";
 
 export const client = axios.create({
-  baseURL: AppConfig.apiUrl,
-});
-
-export const newClient = axios.create({
-  baseURL: `${AppConfig.newApiUrl}/api`,
+  baseURL: `${AppConfig.apiUrl}/api`,
 });
 
 const applyAuthorizationInterceptor = (instance: AxiosInstance) => {
@@ -34,4 +30,4 @@ const applyAuthorizationInterceptor = (instance: AxiosInstance) => {
   );
 };
 
-applyAuthorizationInterceptor(newClient);
+applyAuthorizationInterceptor(client);

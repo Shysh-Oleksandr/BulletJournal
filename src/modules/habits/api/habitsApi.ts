@@ -2,31 +2,30 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "store/api/client";
 
 import {
+  CreateHabitLogRequest,
   CreateHabitRequest,
   CreateHabitResponse,
   DeleteHabitRequest,
-  FetchHabitsResponse,
   Habit,
   HabitsState,
   ReorderHabitsRequest,
+  UpdateHabitLogRequest,
   UpdateHabitRequest,
 } from "../types";
 import { calculateHabitLogsStatus } from "../utils/calculateHabitLogsStatus";
 
-export const getHabitsQueryKey = (userId?: string) => ["habits", userId];
+export const habitsQueryKey = ["habits"];
 
-export const useGetHabitsQuery = (userId: string) => {
+export const useGetHabitsQuery = () => {
   return useQuery<HabitsState>({
-    queryKey: getHabitsQueryKey(userId),
+    queryKey: habitsQueryKey,
     queryFn: async () => {
-      const { data } = await client.get<FetchHabitsResponse>(
-        `/habits/${userId}`,
-      );
+      const { data } = await client.get<Habit[]>(`/habits`);
 
       const byId: Record<string, Habit> = {};
       const allIds: string[] = [];
 
-      data.habits.forEach((habit) => {
+      data.forEach((habit) => {
         const { processedLogs, oldestLogDate } =
           calculateHabitLogsStatus(habit);
 
@@ -37,6 +36,21 @@ export const useGetHabitsQuery = (userId: string) => {
       return { byId, allIds };
     },
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useGetHabitQuery = (habitId: string) => {
+  return useQuery<Habit>({
+    queryKey: [...habitsQueryKey, habitId],
+    queryFn: async () => {
+      const { data } = await client.get<Habit>(`/habits/${habitId}`);
+
+      const { processedLogs, oldestLogDate } = calculateHabitLogsStatus(data);
+
+      return { ...data, logs: processedLogs, oldestLogDate };
+    },
   });
 };
 
@@ -45,19 +59,18 @@ export const useUpdateHabitMutation = () => {
 
   return useMutation({
     mutationFn: ({ _id, ...payload }: UpdateHabitRequest) =>
-      client.patch(`/habits/update/${_id}`, payload),
+      client.put(`/habits/${_id}`, payload),
 
     onMutate: async (updatedHabit) => {
       await queryClient.cancelQueries({
-        queryKey: getHabitsQueryKey(updatedHabit.author),
+        queryKey: habitsQueryKey,
       });
 
-      const previousHabits = queryClient.getQueryData<HabitsState>(
-        getHabitsQueryKey(updatedHabit.author),
-      );
+      const previousHabits =
+        queryClient.getQueryData<HabitsState>(habitsQueryKey);
 
       queryClient.setQueryData(
-        getHabitsQueryKey(updatedHabit.author),
+        habitsQueryKey,
         (oldData: HabitsState | undefined) => {
           if (!oldData) return oldData;
 
@@ -83,19 +96,15 @@ export const useUpdateHabitMutation = () => {
       return { previousHabits };
     },
 
-    onError: (_err, updatedHabit, context) => {
+    onError: (_err, _, context) => {
       if (context?.previousHabits) {
-        queryClient.setQueryData(
-          getHabitsQueryKey(updatedHabit.author),
-          context.previousHabits,
-        );
+        queryClient.setQueryData(habitsQueryKey, context.previousHabits);
       }
     },
 
-    onSettled: (_, __, updatedHabit) => {
-      // TODO: check if this is needed
+    onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: getHabitsQueryKey(updatedHabit.author),
+        queryKey: habitsQueryKey,
       });
     },
   });
@@ -106,11 +115,11 @@ export const useCreateHabitMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateHabitRequest) =>
-      client.post<CreateHabitResponse>("/habits/create", payload),
+      client.post<CreateHabitResponse>("/habits", payload),
 
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getHabitsQueryKey(variables.author),
+        queryKey: habitsQueryKey,
       });
     },
   });
@@ -120,12 +129,12 @@ export const useReorderHabitsMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ habitIds }: ReorderHabitsRequest) =>
-      client.put("/habits/reorder", habitIds),
+    mutationFn: (data: ReorderHabitsRequest) =>
+      client.post("/habits/reorder", data),
 
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getHabitsQueryKey(variables.userId),
+        queryKey: habitsQueryKey,
       });
     },
   });
@@ -138,9 +147,9 @@ export const useDeleteHabitMutation = () => {
     mutationFn: ({ _id }: DeleteHabitRequest) =>
       client.delete(`/habits/${_id}`),
 
-    onSuccess: (_, { _id, userId }) => {
+    onSuccess: (_, { _id }) => {
       queryClient.setQueryData(
-        getHabitsQueryKey(userId),
+        habitsQueryKey,
         (oldData: HabitsState | undefined) => {
           if (!oldData) return oldData;
 
@@ -157,7 +166,114 @@ export const useDeleteHabitMutation = () => {
       );
 
       queryClient.invalidateQueries({
-        queryKey: getHabitsQueryKey(userId),
+        queryKey: habitsQueryKey,
+      });
+    },
+  });
+};
+
+export const useUpdateHabitLogMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ _id, ...payload }: UpdateHabitLogRequest) =>
+      client.put(`/habit-logs/${_id}`, payload),
+
+    onMutate: async (updatedLog) => {
+      await queryClient.cancelQueries({
+        queryKey: habitsQueryKey,
+      });
+
+      const previousLogs =
+        queryClient.getQueryData<HabitsState>(habitsQueryKey);
+
+      queryClient.setQueryData(
+        habitsQueryKey,
+        (oldData: HabitsState | undefined) => {
+          if (!oldData) return oldData;
+
+          const newHabits = { ...oldData };
+          const habitToChange = newHabits.byId[updatedLog.habitId];
+
+          if (habitToChange) {
+            const log = habitToChange.logs.find(
+              (log) => log._id === updatedLog._id,
+            );
+
+            if (log) {
+              Object.assign(log, updatedLog);
+            }
+          }
+
+          return newHabits;
+        },
+      );
+
+      return { previousLogs };
+    },
+
+    onError: (_err, _, context) => {
+      if (context?.previousLogs) {
+        queryClient.setQueryData(habitsQueryKey, context.previousLogs);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: habitsQueryKey,
+      });
+    },
+  });
+};
+
+export const useCreateHabitLogMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: CreateHabitLogRequest) =>
+      client.post("/habit-logs", payload),
+
+    onMutate: async (newLog) => {
+      await queryClient.cancelQueries({
+        queryKey: habitsQueryKey,
+      });
+
+      const previousLogs =
+        queryClient.getQueryData<HabitsState>(habitsQueryKey);
+
+      queryClient.setQueryData(
+        habitsQueryKey,
+        (oldData: HabitsState | undefined) => {
+          if (!oldData) return oldData;
+
+          const newHabits = { ...oldData };
+          const habitToChange = newHabits.byId[newLog.habitId];
+
+          if (habitToChange) {
+            const tempId = `temp-${Date.now()}`;
+
+            habitToChange.logs.push({
+              ...newLog,
+              _id: tempId,
+            });
+          }
+
+          return newHabits;
+        },
+      );
+
+      return { previousLogs };
+    },
+
+    onError: (_err, _, context) => {
+      if (context?.previousLogs) {
+        queryClient.setQueryData(habitsQueryKey, context.previousLogs);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: habitsQueryKey,
       });
     },
   });
@@ -165,8 +281,11 @@ export const useDeleteHabitMutation = () => {
 
 export const habitsApi = {
   useGetHabitsQuery,
+  useGetHabitQuery,
   useUpdateHabitMutation,
   useCreateHabitMutation,
   useReorderHabitsMutation,
   useDeleteHabitMutation,
+  useUpdateHabitLogMutation,
+  useCreateHabitLogMutation,
 };

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { newClient } from "store/api/client";
+import { client } from "store/api/client";
 
 import {
   CreateImagesRequest,
@@ -17,7 +17,7 @@ export const useNotesQuery = () => {
   return useQuery({
     queryKey: notesQueryKey,
     queryFn: async () => {
-      const { data } = await newClient.get<Note[]>(`/notes/user`);
+      const { data } = await client.get<Note[]>(`/notes/user`);
 
       return data;
     },
@@ -31,7 +31,7 @@ export const useCreateNoteMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateNoteRequest) =>
-      newClient.post<CreateNoteResponse>("/notes", payload),
+      client.post<CreateNoteResponse>("/notes", payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
@@ -43,7 +43,7 @@ export const useUpdateNoteMutation = () => {
 
   return useMutation({
     mutationFn: ({ _id, ...data }: UpdateNoteRequest) =>
-      newClient.put(`/notes/${_id}`, data),
+      client.put(`/notes/${_id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
@@ -54,7 +54,7 @@ export const useDeleteNoteMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (noteId: string) => newClient.delete(`/notes/${noteId}`),
+    mutationFn: (noteId: string) => client.delete(`/notes/${noteId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notesQueryKey });
     },
@@ -64,14 +64,14 @@ export const useDeleteNoteMutation = () => {
 export const useCreateImagesMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateImagesRequest) =>
-      newClient.post<CreateImagesResponse>("/images/bulk", payload),
+      client.post<CreateImagesResponse>("/images/bulk", payload),
   });
 };
 
 export const useDeleteImagesMutation = () => {
   return useMutation({
     mutationFn: (payload: DeleteImagesRequest) =>
-      newClient.delete("/images/bulk", { data: payload }),
+      client.delete("/images/bulk", { data: payload }),
   });
 };
 
