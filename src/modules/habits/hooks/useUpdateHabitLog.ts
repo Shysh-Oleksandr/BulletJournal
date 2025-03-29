@@ -2,7 +2,7 @@ import { isSameDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { habitsApi } from "../api/habitsApi";
-import { Habit, HabitLog, HabitTypes } from "../types";
+import { Habit, HabitTypes } from "../types";
 
 type Props = {
   habit: Habit;
@@ -10,7 +10,8 @@ type Props = {
 };
 
 export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
-  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
+  const { mutate: updateHabitLog } = habitsApi.useUpdateHabitLogMutation();
+  const { mutate: createHabitLog } = habitsApi.useCreateHabitLogMutation();
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 
@@ -46,56 +47,41 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
       ? Math.round((value / habit.amountTarget) * 100)
       : 0;
 
-    const updatedLogs: HabitLog[] = currentLog
-      ? habit.logs.map((log) => {
-          if (!isSameDay(log.date, selectedDate)) return log;
+    if (currentLog?._id) {
+      const checkedPercentageCompleted =
+        currentLog.percentageCompleted === 100 ? 0 : 100;
 
-          const checkedPercentageCompleted =
-            log.percentageCompleted === 100 ? 0 : 100;
+      const percentageCompleted = isCheckHabitType
+        ? checkedPercentageCompleted
+        : amountPercentageCompleted;
 
-          const percentageCompleted = isCheckHabitType
-            ? checkedPercentageCompleted
-            : amountPercentageCompleted;
-
-          return {
-            ...log,
-            date: selectedDate,
-            percentageCompleted,
-            amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
-            amountTarget: habit.amountTarget ?? 1,
-            isArtificial: false,
-          } as HabitLog;
-        })
-      : [
-          ...habit.logs,
-          {
-            date: selectedDate,
-            percentageCompleted: isCheckHabitType
-              ? 100
-              : amountPercentageCompleted,
-            amount: isCheckHabitType ? 1 : value,
-            amountTarget: habit.amountTarget ?? 1,
-          },
-        ];
-
-    const filteredUpdatedLogs = updatedLogs.filter((log) => !log.isArtificial);
-
-    updateHabit({
-      logs: filteredUpdatedLogs,
-      _id: habit._id,
-      author: habit.author,
-    });
+      updateHabitLog({
+        ...currentLog,
+        date: selectedDate,
+        percentageCompleted,
+        amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
+        amountTarget: habit.amountTarget ?? 1,
+        isArtificial: false,
+      });
+    } else {
+      createHabitLog({
+        date: selectedDate,
+        percentageCompleted: isCheckHabitType ? 100 : amountPercentageCompleted,
+        amount: isCheckHabitType ? 1 : value,
+        amountTarget: habit.amountTarget ?? 1,
+        habitId: habit._id,
+      });
+    }
   }, [
     inputValue,
     isCheckHabitType,
     currentLog,
     habit.amountTarget,
-    habit.logs,
     habit._id,
-    habit.author,
-    selectedDate,
-    updateHabit,
     initialLogValue,
+    updateHabitLog,
+    selectedDate,
+    createHabitLog,
   ]);
 
   const onChange = useCallback((text: string) => {

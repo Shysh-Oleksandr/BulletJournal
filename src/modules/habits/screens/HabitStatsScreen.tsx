@@ -35,11 +35,15 @@ const HabitStatsScreen: FC<{
   const { habit: item } = useHabitById(id);
 
   const bestStreaksData = useMemo(
-    () => calculateHabitBestStreaks(item.logs),
-    [item.logs],
+    () => calculateHabitBestStreaks(item?.logs ?? []),
+    [item?.logs],
   );
 
   // const isCheckHabitType = item.habitType === HabitTypes.CHECK;
+
+  if (!item) {
+    return null;
+  }
 
   return (
     <>

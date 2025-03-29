@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { newClient } from "store/api/client";
+import { client } from "store/api/client";
 
 import {
   CreateGroupRequest,
@@ -22,7 +22,7 @@ export const useGroups = () => {
   return useQuery({
     queryKey: groupsQueryKey,
     queryFn: async () => {
-      const { data } = await newClient.get<GroupItem[]>(`/groups`);
+      const { data } = await client.get<GroupItem[]>(`/groups`);
 
       return data.reduce<GroupsState>(
         (acc, group) => {
@@ -42,7 +42,7 @@ export const useCreateGroupMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateGroupRequest) =>
-      newClient.post<CreateGroupResponse>("/groups", payload),
+      client.post<CreateGroupResponse>("/groups", payload),
     onMutate: async (payload) => {
       await queryClient.cancelQueries({
         queryKey: groupsQueryKey,
@@ -93,7 +93,7 @@ export const useUpdateGroupMutation = () => {
 
   return useMutation({
     mutationFn: ({ _id, ...data }: UpdateGroupRequest) =>
-      newClient.put(`/groups/${_id}`, data),
+      client.put(`/groups/${_id}`, data),
     onMutate: async (updatedGroup) => {
       await queryClient.cancelQueries({
         queryKey: groupsQueryKey,
@@ -133,8 +133,7 @@ export const useDeleteGroupMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ _id }: DeleteTaskRequest) =>
-      newClient.delete(`/groups/${_id}`),
+    mutationFn: ({ _id }: DeleteTaskRequest) => client.delete(`/groups/${_id}`),
     onMutate: async ({ _id }) => {
       await queryClient.cancelQueries({ queryKey: groupsQueryKey });
 
@@ -170,7 +169,7 @@ export const useTasks = () => {
   return useQuery({
     queryKey: tasksQueryKey,
     queryFn: async () => {
-      const { data } = await newClient.get<TaskItem[]>(`/tasks`);
+      const { data } = await client.get<TaskItem[]>(`/tasks`);
 
       return data.reduce<TasksState>(
         (acc, task) => {
@@ -190,7 +189,7 @@ export const useCreateTaskMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateTaskRequest) =>
-      newClient.post<CreateTaskResponse>("/tasks", payload),
+      client.post<CreateTaskResponse>("/tasks", payload),
     onMutate: async (payload) => {
       await queryClient.cancelQueries({
         queryKey: tasksQueryKey,
@@ -229,7 +228,7 @@ export const useUpdateTaskMutation = () => {
 
   return useMutation({
     mutationFn: ({ _id, ...data }: UpdateTaskRequest) =>
-      newClient.put(`/tasks/${_id}`, data),
+      client.put(`/tasks/${_id}`, data),
     onMutate: async (updatedTask) => {
       await queryClient.cancelQueries({
         queryKey: tasksQueryKey,
@@ -269,8 +268,7 @@ export const useDeleteTaskMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ _id }: DeleteTaskRequest) =>
-      newClient.delete(`/tasks/${_id}`),
+    mutationFn: ({ _id }: DeleteTaskRequest) => client.delete(`/tasks/${_id}`),
     onMutate: async ({ _id }) => {
       await queryClient.cancelQueries({ queryKey: tasksQueryKey });
 

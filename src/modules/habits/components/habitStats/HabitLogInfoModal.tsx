@@ -105,7 +105,6 @@ const HabitLogInfoModal = ({
 
     updateHabit({
       _id: habit._id,
-      author: habit.author,
       logs: updatedLogs,
     });
   };

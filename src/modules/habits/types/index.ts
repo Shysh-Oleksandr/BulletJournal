@@ -1,17 +1,28 @@
 export type HabitLog = {
+  _id: string;
   date: number;
   percentageCompleted: number;
   amount?: number;
   amountTarget?: number;
   note?: string;
   isManuallyOptional?: boolean;
+  habitId: string;
+  // FE fields:
   isOptional?: boolean;
   isArtificial?: boolean;
 };
 
+export type CreateHabitLogRequest = Omit<HabitLog, "_id">;
+export type UpdateHabitLogRequest = Partial<HabitLog> &
+  Pick<HabitLog, "_id" | "habitId">;
+
+export type CreateHabitLogResponse = {
+  habitLog: HabitLog;
+};
+export type UpdateHabitLogResponse = CreateHabitLogResponse;
+
 export type Habit = {
   _id: string;
-  author: string;
   label: string;
   description?: string;
   amountTarget?: number | null;
@@ -51,18 +62,13 @@ export type HabitStreak = {
   numberOfDays: number;
 };
 
-export type FetchHabitsResponse = {
-  count: number;
-  habits: Habit[];
-};
-
 export type HabitsState = {
   byId: Record<string, Habit>;
   allIds: string[];
 };
 
 export type UpdateHabitRequest = Partial<Habit> &
-  Pick<Habit, "_id" | "author"> & {
+  Pick<Habit, "_id"> & {
     withDeepClone?: boolean;
   };
 
@@ -70,15 +76,13 @@ export type CreateHabitResponse = {
   habit: Habit;
 };
 
-export type CreateHabitRequest = Omit<Habit, "_id">;
+export type CreateHabitRequest = Omit<Habit, "_id" | "logs">;
 
 export type DeleteHabitRequest = {
   _id: string;
-  userId: string;
 };
 
 export type ReorderHabitsRequest = {
-  userId: string;
   habitIds: string[];
 };
 

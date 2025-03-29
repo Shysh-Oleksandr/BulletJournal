@@ -8,7 +8,6 @@ import {
   BG_GRADIENT_COLORS,
   BG_GRADIENT_LOCATIONS,
 } from "modules/app/constants";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -30,18 +29,16 @@ const ArchivedHabitsScreen = (): JSX.Element => {
 
   const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
-  const userId = useAuthStore((state) => state.userId);
   const { archivedHabits } = useArchivedHabits();
 
   const onUnarchive = useCallback(
     (_id: string) => {
       updateHabit({
         _id,
-        author: userId,
         isArchived: false,
       });
     },
-    [updateHabit, userId],
+    [updateHabit],
   );
 
   return (

@@ -1,22 +1,26 @@
 import { useMemo } from "react";
 
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
-
 import { calculateMandatoryHabitsByDate } from "../utils/calculateMandatoryHabitsByDate";
 
 import { useGetHabitsQuery } from "./habitsApi";
 
-export const useAllHabits = () => {
-  const userId = useAuthStore((state) => state.userId);
+// Create a single source of truth hook that other hooks will use
+export const useHabitsData = () => {
+  return useGetHabitsQuery();
+};
 
-  const { data, isLoading, isError } = useGetHabitsQuery(userId);
+export const useAllHabits = () => {
+  const { data, isLoading, isError } = useHabitsData();
 
   const allHabits = useMemo(
     () => data?.allIds.map((id) => data.byId[id]) || [],
     [data],
   );
 
-  return { allHabits, isLoading, isError };
+  return useMemo(
+    () => ({ allHabits, isLoading, isError }),
+    [allHabits, isLoading, isError],
+  );
 };
 
 export const useActiveHabits = () => {
@@ -27,7 +31,10 @@ export const useActiveHabits = () => {
     [allHabits],
   );
 
-  return { activeHabits, isLoading, isError };
+  return useMemo(
+    () => ({ activeHabits, isLoading, isError }),
+    [activeHabits, isLoading, isError],
+  );
 };
 
 export const useArchivedHabits = () => {
@@ -42,15 +49,16 @@ export const useArchivedHabits = () => {
 };
 
 export const useHabitById = (habitId: string) => {
-  const userId = useAuthStore((state) => state.userId);
+  const { data, isLoading, isError } = useHabitsData();
 
-  const { data, isLoading, isError } = useGetHabitsQuery(userId);
-
-  return {
-    habit: data!.byId[habitId],
-    isLoading,
-    isError,
-  };
+  return useMemo(
+    () => ({
+      habit: data?.byId[habitId],
+      isLoading,
+      isError,
+    }),
+    [data, habitId, isLoading, isError],
+  );
 };
 
 export const useHabitsBySelectedDate = (selectedDate: number) => {

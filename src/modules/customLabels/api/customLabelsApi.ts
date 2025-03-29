@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { newClient } from "store/api/client";
+import { client } from "store/api/client";
 
 import {
   CreateLabelRequest,
@@ -15,7 +15,7 @@ export const useLabelsQuery = (labelFor: LabelFor) => {
   return useQuery({
     queryKey: getLabelsQueryKey(labelFor),
     queryFn: async () => {
-      const { data } = await newClient.get<FetchLabelsResponse>(
+      const { data } = await client.get<FetchLabelsResponse>(
         `/custom-labels/user?labelFor=${labelFor}`,
       );
 
@@ -29,7 +29,7 @@ export const useCreateLabelMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateLabelRequest) =>
-      newClient.post<CreateLabelResponse>("/custom-labels", payload),
+      client.post<CreateLabelResponse>("/custom-labels", payload),
     onSuccess: (_, { labelFor }) => {
       queryClient.invalidateQueries({
         queryKey: getLabelsQueryKey(labelFor),
@@ -43,7 +43,7 @@ export const useUpdateLabelMutation = () => {
 
   return useMutation({
     mutationFn: ({ _id, ...data }: UpdateLabelRequest) =>
-      newClient.put(`/custom-labels/${_id}`, data),
+      client.put(`/custom-labels/${_id}`, data),
     onSuccess: (_, { labelFor }) => {
       queryClient.invalidateQueries({
         queryKey: getLabelsQueryKey(labelFor),
@@ -56,8 +56,7 @@ export const useDeleteLabelMutation = (labelFor: LabelFor) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (labelId: string) =>
-      newClient.delete(`/custom-labels/${labelId}`),
+    mutationFn: (labelId: string) => client.delete(`/custom-labels/${labelId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: getLabelsQueryKey(labelFor),

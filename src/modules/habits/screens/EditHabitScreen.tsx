@@ -12,7 +12,6 @@ import LeaveConfirmAlert from "components/LeaveConfirmAlert";
 import Typography from "components/Typography";
 import logging from "config/logging";
 import { CustomUserEvents } from "modules/app/types";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { RootStackParamList, Routes } from "modules/navigation/types";
 import ColorPicker from "modules/notes/components/noteForm/ColorPicker";
@@ -39,6 +38,8 @@ import {
 } from "../types";
 
 const MOCK_LOG: HabitLog = {
+  _id: "1",
+  habitId: "1",
   date: new Date().getTime(),
   percentageCompleted: 100,
 };
@@ -57,8 +58,6 @@ const EditHabitScreen: FC<{
 
   const { t } = useTranslation();
   const navigation = useAppNavigation();
-
-  const userId = useAuthStore((state) => state.userId);
 
   const { item: initialHabit, isNewHabit } = route.params;
 
@@ -94,7 +93,6 @@ const EditHabitScreen: FC<{
 
   const currentHabit: Habit = {
     ...initialHabit,
-    author: userId,
     label: currentLabel.trim(),
     color: currentColor,
     habitType: selectedType,
@@ -113,8 +111,6 @@ const EditHabitScreen: FC<{
     withAlert = true,
     shouldUpdateArchive = false,
   ) => {
-    if (!userId) return;
-
     setIsSaving(true);
 
     logUserEvent(
@@ -128,22 +124,30 @@ const EditHabitScreen: FC<{
     setSavedHabit(currentHabit);
 
     const createHabitData: CreateHabitRequest = {
-      ...currentHabit,
       label: currentHabit.label,
-      isArchived: shouldUpdateArchive
-        ? !currentHabit.isArchived
-        : currentHabit.isArchived,
+      color: currentHabit.color,
+      habitType: currentHabit.habitType,
+      streakTarget: currentHabit.streakTarget,
+      overallTarget: currentHabit.overallTarget,
+      frequency: currentHabit.frequency,
+      units: currentHabit.units,
+      amountTarget: currentHabit.amountTarget,
     };
-
-    const updateHabitData = createHabitData as UpdateHabitRequest;
-
-    delete updateHabitData.logs;
 
     try {
       if (isNewHabit) {
         await createHabit(createHabitData);
       } else {
-        await updateHabit({ ...updateHabitData, withDeepClone: true });
+        const updateHabitData: UpdateHabitRequest = {
+          _id: currentHabit._id,
+          ...createHabitData,
+          isArchived: shouldUpdateArchive
+            ? !currentHabit.isArchived
+            : currentHabit.isArchived,
+          withDeepClone: true,
+        };
+
+        await updateHabit(updateHabitData);
       }
 
       withAlert && navigation.goBack();
@@ -177,7 +181,7 @@ const EditHabitScreen: FC<{
       addCrashlyticsLog(`User tries to delete the habit ${_id}`);
       setIsDeleting(true);
 
-      deleteHabit({ _id, userId });
+      deleteHabit({ _id });
 
       navigation.pop(2);
 
@@ -194,7 +198,7 @@ const EditHabitScreen: FC<{
         setIsDeleting(false);
       }, 300);
     }
-  }, [deleteHabit, initialHabit, navigation, t, userId]);
+  }, [deleteHabit, initialHabit, navigation, t]);
 
   return (
     <>
