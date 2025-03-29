@@ -14,14 +14,12 @@ import {
   BG_GRADIENT_LOCATIONS,
   SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
-import { useAuthStore } from "modules/auth/hooks/useAuthStore";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
 import styled from "styled-components/native";
 
-import { habitsApi } from "../api/habitsApi";
-import { useHabitsBySelectedDate } from "../api/habitsSelectors";
+import { useHabitsBySelectedDate, useHabitsData } from "../api/habitsSelectors";
 import HabitItem from "../components/habitItem/HabitItem";
 import HabitsProgressBar from "../components/habitsHeader/HabitsProgressBar";
 import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
@@ -39,9 +37,7 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const userId = useAuthStore((state) => state.userId);
-
-  const { isLoading, refetch } = habitsApi.useGetHabitsQuery(userId);
+  const { isLoading, refetch } = useHabitsData();
 
   const [isManualRefresh, setIsManualRefresh] = useState(false);
 
