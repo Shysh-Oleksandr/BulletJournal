@@ -7,6 +7,7 @@ import {
   CreateHabitResponse,
   DeleteHabitRequest,
   Habit,
+  HabitLog,
   HabitsState,
   ReorderHabitsRequest,
   UpdateHabitLogRequest,
@@ -184,7 +185,7 @@ export const useUpdateHabitLogMutation = () => {
         queryKey: habitsQueryKey,
       });
 
-      const previousLogs =
+      const previousHabits =
         queryClient.getQueryData<HabitsState>(habitsQueryKey);
 
       queryClient.setQueryData(
@@ -192,29 +193,32 @@ export const useUpdateHabitLogMutation = () => {
         (oldData: HabitsState | undefined) => {
           if (!oldData) return oldData;
 
-          const newHabits = { ...oldData };
+          const newHabits = {
+            ...oldData,
+            byId: { ...oldData.byId },
+          };
+
           const habitToChange = newHabits.byId[updatedLog.habitId];
 
           if (habitToChange) {
-            const log = habitToChange.logs.find(
-              (log) => log._id === updatedLog._id,
-            );
-
-            if (log) {
-              Object.assign(log, updatedLog);
-            }
+            newHabits.byId[updatedLog.habitId] = {
+              ...habitToChange,
+              logs: habitToChange.logs.map((log) =>
+                log._id === updatedLog._id ? { ...log, ...updatedLog } : log,
+              ),
+            };
           }
 
           return newHabits;
         },
       );
 
-      return { previousLogs };
+      return { previousHabits };
     },
 
     onError: (_err, _, context) => {
-      if (context?.previousLogs) {
-        queryClient.setQueryData(habitsQueryKey, context.previousLogs);
+      if (context?.previousHabits) {
+        queryClient.setQueryData(habitsQueryKey, context.previousHabits);
       }
     },
 
@@ -231,43 +235,77 @@ export const useCreateHabitLogMutation = () => {
 
   return useMutation({
     mutationFn: (payload: CreateHabitLogRequest) =>
-      client.post("/habit-logs", payload),
+      client.post<{ habitLog: HabitLog }>("/habit-logs", payload),
 
     onMutate: async (newLog) => {
       await queryClient.cancelQueries({
         queryKey: habitsQueryKey,
       });
 
-      const previousLogs =
+      const previousHabits =
         queryClient.getQueryData<HabitsState>(habitsQueryKey);
+      const tempId = `temp-${Date.now()}`;
 
       queryClient.setQueryData(
         habitsQueryKey,
         (oldData: HabitsState | undefined) => {
           if (!oldData) return oldData;
 
-          const newHabits = { ...oldData };
+          const newHabits = {
+            ...oldData,
+            byId: { ...oldData.byId },
+          };
+
           const habitToChange = newHabits.byId[newLog.habitId];
 
           if (habitToChange) {
-            const tempId = `temp-${Date.now()}`;
-
-            habitToChange.logs.push({
-              ...newLog,
-              _id: tempId,
-            });
+            newHabits.byId[newLog.habitId] = {
+              ...habitToChange,
+              logs: [...habitToChange.logs, { ...newLog, _id: tempId }],
+            };
           }
 
           return newHabits;
         },
       );
 
-      return { previousLogs };
+      return { previousHabits, tempId };
+    },
+
+    onSuccess: (response, variables, context) => {
+      if (!context) return;
+
+      queryClient.setQueryData(
+        habitsQueryKey,
+        (oldData: HabitsState | undefined) => {
+          if (!oldData) return oldData;
+
+          const newHabits = {
+            ...oldData,
+            byId: { ...oldData.byId },
+          };
+
+          const habitToChange = newHabits.byId[variables.habitId];
+
+          if (habitToChange) {
+            newHabits.byId[variables.habitId] = {
+              ...habitToChange,
+              logs: habitToChange.logs.map((log) =>
+                log._id === context.tempId
+                  ? { ...log, _id: response.data.habitLog._id }
+                  : log,
+              ),
+            };
+          }
+
+          return newHabits;
+        },
+      );
     },
 
     onError: (_err, _, context) => {
-      if (context?.previousLogs) {
-        queryClient.setQueryData(habitsQueryKey, context.previousLogs);
+      if (context?.previousHabits) {
+        queryClient.setQueryData(habitsQueryKey, context.previousHabits);
       }
     },
 

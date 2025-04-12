@@ -16,7 +16,10 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 
   const currentLog = useMemo(
-    () => habit.logs.find((log) => isSameDay(log.date, selectedDate)),
+    () =>
+      habit.logs.find(
+        (log) => !log.isArtificial && isSameDay(log.date, selectedDate),
+      ),
     [habit.logs, selectedDate],
   );
 
@@ -25,6 +28,8 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
   const [inputValue, setInputValue] = useState(initialLogValue);
 
   const updateLog = useCallback(() => {
+    if (currentLog?._id.includes("temp")) return;
+
     if (inputValue.trim().length === 0) {
       setInputValue(initialLogValue);
 
