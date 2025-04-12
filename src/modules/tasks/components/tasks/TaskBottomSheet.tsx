@@ -27,12 +27,14 @@ import TaskItemInput from "../common/TaskItemInput";
 
 import TaskTypeSelector from "./TaskTypeSelector";
 
-type Props = {
+export type TaskBottomSheetProps = {
   groupId?: string;
   parentTaskId?: string;
   task?: TaskItem;
   content?: (closeModal: () => void) => JSX.Element;
   defaultDueDate?: number;
+  defaultColor?: string;
+  defaultCustomLabels?: string[];
   openByDefault?: boolean;
   depth?: number;
   onClose?: () => void;
@@ -45,11 +47,13 @@ const TaskBottomSheet = ({
   task,
   content,
   defaultDueDate,
+  defaultColor,
+  defaultCustomLabels,
   openByDefault,
   depth = 0,
   onClose,
   children,
-}: Props): JSX.Element => {
+}: TaskBottomSheetProps): JSX.Element => {
   const { t } = useTranslation();
 
   const { mutate: createTask } = tasksApi.useCreateTaskMutation();
@@ -63,7 +67,7 @@ const TaskBottomSheet = ({
   const defaultValues = useMemo(
     () => ({
       name: task?.name ?? "",
-      color: task?.color ?? theme.colors.cyan700,
+      color: task?.color ?? defaultColor ?? theme.colors.cyan700,
       dueDate: task?.dueDate ?? defaultDueDate ?? null,
       selectedType: task?.type ?? TaskTypes.CHECK,
       currentTarget: task?.target ?? 100,
@@ -76,9 +80,19 @@ const TaskBottomSheet = ({
         groupId: task?.groupId ?? groupId ?? null,
         parentTaskId: task?.parentTaskId ?? parentTaskId ?? null,
       },
-      currentLabelsIds: task?.customLabels?.map((label) => label._id) ?? [],
+      currentLabelsIds:
+        task?.customLabels?.map((label) => label._id) ??
+        defaultCustomLabels ??
+        [],
     }),
-    [task, defaultDueDate, groupId, parentTaskId],
+    [
+      task,
+      defaultDueDate,
+      groupId,
+      parentTaskId,
+      defaultColor,
+      defaultCustomLabels,
+    ],
   );
 
   const [formValues, setFormValues] = useState(defaultValues);
