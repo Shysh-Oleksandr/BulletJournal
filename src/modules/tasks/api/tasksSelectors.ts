@@ -1,7 +1,9 @@
 import { isWithinInterval } from "date-fns";
 import { useCallback, useMemo } from "react";
 
-import { GroupItem, TaskItem } from "../types";
+import { useCustomLabels } from "modules/customLabels/api/customLabelsSelectors";
+
+import { GroupItem, LabelWithTasks, TaskItem } from "../types";
 import { calculateTasksCountInfo } from "../utils/calculateTasksCountInfo";
 
 import { useGroups, useTasks } from "./tasksApi";
@@ -245,4 +247,40 @@ export const useTasksWithinPeriod = (startDate: number, endDate: number) => {
   );
 
   return { tasks, isLoading, isError };
+};
+
+export const useLabelsWithTasks = (): LabelWithTasks[] => {
+  const { labels } = useCustomLabels("Task");
+
+  const { allTasks } = useAllTasks();
+
+  const labelsWithTasks = useMemo(() => {
+    const labelsWithTasks: LabelWithTasks[] = [];
+
+    labels.forEach((label) => {
+      let activeTasksAmount = 0;
+      const tasks: TaskItem[] = [];
+
+      allTasks.forEach((task) => {
+        if (task.customLabels?.some((l) => l._id === label._id)) {
+          tasks.push(task);
+          if (!task.isArchived && !task.isCompleted) {
+            activeTasksAmount++;
+          }
+        }
+      });
+
+      labelsWithTasks.push({
+        _id: label._id,
+        labelName: label.labelName,
+        color: label.color,
+        tasks,
+        activeTasksAmount,
+      });
+    });
+
+    return labelsWithTasks;
+  }, [allTasks, labels]);
+
+  return labelsWithTasks;
 };

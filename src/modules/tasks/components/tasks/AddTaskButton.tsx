@@ -3,18 +3,20 @@ import { useTranslation } from "react-i18next";
 
 import AddItemButton from "../common/AddItemButton";
 
-import TaskBottomSheet from "./TaskBottomSheet";
+import TaskBottomSheet, { TaskBottomSheetProps } from "./TaskBottomSheet";
 
 type Props = {
   groupId?: string;
   parentTaskId?: string;
-  defaultDueDate?: number;
-};
+} & Pick<
+  TaskBottomSheetProps,
+  "defaultDueDate" | "defaultColor" | "defaultCustomLabels"
+>;
 
 const AddTaskButton = ({
   groupId,
   parentTaskId,
-  defaultDueDate,
+  ...taskBottomSheetProps
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
@@ -22,7 +24,7 @@ const AddTaskButton = ({
     <TaskBottomSheet
       parentTaskId={parentTaskId}
       groupId={groupId}
-      defaultDueDate={defaultDueDate}
+      {...taskBottomSheetProps}
     >
       {(openModal) => (
         <AddItemButton

@@ -9,6 +9,7 @@ import { PERIODS_DATA } from "modules/tasks/data";
 import { TaskItem } from "modules/tasks/types";
 import styled from "styled-components/native";
 
+import CategorizedTasksByLabels from "./CategorizedTasksByLabels";
 import CategorizedTasksByPeriodListItem from "./CategorizedTasksByPeriodListItem";
 import CategorizedTasksListItem from "./CategorizedTasksListItem";
 
@@ -56,6 +57,7 @@ const CategorizedTasksSection = (): JSX.Element => {
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
     >
+      <CategorizedTasksByLabels />
       {allTasks.length > 0 ? (
         <CategoryContainer>
           {PERIODS_DATA.map((period) => (

@@ -66,3 +66,11 @@ export type UpdateTaskRequest = Partial<CreateTaskRequest> &
   Pick<TaskItem, "_id">;
 
 export type DeleteTaskRequest = Pick<TaskItem, "_id">;
+
+export type LabelWithTasks = {
+  _id: string;
+  labelName: string;
+  color: string;
+  tasks: TaskItem[];
+  activeTasksAmount: number;
+};

@@ -30,6 +30,7 @@ export type BottomModalProps = {
   setCloseTriggered?: (value: boolean) => void;
   withDividerBelowHeader?: boolean;
   gradientColors?: string[];
+  titleColor?: string;
 };
 
 const BottomModal = ({
@@ -47,6 +48,7 @@ const BottomModal = ({
   withHeader = true,
   withDividerBelowHeader = true,
   gradientColors,
+  titleColor = theme.colors.darkBlueText,
   onClose,
   setCloseTriggered,
   setIsVisible,
@@ -107,6 +109,7 @@ const BottomModal = ({
                 align="center"
                 fontWeight="bold"
                 lineHeight={27}
+                color={titleColor}
               >
                 {title}
               </Typography>
