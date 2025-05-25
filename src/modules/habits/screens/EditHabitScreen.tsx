@@ -1,6 +1,7 @@
 import isEqual from "lodash.isequal";
 import React, { FC, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator } from "react-native";
 import Toast from "react-native-toast-message";
 import theme from "theme";
 
@@ -23,7 +24,7 @@ import { addCrashlyticsLog } from "utils/addCrashlyticsLog";
 import { alertError } from "utils/alertMessages";
 import { logUserEvent } from "utils/logUserEvent";
 
-import { habitsApi } from "../api/habitsApi";
+import { habitsApi, useGetHabitQuery } from "../api/habitsApi";
 import HabitFrequencySelector from "../components/habitForm/HabitFrequencySelector";
 import HabitTargetSelector from "../components/habitForm/HabitTargetSelector";
 import HabitTypeSelector from "../components/habitForm/HabitTypeSelector";
@@ -59,7 +60,13 @@ const EditHabitScreen: FC<{
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const { item: initialHabit, isNewHabit } = route.params;
+  const { id, color = theme.colors.cyan600 } = route.params ?? {};
+
+  const { data: initialHabit = EMPTY_HABIT, isLoading } = useGetHabitQuery(
+    id ?? "",
+  );
+
+  const isNewHabit = !id;
 
   const [currentLabel, setCurrentLabel] = useState(initialHabit.label);
 
@@ -200,6 +207,28 @@ const EditHabitScreen: FC<{
     }
   }, [deleteHabit, initialHabit, navigation, t]);
 
+  if (isLoading) {
+    return (
+      <>
+        <HeaderBar
+          title={isNewHabit ? t("habits.createHabit") : t("habits.editHabit")}
+          withBackArrow
+          bgColor={color}
+        />
+        <SScrollView
+          contentContainerStyle={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* TODO: add skeleton */}
+          <ActivityIndicator size="large" color={color} />
+        </SScrollView>
+      </>
+    );
+  }
+
   return (
     <>
       <HeaderBar
@@ -211,10 +240,7 @@ const EditHabitScreen: FC<{
                 <AddItemButton
                   textColor={textColor}
                   onPress={() => {
-                    navigation.replace(Routes.EDIT_HABIT, {
-                      item: EMPTY_HABIT,
-                      isNewHabit: true,
-                    });
+                    navigation.replace(Routes.EDIT_HABIT);
                   }}
                 />
               )

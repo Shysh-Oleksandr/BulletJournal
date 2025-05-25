@@ -178,6 +178,8 @@
     "labelCreated": "L'étiquette a été créée",
     "labelDeleted": "L'étiquette a été supprimée",
     "enterNewLabel": "Entrez une nouvelle étiquette",
+    "hideAll": "Masquer tout",
+    "showAll": "Afficher tout",
     "categories": {
       "overdue": "En retard",
       "today": "Aujourd'hui",

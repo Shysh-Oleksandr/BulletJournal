@@ -7,19 +7,9 @@ export type HabitLog = {
   note?: string;
   isManuallyOptional?: boolean;
   habitId: string;
-  // FE fields:
-  isOptional?: boolean;
-  isArtificial?: boolean;
 };
 
 export type CreateHabitLogRequest = Omit<HabitLog, "_id">;
-export type UpdateHabitLogRequest = Partial<HabitLog> &
-  Pick<HabitLog, "_id" | "habitId">;
-
-export type CreateHabitLogResponse = {
-  habitLog: HabitLog;
-};
-export type UpdateHabitLogResponse = CreateHabitLogResponse;
 
 export type Habit = {
   _id: string;
@@ -32,11 +22,33 @@ export type Habit = {
   frequency: HabitFrequency;
   habitType: HabitTypes;
   color: string;
-  logs: HabitLog[];
   isArchived?: boolean;
   order?: number;
-  // Custom FE fields
-  oldestLogDate?: number;
+  featuredLogs: HabitLog[]; // Logs for the selected date range
+  cachedMetrics: HabitMetrics;
+};
+
+export type HabitCalendarDataItem = {
+  date: string;
+  isOptional: boolean;
+  streakState: {
+    displayRightLine: boolean;
+    displayLeftLine: boolean;
+  };
+  percentageCompleted: number;
+  amount?: number;
+  note?: string;
+  isManuallyOptional?: boolean;
+};
+
+export type HabitMetrics = {
+  currentStreak: number;
+  longestStreak: number;
+  overallCompletions: number;
+  oldestLogDate: number;
+  firstCompletedLogDate: number;
+  bestStreaks?: HabitStreak[];
+  calendarData?: Record<string, HabitCalendarDataItem>;
 };
 
 export type HabitFrequency = {
@@ -56,15 +68,10 @@ export enum HabitTypes {
 }
 
 export type HabitStreak = {
-  startDate: Date;
-  endDate: Date;
-  lastOptionalLogDate: Date;
-  numberOfDays: number;
-};
-
-export type HabitsState = {
-  byId: Record<string, Habit>;
-  allIds: string[];
+  startDate: string;
+  endDate: string;
+  numberOfLogs: number;
+  _id: string;
 };
 
 export type UpdateHabitRequest = Partial<Habit> &
@@ -76,7 +83,10 @@ export type CreateHabitResponse = {
   habit: Habit;
 };
 
-export type CreateHabitRequest = Omit<Habit, "_id" | "logs">;
+export type CreateHabitRequest = Omit<
+  Habit,
+  "_id" | "featuredLogs" | "cachedMetrics"
+>;
 
 export type DeleteHabitRequest = {
   _id: string;

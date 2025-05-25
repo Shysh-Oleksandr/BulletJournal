@@ -178,6 +178,8 @@
     "labelCreated": "Das Label wurde erstellt",
     "labelDeleted": "Das Label wurde gelöscht",
     "enterNewLabel": "Neues Label eingeben",
+    "hideAll": "Alle ausblenden",
+    "showAll": "Alle anzeigen",
     "categories": {
       "overdue": "Überfällig",
       "today": "Heute",

@@ -2,33 +2,34 @@ import { isSameDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { habitsApi } from "../api/habitsApi";
-import { Habit, HabitTypes } from "../types";
+import { Habit, HabitLog, HabitTypes } from "../types";
 
 type Props = {
   habit: Habit;
   selectedDate: number;
+  currentLog?: HabitLog;
 };
 
-export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
-  const { mutate: updateHabitLog } = habitsApi.useUpdateHabitLogMutation();
-  const { mutate: createHabitLog } = habitsApi.useCreateHabitLogMutation();
+export const useUpdateHabitLog = ({
+  habit,
+  selectedDate,
+  currentLog,
+}: Props) => {
+  const { mutate: createOrUpdateHabitLog } =
+    habitsApi.useCreateOrUpdateHabitLogMutation();
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
 
-  const currentLog = useMemo(
-    () =>
-      habit.logs.find(
-        (log) => !log.isArtificial && isSameDay(log.date, selectedDate),
-      ),
-    [habit.logs, selectedDate],
-  );
+  const relevantLog =
+    currentLog ??
+    habit.featuredLogs.find((log) => isSameDay(log.date, selectedDate));
 
-  const initialLogValue = currentLog?.amount?.toString() ?? "0";
+  const initialLogValue = relevantLog?.amount?.toString() ?? "0";
 
   const [inputValue, setInputValue] = useState(initialLogValue);
 
   const updateLog = useCallback(() => {
-    if (currentLog?._id.includes("temp")) return;
+    if (relevantLog?._id.includes("temp")) return;
 
     if (inputValue.trim().length === 0) {
       setInputValue(initialLogValue);
@@ -44,7 +45,7 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
       return;
     }
 
-    const isSameValue = !isCheckHabitType && value === currentLog?.amount;
+    const isSameValue = !isCheckHabitType && value === relevantLog?.amount;
 
     if (isSameValue) return;
 
@@ -52,41 +53,28 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
       ? Math.round((value / habit.amountTarget) * 100)
       : 0;
 
-    if (currentLog?._id) {
-      const checkedPercentageCompleted =
-        currentLog.percentageCompleted === 100 ? 0 : 100;
+    const checkedPercentageCompleted =
+      relevantLog?.percentageCompleted === 100 ? 0 : 100;
+    const percentageCompleted = isCheckHabitType
+      ? checkedPercentageCompleted
+      : amountPercentageCompleted;
 
-      const percentageCompleted = isCheckHabitType
-        ? checkedPercentageCompleted
-        : amountPercentageCompleted;
-
-      updateHabitLog({
-        ...currentLog,
-        date: selectedDate,
-        percentageCompleted,
-        amount: isCheckHabitType ? checkedPercentageCompleted / 100 : value,
-        amountTarget: habit.amountTarget ?? 1,
-        isArtificial: false,
-      });
-    } else {
-      createHabitLog({
-        date: selectedDate,
-        percentageCompleted: isCheckHabitType ? 100 : amountPercentageCompleted,
-        amount: isCheckHabitType ? 1 : value,
-        amountTarget: habit.amountTarget ?? 1,
-        habitId: habit._id,
-      });
-    }
+    createOrUpdateHabitLog({
+      date: selectedDate,
+      percentageCompleted,
+      amount: isCheckHabitType ? percentageCompleted / 100 : value,
+      amountTarget: habit.amountTarget ?? 1,
+      habitId: habit._id,
+    });
   }, [
     inputValue,
     isCheckHabitType,
-    currentLog,
+    relevantLog,
     habit.amountTarget,
     habit._id,
     initialLogValue,
-    updateHabitLog,
+    createOrUpdateHabitLog,
     selectedDate,
-    createHabitLog,
   ]);
 
   const onChange = useCallback((text: string) => {
@@ -106,7 +94,7 @@ export const useUpdateHabitLog = ({ habit, selectedDate }: Props) => {
   }, [initialLogValue]);
 
   return useMemo(
-    () => ({ inputValue, updateLog, onChange, currentLog }),
-    [currentLog, inputValue, onChange, updateLog],
+    () => ({ inputValue, updateLog, onChange, currentLog: relevantLog }),
+    [relevantLog, inputValue, onChange, updateLog],
   );
 };

@@ -1,25 +1,11 @@
 import { useMemo, useState } from "react";
 
-import { HabitLog } from "../types";
-
 const currentYear = new Date().getUTCFullYear();
 
-export const useHabitsSelectedYear = (habitLogs: HabitLog[]) => {
-  const oldestHabitLogYear = useMemo(() => {
-    const logs = habitLogs.filter(
-      (log) => log.amount && log.amount > 0 && !log.isArtificial,
-    );
-
-    if (logs.length === 0) return currentYear;
-
-    const oldestHabitLog = logs.reduce((prev, next) => {
-      if (prev.date < next.date) return prev;
-
-      return next;
-    });
-
-    return new Date(oldestHabitLog.date).getUTCFullYear();
-  }, [habitLogs]);
+export const useHabitsSelectedYear = (oldestHabitLog: number) => {
+  const oldestHabitLogYear = oldestHabitLog
+    ? new Date(oldestHabitLog).getUTCFullYear()
+    : currentYear;
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
 

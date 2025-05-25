@@ -20,13 +20,18 @@ import { hexToRGB } from "utils/hexToRGB";
 const { width: screenWidth } = Dimensions.get("window");
 
 const CHART_HEIGHT = 230;
+const habitLogs: HabitLog[] = [];
 
 type Props = {
-  habitLogs: HabitLog[];
+  oldestHabitLog: number;
   color?: string;
 };
 
-const HabitMonthlyBarChart = ({ habitLogs, color }: Props): JSX.Element => {
+// TODO: calculate monthly amounts per year on BE
+const HabitMonthlyBarChart = ({
+  oldestHabitLog,
+  color,
+}: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const chartConfig = useHabitChartConfig(color);
@@ -39,7 +44,7 @@ const HabitMonthlyBarChart = ({ habitLogs, color }: Props): JSX.Element => {
     isNextYearDisabled,
     onPrevArrowPress,
     onNextArrowPress,
-  } = useHabitsSelectedYear(habitLogs);
+  } = useHabitsSelectedYear(oldestHabitLog);
 
   const data: ChartData = useMemo(() => {
     return {
@@ -51,7 +56,7 @@ const HabitMonthlyBarChart = ({ habitLogs, color }: Props): JSX.Element => {
         },
       ],
     };
-  }, [habitLogs, selectedYear]);
+  }, [selectedYear]);
 
   return (
     <Container>
