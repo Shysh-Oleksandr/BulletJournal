@@ -52,17 +52,11 @@ const HabitBody = ({
     habit.color,
   );
 
-  const { bgColor: completedBgColor, optionalBgColor } = useHabitStatColors(
-    habit.color,
-  );
+  const { optionalBgColor } = useHabitStatColors(habit.color);
 
   const hasAdditionalInfo = currentLog?.isManuallyOptional || currentLog?.note;
 
-  const indicatorBgColor = isCompleted
-    ? optionalBgColor
-    : currentLog?.isOptional
-      ? completedBgColor
-      : theme.colors.cyan500;
+  const indicatorBgColor = isCompleted ? optionalBgColor : theme.colors.cyan500;
 
   const onCardPress = useCallback(() => {
     if (isCheckHabitType) {
@@ -75,7 +69,11 @@ const HabitBody = ({
   }, [isCheckHabitType, updateLog]);
 
   const onDetailsPress = useCallback(() => {
-    navigation.navigate(Routes.HABIT_STATS, { id: habit._id });
+    navigation.navigate(Routes.HABIT_STATS, {
+      id: habit._id,
+      color: habit.color,
+      label: habit.label,
+    });
   }, [navigation, habit]);
 
   return (

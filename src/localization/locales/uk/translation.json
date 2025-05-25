@@ -180,6 +180,8 @@
     "labelCreated": "Мітку створено",
     "labelDeleted": "Мітку видалено",
     "enterNewLabel": "Введіть нову мітку",
+    "hideAll": "Приховати всі",
+    "showAll": "Показати всі",
     "categories": {
       "overdue": "Прострочені",
       "today": "Сьогодні",

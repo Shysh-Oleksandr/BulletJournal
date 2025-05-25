@@ -5,7 +5,8 @@ import { Theme } from "react-native-calendars/src/types";
 export const SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
 
 export const getCalendarTheme = (color?: string): Theme => ({
-  arrowColor: color ?? theme.colors.cyan600,
+  arrowColor: color ?? theme.colors.red500,
+  disabledArrowColor: theme.colors.gray,
   monthTextColor: color ?? theme.colors.darkBlueText,
   textMonthFontWeight: "bold",
   todayTextColor: color ?? theme.colors.darkBlueText,

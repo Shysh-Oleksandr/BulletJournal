@@ -1,6 +1,6 @@
-import { isSameDay } from "date-fns";
+import { endOfWeek, format, isSameDay, startOfWeek } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, RefreshControl } from "react-native";
 import theme from "theme";
@@ -14,17 +14,17 @@ import {
   BG_GRADIENT_LOCATIONS,
   SMALL_BUTTON_HIT_SLOP,
 } from "modules/app/constants";
+import { SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
 import styled from "styled-components/native";
 
-import { useHabitsBySelectedDate, useHabitsData } from "../api/habitsSelectors";
+import { useGetHabitsSummaryQuery } from "../api/habitsApi";
 import HabitItem from "../components/habitItem/HabitItem";
 import HabitsProgressBar from "../components/habitsHeader/HabitsProgressBar";
 import HabitsWeekCalendar from "../components/habitsHeader/HabitsWeekCalendar";
 import HabitLogInfoModal from "../components/habitStats/HabitLogInfoModal";
-import { EMPTY_HABIT } from "../data";
 import { Habit } from "../types";
 
 const contentContainerStyle = {
@@ -37,8 +37,6 @@ const HabitsScreen = (): JSX.Element => {
   const { t } = useTranslation();
   const navigation = useAppNavigation();
 
-  const { isLoading, refetch } = useHabitsData();
-
   const [isManualRefresh, setIsManualRefresh] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
@@ -47,19 +45,21 @@ const HabitsScreen = (): JSX.Element => {
   );
 
   const {
-    habits: { mandatoryHabits, optionalHabits },
-  } = useHabitsBySelectedDate(selectedDate);
-
-  const isTodaySelected = useMemo(
-    () => isSameDay(selectedDate, new Date()),
-    [selectedDate],
+    data: activeHabits = [],
+    isLoading,
+    refetch,
+  } = useGetHabitsSummaryQuery(
+    format(startOfWeek(selectedDate, { weekStartsOn: 1 }), SIMPLE_DATE_FORMAT),
+    format(endOfWeek(selectedDate, { weekStartsOn: 1 }), SIMPLE_DATE_FORMAT),
   );
 
+  // const isTodaySelected = useMemo(
+  //   () => isSameDay(selectedDate, new Date()),
+  //   [selectedDate],
+  // );
+
   const navigateToCreateHabitScreen = useCallback(() => {
-    navigation.navigate(Routes.EDIT_HABIT, {
-      item: EMPTY_HABIT,
-      isNewHabit: true,
-    });
+    navigation.navigate(Routes.EDIT_HABIT);
   }, [navigation]);
 
   const handleManualRefresh = async () => {
@@ -90,54 +90,60 @@ const HabitsScreen = (): JSX.Element => {
         )}
       />
       <HabitsProgressBar
-        mandatoryHabits={mandatoryHabits}
         selectedDate={selectedDate}
+        mandatoryHabits={activeHabits}
       />
       <AddButton contentItem={ContentItem.HABIT} />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
         colors={BG_GRADIENT_COLORS}
       >
-        {isLoading ? (
-          <LoaderContainer>
-            <ActivityIndicator size="large" color={theme.colors.cyan600} />
-          </LoaderContainer>
-        ) : (
-          <Container
-            contentContainerStyle={contentContainerStyle}
-            showsVerticalScrollIndicator={false}
-            overScrollMode="never"
-            bounces={false}
-            automaticallyAdjustKeyboardInsets
-            refreshControl={
-              <RefreshControl
-                colors={[theme.colors.cyan600]}
-                refreshing={isManualRefresh}
-                onRefresh={handleManualRefresh}
-              />
-            }
-          >
-            <HabitsWeekCalendar
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
+        <Container
+          contentContainerStyle={contentContainerStyle}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+          bounces={false}
+          automaticallyAdjustKeyboardInsets
+          refreshControl={
+            <RefreshControl
+              colors={[theme.colors.cyan600]}
+              refreshing={isManualRefresh}
+              onRefresh={handleManualRefresh}
             />
+          }
+        >
+          <HabitsWeekCalendar
+            activeHabits={activeHabits}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
+          {additionalInfoHabit && (
             <HabitLogInfoModal
               habit={additionalInfoHabit}
-              selectedLogTimestamp={selectedDate}
+              selectedLog={
+                additionalInfoHabit.featuredLogs.find((log) =>
+                  isSameDay(log.date, selectedDate),
+                ) || null
+              }
               onClose={() => setAdditionalInfoHabit(null)}
             />
+          )}
 
-            {mandatoryHabits.length > 0 || optionalHabits.length > 0 ? (
-              <>
-                {mandatoryHabits.map((habit) => (
-                  <HabitItem
-                    key={habit._id}
-                    habit={habit}
-                    selectedDate={selectedDate}
-                    onLongPress={() => setAdditionalInfoHabit(habit)}
-                  />
-                ))}
-                {optionalHabits.length > 0 && (
+          {isLoading ? (
+            <LoaderContainer>
+              <ActivityIndicator size="large" color={theme.colors.cyan600} />
+            </LoaderContainer>
+          ) : activeHabits.length > 0 ? (
+            <>
+              {activeHabits.map((habit) => (
+                <HabitItem
+                  key={habit._id}
+                  habit={habit}
+                  selectedDate={selectedDate}
+                  onLongPress={() => setAdditionalInfoHabit(habit)}
+                />
+              ))}
+              {/* {optionalHabits.length > 0 && (
                   <Typography
                     fontWeight="semibold"
                     fontSize="lg"
@@ -158,24 +164,23 @@ const HabitsScreen = (): JSX.Element => {
                     selectedDate={selectedDate}
                     onLongPress={() => setAdditionalInfoHabit(habit)}
                   />
-                ))}
-              </>
-            ) : (
-              <EmptyContainer>
-                <Typography fontWeight="semibold" fontSize="lg">
-                  {t("habits.noHabitsText")}
-                </Typography>
-                <Button
-                  label={t("habits.addHabit")}
-                  marginTop={10}
-                  labelProps={{ fontSize: "xl", fontWeight: "bold" }}
-                  onPress={navigateToCreateHabitScreen}
-                  bgColor={theme.colors.cyan600}
-                />
-              </EmptyContainer>
-            )}
-          </Container>
-        )}
+                ))} */}
+            </>
+          ) : (
+            <EmptyContainer>
+              <Typography fontWeight="semibold" fontSize="lg">
+                {t("habits.noHabitsText")}
+              </Typography>
+              <Button
+                label={t("habits.addHabit")}
+                marginTop={10}
+                labelProps={{ fontSize: "xl", fontWeight: "bold" }}
+                onPress={navigateToCreateHabitScreen}
+                bgColor={theme.colors.cyan600}
+              />
+            </EmptyContainer>
+          )}
+        </Container>
       </SLinearGradient>
     </>
   );

@@ -5,7 +5,6 @@ import theme from "theme";
 import { Entypo } from "@expo/vector-icons";
 import { useGetCustomColor } from "hooks/useGetCustomColor";
 import { CustomUserEvents } from "modules/app/types";
-import { EMPTY_HABIT } from "modules/habits/data";
 import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
@@ -64,10 +63,7 @@ const AddButton = ({
         break;
 
       case ContentItem.HABIT:
-        navigation.navigate(Routes.EDIT_HABIT, {
-          item: EMPTY_HABIT,
-          isNewHabit: true,
-        });
+        navigation.navigate(Routes.EDIT_HABIT);
         break;
 
       default:

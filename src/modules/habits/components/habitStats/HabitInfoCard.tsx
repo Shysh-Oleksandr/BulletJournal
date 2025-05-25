@@ -5,39 +5,35 @@ import theme from "theme";
 
 import { useCalculateHabitAverageByPeriod } from "modules/habits/hooks/useCalculateHabitAverageByPeriod";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
-import { Habit, HabitPeriods, HabitStreak } from "modules/habits/types";
-import { getHabitStreakInfo } from "modules/habits/utils/calculateHabitBestStreaks";
+import { Habit, HabitPeriods } from "modules/habits/types";
 import styled from "styled-components/native";
 
 import HabitStatItem from "./HabitStatItem";
 
 type Props = {
   habit: Habit;
-  bestStreaksData: HabitStreak[];
 };
 
-const HabitInfoCard = ({ habit, bestStreaksData }: Props): JSX.Element => {
+const HabitInfoCard = ({ habit }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const { textColor, bgColor, secondaryTextColor } = useHabitStatColors(
     habit.color,
   );
 
-  const { currentStreak, longestStreak, overallCompleted } = useMemo(
-    () => getHabitStreakInfo(habit.logs, bestStreaksData),
-    [bestStreaksData, habit.logs],
-  );
+  const { currentStreak, longestStreak, overallCompletions, oldestLogDate } =
+    habit.cachedMetrics;
 
   const weeklyAverage = useCalculateHabitAverageByPeriod(
-    habit.logs,
-    overallCompleted,
+    oldestLogDate,
+    overallCompletions,
     habit.frequency.period,
   );
 
   const habitStatItems = useMemo(
     () => [
       {
-        amount: `${overallCompleted}/${habit.overallTarget}`,
+        amount: `${overallCompletions}/${habit.overallTarget}`,
         label: t("habits.completedStat"),
       },
       {
@@ -58,7 +54,7 @@ const HabitInfoCard = ({ habit, bestStreaksData }: Props): JSX.Element => {
       },
     ],
     [
-      overallCompleted,
+      overallCompletions,
       currentStreak,
       habit.frequency.days,
       habit.frequency.period,

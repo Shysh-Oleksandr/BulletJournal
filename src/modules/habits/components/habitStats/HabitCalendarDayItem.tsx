@@ -8,7 +8,7 @@ import Typography from "components/Typography";
 import { SMALL_BUTTON_HIT_SLOP } from "modules/app/constants";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { useUpdateHabitLog } from "modules/habits/hooks/useUpdateHabitLog";
-import { Habit, HabitTypes } from "modules/habits/types";
+import { Habit, HabitCalendarDataItem, HabitTypes } from "modules/habits/types";
 import styled from "styled-components/native";
 import { noop } from "utils/utilityFunctions";
 
@@ -21,10 +21,7 @@ type Props = {
   day: number;
   timestamp: number;
   isDisabled: boolean;
-  streakState?: {
-    displayRightLine: boolean;
-    displayLeftLine: boolean;
-  };
+  calendarData: HabitCalendarDataItem;
   onLongPress?: () => void;
 };
 
@@ -33,7 +30,7 @@ const HabitCalendarDayItem = ({
   day,
   timestamp,
   isDisabled,
-  streakState,
+  calendarData,
   onLongPress,
 }: Props): JSX.Element => {
   const { width: screenWidth } = useWindowDimensions();
@@ -43,13 +40,19 @@ const HabitCalendarDayItem = ({
   const inputRef = useRef<TextInput | null>(null);
 
   const isCheckHabitType = habit.habitType === HabitTypes.CHECK;
-  const { inputValue, currentLog, onChange, updateLog } = useUpdateHabitLog({
+  const { inputValue, onChange, updateLog } = useUpdateHabitLog({
     habit,
     selectedDate: timestamp,
+    currentLog: {
+      _id: "calendarLog",
+      habitId: habit._id,
+      amount: calendarData.amount ?? 0,
+      percentageCompleted: calendarData.percentageCompleted,
+      isManuallyOptional: calendarData.isManuallyOptional,
+      note: calendarData.note,
+      date: timestamp,
+    },
   });
-
-  const isOptional = !!currentLog?.isOptional;
-  const percentageCompleted = currentLog?.percentageCompleted ?? 0;
 
   const {
     isColorLight,
@@ -60,13 +63,17 @@ const HabitCalendarDayItem = ({
 
   const [shouldDisplayInput, setShouldDisplayInput] = useState(false);
 
+  const isOptional = calendarData.isOptional;
+  const percentageCompleted = calendarData.percentageCompleted;
+
   const isCompleted = percentageCompleted >= 100;
 
   const isDayOptional = isOptional && !isDisabled && !isCompleted;
 
   const itemSize = isDayOptional ? OPTIONAL_CIRCLE_SIZE : CIRCLE_SIZE;
 
-  const hasAdditionalInfo = currentLog?.isManuallyOptional || currentLog?.note;
+  const hasAdditionalInfo =
+    calendarData.isManuallyOptional || calendarData.note;
 
   const inputFontSize = useMemo(() => {
     if (inputValue.length < 3) return "md";
@@ -131,10 +138,10 @@ const HabitCalendarDayItem = ({
 
   return (
     <DayItemContainer isDayOptional={isDayOptional}>
-      {streakState?.displayLeftLine && (
+      {calendarData.streakState.displayLeftLine && (
         <HorizontalLine itemSize={itemSize} bgColor={bgColor} isLeft />
       )}
-      {streakState?.displayRightLine && (
+      {calendarData.streakState.displayRightLine && (
         <HorizontalLine
           itemSize={itemSize}
           bgColor={bgColor}
@@ -154,7 +161,7 @@ const HabitCalendarDayItem = ({
           <AdditionalInfoIndicator
             borderColor={indicatorBgColor}
             bgColor={bgColor}
-            isFull={!!currentLog.note}
+            isFull={!!calendarData.note}
           />
         )}
         <CircularProgress

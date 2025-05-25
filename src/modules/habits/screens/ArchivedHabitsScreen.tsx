@@ -1,6 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator } from "react-native";
+import theme from "theme";
 
 import HeaderBar from "components/HeaderBar";
 import Typography from "components/Typography";
@@ -12,8 +14,7 @@ import { useAppNavigation } from "modules/navigation/NavigationService";
 import { Routes } from "modules/navigation/types";
 import styled from "styled-components/native";
 
-import { habitsApi } from "../api/habitsApi";
-import { useArchivedHabits } from "../api/habitsSelectors";
+import { habitsApi, useGetArchivedHabitsQuery } from "../api/habitsApi";
 import ArchivedHabitItem from "../components/habitItem/ArchivedHabitItem";
 
 const contentContainerStyle = {
@@ -29,7 +30,7 @@ const ArchivedHabitsScreen = (): JSX.Element => {
 
   const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
 
-  const { archivedHabits } = useArchivedHabits();
+  const { data: archivedHabits = [], isLoading } = useGetArchivedHabitsQuery();
 
   const onUnarchive = useCallback(
     (_id: string) => {
@@ -40,6 +41,25 @@ const ArchivedHabitsScreen = (): JSX.Element => {
     },
     [updateHabit],
   );
+
+  if (isLoading) {
+    return (
+      <>
+        <HeaderBar withBackArrow title={t("habits.theArchive")} />
+        <SLinearGradient
+          locations={BG_GRADIENT_LOCATIONS}
+          colors={BG_GRADIENT_COLORS}
+          style={{
+            paddingTop: 50,
+            alignItems: "center",
+          }}
+        >
+          {/* TODO: add skeleton */}
+          <ActivityIndicator size="large" color={theme.colors.cyan600} />
+        </SLinearGradient>
+      </>
+    );
+  }
 
   return (
     <>
@@ -60,7 +80,11 @@ const ArchivedHabitsScreen = (): JSX.Element => {
                 key={habit._id}
                 label={habit.label}
                 onPress={() =>
-                  navigation.navigate(Routes.HABIT_STATS, { id: habit._id })
+                  navigation.navigate(Routes.HABIT_STATS, {
+                    id: habit._id,
+                    color: habit.color,
+                    label: habit.label,
+                  })
                 }
                 onUnarchive={() => onUnarchive(habit._id)}
               />

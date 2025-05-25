@@ -1,4 +1,4 @@
-import { format, startOfToday } from "date-fns";
+import { format, isSameMonth, startOfMonth, startOfToday } from "date-fns";
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Calendar as RNCalendar } from "react-native-calendars";
@@ -7,10 +7,10 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { getCalendarTheme, SIMPLE_DATE_FORMAT } from "modules/calendar/data";
 import { configureCalendarLocale } from "modules/calendar/data/calendarLocaleConfig";
+import { useGetHabitCalendarDataQuery } from "modules/habits/api/habitsApi";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
-import { Habit, HabitStreak } from "modules/habits/types";
-import { getMarkedHabitLogsDates } from "modules/habits/utils/getMarkedHabitLogsDates";
-import { Direction } from "react-native-calendars/src/types";
+import { Habit, HabitCalendarDataItem } from "modules/habits/types";
+import { DateData, Direction } from "react-native-calendars/src/types";
 import styled from "styled-components/native";
 
 import HabitCalendarDayItem from "./HabitCalendarDayItem";
@@ -38,18 +38,18 @@ const renderArrow = (direction: Direction, color: string) => (
 
 type Props = {
   habit: Habit;
-  bestStreaksData: HabitStreak[];
 };
 
-const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
-  const [selectedLogTimestamp, setSelectedLogTimestamp] = useState<
-    number | null
-  >(null);
+const HabitCalendar = ({ habit }: Props): JSX.Element => {
+  const [selectedLog, setSelectedLog] = useState<HabitCalendarDataItem | null>(
+    null,
+  );
+  const [selectedMonth, setSelectedMonth] = useState(startOfMonth(new Date()));
   const { textColor } = useHabitStatColors(habit.color);
 
-  const markedDates = useMemo(
-    () => getMarkedHabitLogsDates(habit, bestStreaksData),
-    [bestStreaksData, habit],
+  const { data: calendarData } = useGetHabitCalendarDataQuery(
+    habit._id,
+    selectedMonth,
   );
 
   const customTheme = useMemo(() => getCalendarTheme(textColor), [textColor]);
@@ -58,14 +58,16 @@ const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
     ({ date, state, marking }: any) => {
       const isDisabled = state === "disabled";
 
+      if (!marking) return null;
+
       return (
         <HabitCalendarDayItem
           habit={habit}
           day={date.day}
           timestamp={date.timestamp}
           isDisabled={isDisabled}
-          streakState={marking?.streakState}
-          onLongPress={() => setSelectedLogTimestamp(date.timestamp)}
+          calendarData={marking}
+          onLongPress={() => setSelectedLog(marking)}
         />
       );
     },
@@ -84,14 +86,19 @@ const HabitCalendar = ({ habit, bestStreaksData }: Props): JSX.Element => {
         renderArrow={(direction: Direction) =>
           renderArrow(direction, textColor)
         }
+        displayLoadingIndicator
         hideExtraDays
-        markedDates={markedDates}
+        disableArrowRight={isSameMonth(selectedMonth, today)}
+        markedDates={calendarData}
+        onMonthChange={(date: DateData) => {
+          setSelectedMonth(startOfMonth(date.timestamp));
+        }}
       />
 
       <HabitLogInfoModal
         habit={habit}
-        selectedLogTimestamp={selectedLogTimestamp}
-        onClose={() => setSelectedLogTimestamp(null)}
+        selectedLog={selectedLog}
+        onClose={() => setSelectedLog(null)}
       />
     </Container>
   );

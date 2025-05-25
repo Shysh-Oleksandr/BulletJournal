@@ -6,6 +6,7 @@ import theme from "theme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
+import { Habit } from "modules/habits/types";
 import styled from "styled-components/native";
 
 import { useHabitsWeekDates } from "../../hooks/useHabitsWeekDates";
@@ -17,18 +18,20 @@ const today = startOfToday().getTime();
 
 type Props = {
   selectedDate: number;
+  activeHabits: Habit[];
   setSelectedDate: (val: number) => void;
 };
 
 const HabitsWeekCalendar = ({
   selectedDate,
+  activeHabits,
   setSelectedDate,
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
   const isTodaySelected = useMemo(() => isToday(selectedDate), [selectedDate]);
 
-  const mappedWeekDates = useHabitsWeekDates(selectedDate);
+  const mappedWeekDates = useHabitsWeekDates(selectedDate, activeHabits);
 
   return (
     <Container>

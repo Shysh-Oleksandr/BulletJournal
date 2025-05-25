@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
+import { ActivityIndicator } from "react-native";
 
 import { RouteProp } from "@react-navigation/native";
 import HeaderBar from "components/HeaderBar";
@@ -12,14 +13,12 @@ import { RootStackParamList, Routes } from "modules/navigation/types";
 import AddButton, { ContentItem } from "modules/notes/components/AddButton";
 import styled from "styled-components/native";
 
-import { useHabitById } from "../api/habitsSelectors";
+import { useGetHabitQuery } from "../api/habitsApi";
 import HabitBestStreaksChart from "../components/habitStats/HabitBestStreaksChart";
 import HabitCalendar from "../components/habitStats/HabitCalendar";
 import HabitInfoCard from "../components/habitStats/HabitInfoCard";
 import HabitInfoSection from "../components/habitStats/HabitInfoSection";
-import HabitMonthlyBarChart from "../components/habitStats/HabitMonthlyBarChart";
 import HabitProgressBar from "../components/habitStats/HabitProgressBar";
-import { calculateHabitBestStreaks } from "../utils/calculateHabitBestStreaks";
 
 const contentContainerStyle = {
   paddingBottom: 70,
@@ -30,19 +29,29 @@ const HabitStatsScreen: FC<{
 }> = ({ route }) => {
   const navigation = useAppNavigation();
 
-  const { id } = route.params;
+  const { id, color, label } = route.params;
 
-  const { habit: item } = useHabitById(id);
-
-  const bestStreaksData = useMemo(
-    () => calculateHabitBestStreaks(item?.logs ?? []),
-    [item?.logs],
-  );
+  const { data: item, isLoading } = useGetHabitQuery(id);
 
   // const isCheckHabitType = item.habitType === HabitTypes.CHECK;
 
-  if (!item) {
-    return null;
+  if (!item || isLoading) {
+    return (
+      <>
+        <HeaderBar title={label} withBackArrow bgColor={color} />
+        <SLinearGradient
+          locations={BG_GRADIENT_LOCATIONS}
+          colors={BG_GRADIENT_COLORS}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* TODO: add skeleton */}
+          <ActivityIndicator size="large" color={color} />
+        </SLinearGradient>
+      </>
+    );
   }
 
   return (
@@ -53,7 +62,12 @@ const HabitStatsScreen: FC<{
         withEditIcon
         withTabBarOffset={false}
         bgColor={item.color}
-        onPress={() => navigation.navigate(Routes.EDIT_HABIT, { item })}
+        onPress={() =>
+          navigation.navigate(Routes.EDIT_HABIT, {
+            id: item._id,
+            color: item.color,
+          })
+        }
       />
       <SLinearGradient
         locations={BG_GRADIENT_LOCATIONS}
@@ -70,17 +84,18 @@ const HabitStatsScreen: FC<{
           <HabitInfoSection habit={item} />
           <HabitProgressBar habit={item} />
           <StatsContainer>
-            <HabitCalendar bestStreaksData={bestStreaksData} habit={item} />
-            <HabitInfoCard bestStreaksData={bestStreaksData} habit={item} />
-            <HabitBestStreaksChart
-              bestStreaksData={bestStreaksData}
+            <HabitCalendar habit={item} />
+            <HabitInfoCard habit={item} />
+            {item.cachedMetrics.bestStreaks && (
+              <HabitBestStreaksChart
+                bestStreaksData={item.cachedMetrics.bestStreaks}
+                color={item.color}
+              />
+            )}
+            {/* <HabitMonthlyBarChart
+              oldestHabitLog={item.cachedMetrics.oldestLogDate}
               color={item.color}
-            />
-            <HabitMonthlyBarChart habitLogs={item.logs} color={item.color} />
-            {/* Deprecated until we improve performance */}
-            {/* {!isCheckHabitType && (
-            <HabitWeeklyLineChart habitLogs={item.logs} color={item.color} />
-          )} */}
+            /> */}
           </StatsContainer>
         </SScrollView>
       </SLinearGradient>

@@ -1,13 +1,13 @@
 import { isSameDay } from "date-fns";
 import { useMemo } from "react";
 
-import { useActiveHabits } from "../api/habitsSelectors";
 import { Habit } from "../types";
 import { getWeekDatesByDate } from "../utils/getWeekDatesByDate";
 
-export const useHabitsWeekDates = (selectedDate: number) => {
-  const { activeHabits } = useActiveHabits();
-
+export const useHabitsWeekDates = (
+  selectedDate: number,
+  activeHabits: Habit[],
+) => {
   return useMemo(() => {
     const weekDates = getWeekDatesByDate(selectedDate);
 
@@ -27,11 +27,7 @@ const getWeeklyCompletionRates = (
 
   // Calculate the start date for each habit
   activeHabits.forEach((habit) => {
-    const habitStartDate = habit.logs.reduce(
-      (earliestDate, log) =>
-        earliestDate ? Math.min(earliestDate, log.date) : log.date,
-      null as number | null,
-    );
+    const habitStartDate = habit.cachedMetrics.oldestLogDate;
 
     if (habitStartDate) {
       habitsByStartDate[habit._id] = habitStartDate;
@@ -41,7 +37,7 @@ const getWeeklyCompletionRates = (
   // Calculate completion rates for each date in the week
   weekDates.forEach((date) => {
     let completedLogs = 0;
-    let mandatoryHabitsCount = 0;
+    let activeHabitsCount = 0;
 
     activeHabits.forEach((habit) => {
       const habitStartDate = habitsByStartDate[habit._id];
@@ -49,22 +45,21 @@ const getWeeklyCompletionRates = (
       // Skip habits that haven't started yet
       if (habitStartDate && date < habitStartDate) return;
 
-      const log = habit.logs.find((log) => isSameDay(log.date, date));
+      // Check if the habit is active for this date
+      activeHabitsCount++;
 
-      if (log) {
-        // Count mandatory habits and completed logs
-        if (!log.isOptional) {
-          mandatoryHabitsCount++;
-        }
+      // Check if the habit is completed for this date
+      const isCompleted = habit.featuredLogs.some(
+        (log) => isSameDay(log.date, date) && log.percentageCompleted >= 100,
+      );
 
-        if (log.percentageCompleted >= 100) {
-          completedLogs++;
-        }
+      if (isCompleted) {
+        completedLogs++;
       }
     });
 
-    const percentageCompleted = mandatoryHabitsCount
-      ? Math.round((completedLogs / mandatoryHabitsCount) * 100)
+    const percentageCompleted = activeHabitsCount
+      ? Math.round((completedLogs / activeHabitsCount) * 100)
       : 0;
 
     completionRates.push({ date, percentageCompleted });

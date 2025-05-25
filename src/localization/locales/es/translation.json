@@ -178,6 +178,8 @@
     "labelCreated": "La etiqueta ha sido creada",
     "labelDeleted": "La etiqueta ha sido eliminada",
     "enterNewLabel": "Introduce una nueva etiqueta",
+    "hideAll": "Ocultar todo",
+    "showAll": "Mostrar todo",
     "categories": {
       "overdue": "Atrasadas",
       "today": "Hoy",

@@ -179,6 +179,8 @@
     "labelCreated": "The label is created",
     "labelDeleted": "The label is deleted",
     "enterNewLabel": "Enter a new label",
+    "hideAll": "Hide all",
+    "showAll": "Show all",
     "categories": {
       "overdue": "Overdue",
       "today": "Today",

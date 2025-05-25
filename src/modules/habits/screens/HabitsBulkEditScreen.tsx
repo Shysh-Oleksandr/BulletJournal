@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator } from "react-native";
 import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
@@ -21,8 +22,7 @@ import { useAppNavigation } from "modules/navigation/NavigationService";
 import styled from "styled-components/native";
 import { alertError } from "utils/alertMessages";
 
-import { habitsApi } from "../api/habitsApi";
-import { useAllHabits } from "../api/habitsSelectors";
+import { habitsApi, useGetAllHabitsQuery } from "../api/habitsApi";
 import HabitBulkEditItem from "../components/habitItem/HabitBulkEditItem";
 import { BulkEditHabit, HabitActions } from "../types";
 import { getHabitActionButtonsData } from "../utils/getHabitActionButtonsData";
@@ -38,7 +38,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { allHabits } = useAllHabits();
+  const { data: allHabits = [], isLoading } = useGetAllHabitsQuery();
 
   const initialHabits = useMemo(
     () =>
@@ -125,6 +125,7 @@ const HabitsBulkEditScreen = (): JSX.Element => {
     );
   }, []);
 
+  // TODO: batch archive/unarchive as currently we have a bug when updating a few habits at once
   const handleUpdateHabits = useCallback(
     async (isLeaveDialog = false) => {
       try {
@@ -188,6 +189,28 @@ const HabitsBulkEditScreen = (): JSX.Element => {
       updateHabit,
     ],
   );
+
+  useEffect(() => {
+    setCurrentHabits(initialHabits);
+  }, [initialHabits]);
+
+  if (isLoading) {
+    return (
+      <>
+        <HeaderBar withBackArrow title={t("habits.habits")} />
+        <SLinearGradient
+          locations={BG_GRADIENT_LOCATIONS}
+          colors={BG_GRADIENT_COLORS}
+          style={{
+            paddingTop: 50,
+          }}
+        >
+          {/* TODO: add skeleton */}
+          <ActivityIndicator size="large" color={theme.colors.cyan600} />
+        </SLinearGradient>
+      </>
+    );
+  }
 
   return (
     <>

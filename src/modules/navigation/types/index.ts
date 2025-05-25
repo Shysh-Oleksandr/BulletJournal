@@ -1,4 +1,3 @@
-import { Habit } from "modules/habits/types";
 import { Note } from "modules/notes/types";
 
 export enum Routes {
@@ -29,13 +28,17 @@ export type RootStackParamList = {
   [Routes.HABITS]: undefined;
   [Routes.HABITS_BULK_EDIT]: undefined;
   [Routes.ARCHIVED_HABITS]: undefined;
-  [Routes.EDIT_HABIT]: {
-    item: Habit;
-    isNewHabit?: boolean;
-  };
+  [Routes.EDIT_HABIT]:
+    | {
+        id?: string;
+        color?: string;
+      }
+    | undefined;
   [Routes.TASKS]: undefined;
   [Routes.HABIT_STATS]: {
     id: string;
+    color: string;
+    label: string;
   };
   [Routes.MAIN]: {
     screen: Routes.NOTES | Routes.CALENDAR | Routes.TASKS | Routes.HABITS;

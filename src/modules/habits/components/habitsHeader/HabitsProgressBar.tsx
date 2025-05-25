@@ -1,9 +1,9 @@
-import { isSameDay } from "date-fns";
 import React, { useMemo } from "react";
 import theme from "theme";
 
 import ProgressBar from "components/ProgressBar";
 import { Habit } from "modules/habits/types";
+import { calculateHabitsPercentageCompletedByDay } from "modules/habits/utils/calculateHabitsPercentageCompletedByDay";
 
 type Props = {
   mandatoryHabits: Habit[];
@@ -14,20 +14,11 @@ const HabitsProgressBar = ({
   mandatoryHabits,
   selectedDate,
 }: Props): JSX.Element => {
-  const percentageCompleted = useMemo(() => {
-    if (mandatoryHabits.length === 0) return null;
-
-    const completedLogs = mandatoryHabits.filter((habit) =>
-      habit.logs.some(
-        (log) =>
-          log.percentageCompleted >= 100 && isSameDay(log.date, selectedDate),
-      ),
-    ).length;
-
-    const percentageCompleted = (completedLogs / mandatoryHabits.length) * 100;
-
-    return Math.min(Math.round(percentageCompleted), 100);
-  }, [mandatoryHabits, selectedDate]);
+  const percentageCompleted = useMemo(
+    () =>
+      calculateHabitsPercentageCompletedByDay(mandatoryHabits, selectedDate),
+    [mandatoryHabits, selectedDate],
+  );
 
   return (
     <ProgressBar
