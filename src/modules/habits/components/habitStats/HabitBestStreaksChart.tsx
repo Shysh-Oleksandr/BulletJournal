@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import theme from "theme";
 
@@ -7,7 +7,6 @@ import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { useHabitStatColors } from "modules/habits/hooks/useHabitStatColors";
 import { HabitStreak } from "modules/habits/types";
-import { getTopStreaks } from "modules/habits/utils/calculateHabitBestStreaks";
 import styled from "styled-components/native";
 
 const MIN_ITEM_WIDTH = 30;
@@ -27,12 +26,7 @@ const HabitBestStreaksChart = ({
 
   const { textColor, bgColor, activeBgColor } = useHabitStatColors(color);
 
-  const topStreaks = useMemo(
-    () => getTopStreaks(bestStreaksData),
-    [bestStreaksData],
-  );
-
-  if (topStreaks.length === 0) return null;
+  if (bestStreaksData.length === 0) return null;
 
   return (
     <Container>
@@ -40,17 +34,17 @@ const HabitBestStreaksChart = ({
         {t("habits.bestStreaks")}
       </Typography>
       <StreaksContainer>
-        {topStreaks.map((streak, index) => (
+        {bestStreaksData.map((streak, index) => (
           <StreakItemContainer key={index}>
             <StreakDateContainer isLeft>
               <Typography color={textColor} fontSize="xs">
-                {format(streak.startDate, "dd MMM yyyy", {
+                {format(new Date(streak.startDate), "dd MMM yyyy", {
                   locale: getDateFnsLocale(),
                 })}
               </Typography>
             </StreakDateContainer>
             <StreakNumberContainer
-              numberOfDays={streak.numberOfDays}
+              numberOfDays={streak.numberOfLogs}
               bgColor={bgColor}
               activeBgColor={activeBgColor}
             >
@@ -60,12 +54,12 @@ const HabitBestStreaksChart = ({
                 fontSize="lg"
                 align="center"
               >
-                {streak.numberOfDays}
+                {streak.numberOfLogs}
               </Typography>
             </StreakNumberContainer>
             <StreakDateContainer>
               <Typography color={textColor} fontSize="xs">
-                {format(streak.endDate, "dd MMM yyyy", {
+                {format(new Date(streak.endDate), "dd MMM yyyy", {
                   locale: getDateFnsLocale(),
                 })}
               </Typography>

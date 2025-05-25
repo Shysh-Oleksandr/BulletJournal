@@ -1,4 +1,4 @@
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
@@ -9,7 +9,7 @@ import Switcher from "components/Switcher";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { habitsApi } from "modules/habits/api/habitsApi";
-import { Habit } from "modules/habits/types";
+import { Habit, HabitCalendarDataItem, HabitLog } from "modules/habits/types";
 import styled from "styled-components/native";
 
 const screenHeight = Dimensions.get("window").height;
@@ -28,28 +28,20 @@ enum LogOptionalStatus {
 const LogOptionalStatusValues = Object.values(LogOptionalStatus);
 
 type Props = {
-  habit: Habit | null;
-  selectedLogTimestamp: number | null;
+  habit: Habit;
+  selectedLog: HabitCalendarDataItem | HabitLog | null;
   onClose: () => void;
 };
 
 const HabitLogInfoModal = ({
   habit,
-  selectedLogTimestamp,
+  selectedLog,
   onClose,
 }: Props): JSX.Element => {
-  const { mutate: updateHabit } = habitsApi.useUpdateHabitMutation();
+  const { mutate: createOrUpdateHabitLog } =
+    habitsApi.useCreateOrUpdateHabitLogMutation();
 
   const { t } = useTranslation();
-
-  const log = useMemo(
-    () =>
-      selectedLogTimestamp && habit
-        ? habit.logs.find((log) => isSameDay(log.date, selectedLogTimestamp)) ||
-          null
-        : null,
-    [habit, selectedLogTimestamp],
-  );
 
   const [logOptionalStatus, setLogOptionalStatus] = useState<LogOptionalStatus>(
     LogOptionalStatus.no,
@@ -63,18 +55,18 @@ const HabitLogInfoModal = ({
 
   const formattedDate = useMemo(
     () =>
-      selectedLogTimestamp
-        ? format(selectedLogTimestamp, "EEEE, dd MMMM yyyy", {
+      selectedLog
+        ? format(new Date(selectedLog.date), "EEEE, dd MMMM yyyy", {
             locale: getDateFnsLocale(),
           })
         : "",
-    [selectedLogTimestamp],
+    [selectedLog],
   );
 
   const onModalClose = () => {
     onClose();
 
-    if (!selectedLogTimestamp || !habit) return;
+    if (!selectedLog) return;
 
     const normalizedNote = note.trim().length === 0 ? undefined : note.trim();
 
@@ -82,45 +74,37 @@ const HabitLogInfoModal = ({
       logOptionalStatus === LogOptionalStatus.yes;
 
     if (
-      normalizedNote === log?.note &&
-      ((isManuallyOptionalSelected && log?.isManuallyOptional) ||
-        (!isManuallyOptionalSelected && !log?.isManuallyOptional))
+      normalizedNote === selectedLog.note &&
+      ((isManuallyOptionalSelected && selectedLog.isManuallyOptional) ||
+        (!isManuallyOptionalSelected && !selectedLog.isManuallyOptional))
     )
       return;
 
-    const updatedLogs = habit.logs
-      .map((log) => {
-        if (isSameDay(log.date, selectedLogTimestamp)) {
-          return {
-            ...log,
-            isManuallyOptional: logOptionalStatus === LogOptionalStatus.yes,
-            note: normalizedNote,
-            isArtificial: false,
-          };
-        }
-
-        return log;
-      })
-      .filter((log) => !log.isArtificial);
-
-    updateHabit({
-      _id: habit._id,
-      logs: updatedLogs,
+    createOrUpdateHabitLog({
+      habitId: habit._id,
+      date: new Date(selectedLog.date).getTime(),
+      percentageCompleted: selectedLog.percentageCompleted || 0,
+      amount: selectedLog.amount || 0,
+      amountTarget: habit.amountTarget || 1,
+      note: normalizedNote,
+      isManuallyOptional: isManuallyOptionalSelected,
     });
   };
 
   useEffect(() => {
-    if (selectedLogTimestamp) {
-      setNote(log?.note ?? "");
+    if (selectedLog) {
+      setNote(selectedLog.note ?? "");
       setLogOptionalStatus(
-        log?.isManuallyOptional ? LogOptionalStatus.yes : LogOptionalStatus.no,
+        selectedLog.isManuallyOptional
+          ? LogOptionalStatus.yes
+          : LogOptionalStatus.no,
       );
     }
-  }, [log?.isManuallyOptional, log?.note, selectedLogTimestamp]);
+  }, [selectedLog]);
 
   return (
     <CustomModal
-      isVisible={Boolean(selectedLogTimestamp && habit)}
+      isVisible={Boolean(selectedLog)}
       closeModal={onModalClose}
       height={modalHeight}
     >

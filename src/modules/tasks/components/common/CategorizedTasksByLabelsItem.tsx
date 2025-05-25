@@ -40,7 +40,11 @@ const CategorizedTasksByLabelsItem = ({ label }: Props): JSX.Element => (
         bgColor={label.color}
         onPress={openModal}
       >
-        <Typography fontWeight="semibold" color={theme.colors.white}>
+        <Typography
+          fontWeight="semibold"
+          fontSize="sm"
+          color={theme.colors.white}
+        >
           {label.labelName}
           {label.activeTasksAmount > 0 ? ` (${label.activeTasksAmount})` : ""}
         </Typography>

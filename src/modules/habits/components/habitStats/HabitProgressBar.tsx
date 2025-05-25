@@ -9,14 +9,11 @@ type Props = {
 
 const HabitProgressBar = ({ habit }: Props): JSX.Element => {
   const percentageCompleted = useMemo(() => {
-    const completedLogs = habit.logs.filter(
-      (log) => log.percentageCompleted >= 100,
-    ).length;
-
-    const percentageCompleted = (completedLogs / habit.overallTarget) * 100;
+    const percentageCompleted =
+      (habit.cachedMetrics.overallCompletions / habit.overallTarget) * 100;
 
     return Math.min(percentageCompleted, 100);
-  }, [habit.logs, habit.overallTarget]);
+  }, [habit.cachedMetrics.overallCompletions, habit.overallTarget]);
 
   return (
     <ProgressBar

@@ -26,28 +26,26 @@ const HabitInfoSection = ({ habit }: Props): JSX.Element => {
 
   const frequencyLabel = useHabitFrequencyLabel(habit.frequency);
 
-  const firstCompletedLogDate = useMemo(() => {
-    const firstCompletedLogDate =
-      habit.logs.length > 0
-        ? Math.min(...habit.logs.map((log) => log.date))
-        : new Date();
-
-    return format(firstCompletedLogDate, "dd/MM/yyyy");
-  }, [habit.logs]);
+  const firstCompletedLogDate = format(
+    habit.cachedMetrics.firstCompletedLogDate || new Date(),
+    "dd/MM/yyyy",
+  );
 
   return (
     <Container bgColor={bgColor}>
       <InfoContainer>
-        <InfoItemContainer>
-          <FontAwesome
-            name="calendar-check-o"
-            color={textColor}
-            size={theme.fontSizes.md}
-          />
-          <Typography fontSize="sm" color={textColor}>
-            {firstCompletedLogDate}
-          </Typography>
-        </InfoItemContainer>
+        {firstCompletedLogDate && (
+          <InfoItemContainer>
+            <FontAwesome
+              name="calendar-check-o"
+              color={textColor}
+              size={theme.fontSizes.md}
+            />
+            <Typography fontSize="sm" color={textColor}>
+              {firstCompletedLogDate}
+            </Typography>
+          </InfoItemContainer>
+        )}
         {!isCheckHabitType && (
           <InfoItemContainer>
             <FontAwesome5

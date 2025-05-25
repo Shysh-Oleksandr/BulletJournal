@@ -1,4 +1,4 @@
-import { differenceInMonths, format } from "date-fns";
+import { differenceInMonths, endOfWeek, format, startOfWeek } from "date-fns";
 import React, {
   useCallback,
   useEffect,
@@ -15,9 +15,10 @@ import BottomModal from "components/BottomModal";
 import Typography from "components/Typography";
 import { getDateFnsLocale } from "localization/utils/getDateFnsLocale";
 import { SIMPLE_DATE_FORMAT } from "modules/calendar/data";
-import { useActiveHabits } from "modules/habits/api/habitsSelectors";
+import { useGetHabitsSummaryQuery } from "modules/habits/api/habitsApi";
 import { EXTREME_PAST_DATE } from "modules/habits/data";
-import { getAllHabitsMarkedDates } from "modules/habits/utils/getAllHabitsMarkedDates";
+// import { getAllHabitsMarkedDates } from "modules/habits/utils/getAllHabitsMarkedDates";
+import { Habit } from "modules/habits/types";
 import styled from "styled-components/native";
 
 import HabitsCalendarDayItem from "./HabitsCalendarDayItem";
@@ -41,7 +42,15 @@ const HabitsCalendarBottomSheet = ({
 }: Props): JSX.Element => {
   const { t } = useTranslation();
 
-  const { activeHabits } = useActiveHabits();
+  const formattedSelectedDate = useMemo(
+    () => format(selectedDate, SIMPLE_DATE_FORMAT),
+    [selectedDate],
+  );
+
+  const { data: activeHabits = [] } = useGetHabitsSummaryQuery(
+    format(startOfWeek(selectedDate, { weekStartsOn: 1 }), SIMPLE_DATE_FORMAT),
+    format(endOfWeek(selectedDate, { weekStartsOn: 1 }), SIMPLE_DATE_FORMAT),
+  );
 
   const calendarListRef = useRef<typeof CalendarList>(null);
 
@@ -55,7 +64,9 @@ const HabitsCalendarBottomSheet = ({
 
     const oldestHabitLogDate = Math.min(
       ...[
-        ...activeHabits.map((habit) => habit.oldestLogDate ?? now),
+        ...activeHabits.map(
+          (habit: Habit) => habit.cachedMetrics.oldestLogDate ?? now,
+        ),
         EXTREME_PAST_DATE.getTime(),
       ],
     );
@@ -63,15 +74,10 @@ const HabitsCalendarBottomSheet = ({
     return differenceInMonths(now, oldestHabitLogDate);
   }, [activeHabits]);
 
-  const formattedSelectedDate = useMemo(
-    () => format(selectedDate, SIMPLE_DATE_FORMAT),
-    [selectedDate],
-  );
-
-  const markedDates = useMemo(
-    () => getAllHabitsMarkedDates(activeHabits),
-    [activeHabits],
-  );
+  // const markedDates = useMemo(
+  //   () => getAllHabitsMarkedDates(activeHabits),
+  //   [activeHabits],
+  // );
 
   const onClose = useCallback(() => {
     setIsVisible(false);
@@ -158,7 +164,7 @@ const HabitsCalendarBottomSheet = ({
         bounces={false}
         renderHeader={renderHeader}
         dayComponent={dayComponent}
-        markedDates={markedDates}
+        // markedDates={markedDates}
       />
     </BottomModal>
   );

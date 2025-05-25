@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import theme from "theme";
 
 import Typography from "components/Typography";
@@ -12,6 +13,7 @@ const contentContainerStyle = {
 };
 
 const CategorizedTasksByLabels = (): JSX.Element | null => {
+  const { t } = useTranslation();
   const labels = useLabelsWithTasks();
 
   const [showAll, setShowAll] = useState(false);
@@ -37,8 +39,12 @@ const CategorizedTasksByLabels = (): JSX.Element | null => {
           <CategorizedTasksByLabelsItem key={label.labelName} label={label} />
         ))}
         <ButtonContainer onPress={() => setShowAll(!showAll)}>
-          <Typography fontWeight="semibold" color={theme.colors.darkBlueText}>
-            {showAll ? "Hide all" : "Show all"}
+          <Typography
+            fontWeight="semibold"
+            fontSize="sm"
+            color={theme.colors.darkBlueText}
+          >
+            {showAll ? t("tasks.hideAll") : t("tasks.showAll")}
           </Typography>
         </ButtonContainer>
       </CategoryContainer>

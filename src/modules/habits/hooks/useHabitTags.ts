@@ -2,20 +2,11 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Habit, HabitTypes } from "../types";
-import {
-  calculateHabitBestStreaks,
-  getHabitStreakInfo,
-} from "../utils/calculateHabitBestStreaks";
 
 import { useHabitFrequencyLabel } from "./useHabitFrequencyLabel";
 
 export const useHabitTags = (habit: Habit, amountTarget?: number) => {
   const { t } = useTranslation();
-
-  const { currentStreak, longestStreak, overallCompleted } = useMemo(
-    () => getHabitStreakInfo(habit.logs, calculateHabitBestStreaks(habit.logs)),
-    [habit.logs],
-  );
 
   const frequencyLabel = useHabitFrequencyLabel(habit.frequency);
 
@@ -31,15 +22,15 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
     }
 
     tags.push(
-      `${t("habits.streak")}: ${currentStreak}/${habit.streakTarget} ${t(
+      `${t("habits.streak")}: ${habit.cachedMetrics.currentStreak}/${habit.streakTarget} ${t(
         "habits.times",
       )}`,
     );
     tags.push(
-      `${t("habits.longestStreak")}: ${longestStreak} ${t("habits.times")}`,
+      `${t("habits.longestStreak")}: ${habit.cachedMetrics.longestStreak} ${t("habits.times")}`,
     );
     tags.push(
-      `${t("habits.overall")}: ${overallCompleted}/${habit.overallTarget} ${t(
+      `${t("habits.overall")}: ${habit.cachedMetrics.overallCompletions}/${habit.overallTarget} ${t(
         "habits.times",
       )}`,
     );
@@ -47,15 +38,7 @@ export const useHabitTags = (habit: Habit, amountTarget?: number) => {
     tags.push(`${t("habits.frequency")}: ${frequencyLabel}`);
 
     return tags;
-  }, [
-    habit,
-    t,
-    currentStreak,
-    longestStreak,
-    overallCompleted,
-    frequencyLabel,
-    amountTarget,
-  ]);
+  }, [habit, t, frequencyLabel, amountTarget]);
 
   return tags;
 };

@@ -25,17 +25,19 @@ const HabitItem = ({
   });
 
   const isActiveOnSelectedDate = useMemo(
-    () => getIsActiveOnSelectedDate(selectedDate, habit.oldestLogDate),
-    [habit.oldestLogDate, selectedDate],
+    () =>
+      getIsActiveOnSelectedDate(
+        selectedDate,
+        habit.cachedMetrics.oldestLogDate,
+      ),
+    [habit.cachedMetrics.oldestLogDate, selectedDate],
   );
 
-  const isCompleted = useMemo(
-    () =>
-      habit.logs.some(
-        (log) =>
-          log.percentageCompleted >= 100 && isSameDay(log.date, selectedDate),
-      ),
-    [habit.logs, selectedDate],
+  const isCompleted = Boolean(
+    habit.featuredLogs.some(
+      (log) =>
+        isSameDay(log.date, selectedDate) && log.percentageCompleted >= 100,
+    ),
   );
 
   return (
